@@ -7,7 +7,7 @@ using System.Globalization;
 using TMPro;
 using UnityEngine.UI;
 
-//[ExecuteInEditMode]
+//[ExecuteInEditMode] // this loads terrain in edit mode
 
 
 public class MeshGenerator : MonoBehaviour
