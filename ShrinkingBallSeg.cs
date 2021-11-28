@@ -7,7 +7,7 @@ public class ShrinkingBallSeg : MonoBehaviour
 {
     public List<Vector3> vertices;
     public List<Vector3> normals;
-    public float initialRadius = 200.0f;
+    public float initialRadius = 500.0f;
     public List<Vector3> verticesThin;
     public List<Vector3> MedialBallCenters;
     public List<float> MedialBallRadii;
@@ -38,17 +38,6 @@ public class ShrinkingBallSeg : MonoBehaviour
         Mesh mesh = meshGenerator.mesh;
         vertices = mesh.vertices.ToList();
         normals = mesh.normals.ToList();
-        int count = 0;
-        int thinningFactor = 2;
-        foreach (Vector3 vertex in vertices)
-        {
-            count++;
-            if (count == thinningFactor)
-            {
-                verticesThin.Add(vertex);
-                count = 0;
-            }
-        }
     }
 
     bool checkRadius(int vertexIndex, float radius)
@@ -71,7 +60,7 @@ public class ShrinkingBallSeg : MonoBehaviour
         float radius = initialRadius;
         while (empty == false)
         {
-            radius -= 1.0f;
+            radius -= 3.0f;
             empty = checkRadius(vertexIndex, radius);
             if (radius < 50f)
             {

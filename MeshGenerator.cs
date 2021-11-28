@@ -49,9 +49,9 @@ public class MeshGenerator : MonoBehaviour
         while (index < arrayOfLines.Length -1)
         {
             values = arrayOfLines[index].Split(' ');
-            VectorNew = new Vector3(((float.Parse(values[1], CultureInfo.InvariantCulture)- 1013618) / 10),
-                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 10),
-                               ((float.Parse(values[0], CultureInfo.InvariantCulture)- 649582) / 10));
+            VectorNew = new Vector3((-(float.Parse(values[1], CultureInfo.InvariantCulture))), // PanCan - 1013618) / 10   [1]
+                               ((float.Parse(values[2], CultureInfo.InvariantCulture))), // PanCan  / 10
+                               ((float.Parse(values[0], CultureInfo.InvariantCulture)))); // PanCan - 649582) / 10   [0]
             vertices.Add(VectorNew);
             idList.Add(values[3].Trim(charsToTrim)); // list in order with vertex id's
             if (VectorNew.y > maxTerrainHeight)
@@ -72,8 +72,8 @@ public class MeshGenerator : MonoBehaviour
         while (indexT < arrayOfLines2.Length-1 )
         {
             valuesT = arrayOfLines2[indexT].Split(' ');
-            triangles.Add(idList.IndexOf(valuesT[0]));
             triangles.Add(idList.IndexOf(valuesT[1]));
+            triangles.Add(idList.IndexOf(valuesT[0]));
             triangles.Add(idList.IndexOf(valuesT[2].Trim(charsToTrim)));
             indexT++;
         }
