@@ -7,7 +7,7 @@ public class ShrinkingBallSeg : MonoBehaviour
 {
     public List<Vector3> vertices;
     public List<Vector3> normals;
-    public float initialRadius = 500.0f;
+    public float initialRadius = 250.0f;
     public List<Vector3> verticesThin;
     public List<Vector3> MedialBallCenters;
     public List<float> MedialBallRadii;
@@ -60,7 +60,7 @@ public class ShrinkingBallSeg : MonoBehaviour
         float radius = initialRadius;
         while (empty == false)
         {
-            radius -= 3.0f;
+            radius -= 5.0f;
             empty = checkRadius(vertexIndex, radius);
             if (radius < 50f)
             {
