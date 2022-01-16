@@ -9,11 +9,14 @@ using UnityEngine.UI;
 
 //[ExecuteInEditMode] // this loads terrain in edit mode
 /* to do: 
+ - Set automatic mesh creation to file reader
+ - Add file writer
+ - create component class for output grid
+ - Create grid to assign properties
  - Create component class for medial balls to save properties
  - Filter the 2D set
  - Create component for medial branches
  - Compute medial branches 
- - Add normal shader
 */
 
 
