@@ -8,6 +8,13 @@ using TMPro;
 using UnityEngine.UI;
 
 //[ExecuteInEditMode] // this loads terrain in edit mode
+/* to do: 
+ - Create component class for medial balls to save properties
+ - Filter the 2D set
+ - Create component for medial branches
+ - Compute medial branches 
+ - Add normal shader
+*/
 
 
 public class MeshGenerator : MonoBehaviour
