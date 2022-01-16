@@ -15,6 +15,13 @@ public class ShrinkingBallSeg : MonoBehaviour
     public GameObject dotblue;
     MeshComponent meshComp;
 
+    /* to do: 
+     - Create component class for medial balls to save properties
+     - Filter the 2D set
+     - Create component for medial branches
+     - Compute medial branches 
+    */
+
     void Start()
     {
 
