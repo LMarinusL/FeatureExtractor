@@ -23,13 +23,16 @@ using UnityEngine.UI;
 public class MeshGenerator : MonoBehaviour
 {
     public TextAsset vertexFile;
-    public TextAsset triangleFile;
+    //public TextAsset triangleFile;
     [SerializeField] public TextMeshProUGUI loadingText;
 
-
+    public int zSizer; //original full 369 small 188
+    public int xSizer; // original full 752 small 93
+    int zSize;
+    int xSize;
     public Mesh mesh;
     public List<Vector3> vertices = null;
-    public List<int> triangles;
+    public int[] triangles;
     public List<string> idList;
     public float heightScale = 5.0f;
 
@@ -63,7 +66,7 @@ public class MeshGenerator : MonoBehaviour
                                ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 10),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- 649582) / 10));
             vertices.Add(VectorNew);
-            idList.Add(values[3].Trim(charsToTrim)); // list in order with vertex id's
+            //idList.Add(values[3].Trim(charsToTrim)); // list in order with vertex id's
             if (VectorNew.y > maxTerrainHeight)
             {
                 maxTerrainHeight = VectorNew.y;
@@ -75,7 +78,7 @@ public class MeshGenerator : MonoBehaviour
             index++;
         }
 
-        string TrianglesString = triangleFile.ToString();
+        /*string TrianglesString = triangleFile.ToString();
         string[] arrayOfLines2 = TrianglesString.Split('\n');
         int indexT = 0;
         string[] valuesT;
@@ -86,6 +89,28 @@ public class MeshGenerator : MonoBehaviour
             triangles.Add(idList.IndexOf(valuesT[1]));
             triangles.Add(idList.IndexOf(valuesT[2].Trim(charsToTrim)));
             indexT++;
+        }*/
+        zSize = zSizer - 1;
+        xSize = xSizer - 1;
+        triangles = new int[xSize * zSize * 6];
+        int vert = 0;
+        int tris = 0;
+        for (int z = 0; z < zSize; z++)
+        {
+            for (int x = 0; x < xSize; x++)
+            {
+                triangles[tris + 0] = vert + 0;
+                triangles[tris + 1] = vert + xSize + 1;
+                triangles[tris + 2] = vert + 1;
+                triangles[tris + 3] = vert + 1;
+                triangles[tris + 4] = vert + xSize + 1;
+                triangles[tris + 5] = vert + xSize + 2;
+
+                vert++;
+                tris += 6;
+
+            };
+            vert++;
         }
 
         colors = new Color[vertices.ToArray().Length];
@@ -105,7 +130,7 @@ public class MeshGenerator : MonoBehaviour
  
         mesh.Clear();
         mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
+        mesh.triangles = triangles;
         mesh.colors = colors;
         mesh.RecalculateNormals();
     }

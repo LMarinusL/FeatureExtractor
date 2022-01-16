@@ -38,17 +38,6 @@ public class ShrinkingBallSeg : MonoBehaviour
         Mesh mesh = meshGenerator.mesh;
         vertices = mesh.vertices.ToList();
         normals = mesh.normals.ToList();
-        int count = 0;
-        int thinningFactor = 2;
-        foreach (Vector3 vertex in vertices)
-        {
-            count++;
-            if (count == thinningFactor)
-            {
-                verticesThin.Add(vertex);
-                count = 0;
-            }
-        }
     }
 
     bool checkRadius(int vertexIndex, float radius)
@@ -86,7 +75,10 @@ public class ShrinkingBallSeg : MonoBehaviour
     {
         for (int i = 0; i < vertices.ToArray().Length; i++)
         {
-            getMedialBallCenter(i);
+            if (vertices[i].y != 0f)
+            {
+                getMedialBallCenter(i);
+            }
         }
     }
     void filterOnRadius()
