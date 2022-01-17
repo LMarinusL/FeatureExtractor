@@ -46,7 +46,6 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid.cells)
         {
             writer.WriteLine(cell.x);
-            Debug.Log(cell.x);
         }
         writer.Close();
     }
