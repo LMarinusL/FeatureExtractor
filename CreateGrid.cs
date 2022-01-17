@@ -41,7 +41,7 @@ public class CreateGrid : MonoBehaviour
 
     public void WriteString()
     {
-        string path = "Assets/Output/test.txt";
+        string path = "Assets/Output/outputGrid.txt";
         StreamWriter writer = new StreamWriter(path, false);
         foreach (Cell cell in grid.cells)
         {
