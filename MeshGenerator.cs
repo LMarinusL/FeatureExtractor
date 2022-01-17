@@ -9,7 +9,6 @@ using UnityEngine.UI;
 
 //[ExecuteInEditMode] // this loads terrain in edit mode
 /* to do: 
- - Add file writer
  - create component class for output grid
  - Create grid to assign properties
  - Filter the 2D set
