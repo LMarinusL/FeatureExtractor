@@ -9,12 +9,14 @@ public class CreateGrid : MonoBehaviour
     public List<Vector3> normals;
     public MATList MATlist;
     public List<MATBall> MATcol;
+    public Grid grid;
 
     void Update()
     {
         if (Input.GetKey(KeyCode.P))
         {
             getData();
+            InstantiateGrid(vertices);
             WriteString();
         }
     }
@@ -32,35 +34,50 @@ public class CreateGrid : MonoBehaviour
         MATcol = MATlist.NewMATList;
     }
 
+    public void InstantiateGrid(List<Vector3> verts)
+    {
+        grid = new Grid(verts);
+    }
+
     public void WriteString()
     {
         string path = "Assets/Output/test.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        foreach (MATBall ball in MATcol)
+        foreach (Cell cell in grid.cells)
         {
-            writer.WriteLine(ball.Score);
+            writer.WriteLine(cell.x);
+            Debug.Log(cell.x);
         }
         writer.Close();
     }
 }
 
-public class GridComponent : Component
+public class Grid : Component
 {
     public List<Vector3> OriginalPC;
+    public List<Cell> cells = new List<Cell>();
 
-    public GridComponent(List<Vector3> originalPC)
+    public Grid(List<Vector3> originalPC)
     {
         OriginalPC = originalPC;
+        foreach (Vector3 point in originalPC)
+        {
+            cells.Add(new Cell(point));
+        }
     }
 }
 
-public class CellComponent : Component
+public class Cell : Component
 {
-    public Vector3 Loc;
+    public float x;
+    public float y;
+    public float z;
 
-    public CellComponent(Vector3 loc)
+    public Cell(Vector3 loc)
     {
-        Loc = loc;
+        x = loc.x;
+        y = loc.y;
+        z = loc.z;
     }
 }
 
