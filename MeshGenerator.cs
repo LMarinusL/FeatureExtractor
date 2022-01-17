@@ -12,10 +12,10 @@ using UnityEngine.UI;
  - Add file writer
  - create component class for output grid
  - Create grid to assign properties
- - Create component class for medial balls to save properties
  - Filter the 2D set
  - Create component for medial branches
  - Compute medial branches 
+ - assign color to medial ball based on score
 */
 
 

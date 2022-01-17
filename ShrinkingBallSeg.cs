@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.IO;
 
 public class ShrinkingBallSeg : MonoBehaviour
 {
     public List<Vector3> vertices;
     public List<Vector3> normals;
     public float initialRadius = 200.0f;
-    public List<Vector3> verticesThin;
+    public List<Vector3> filteredList;
     public List<Vector3> MedialBallCenters;
     public List<float> MedialBallRadii;
     public GameObject dotred;
@@ -88,11 +89,24 @@ public class ShrinkingBallSeg : MonoBehaviour
     void InstantiatePoints()
     {
         MATList list = new MATList(MedialBallCenters);
+        list.setScores();
+        WriteString(MedialBallCenters);
         for (int vertId = 0; vertId < MedialBallCenters.ToArray().Length; vertId++)
         {
             Instantiate(dotblue, list.getLoc3D(vertId), transform.rotation);
-            Instantiate(dotred, list.getLoc2D(vertId), transform.rotation);
+            Instantiate(dotred, list.getLoc2D(vertId, 300f), transform.rotation);
         }
+    }
+
+    public static void WriteString(List<Vector3> list)
+    {
+        string path = "Assets/Output/test.txt";
+        StreamWriter writer = new StreamWriter(path, false);
+        foreach (Vector3 vector in list)
+        {
+            writer.WriteLine(vector.x + " " + vector.y + " "+vector.z);
+        }
+        writer.Close();
     }
 }
 
@@ -110,24 +124,49 @@ public class MATList : Component
             NewMATList.Add(new MATBall(ball));
         }
     }
-
+    public void setScores()
+    {
+        MeshComponent matComp = new MeshComponent(OriginalMATList);
+        float radiusForScore = 100f;
+        for (int num = 0; num < OriginalMATList.ToArray().Length; num++)
+        {
+            List<Vector3> listToCheck = matComp.checkSegment(OriginalMATList[num], radiusForScore);
+            int score = 0;
+            foreach (Vector3 vertex in listToCheck)
+            {
+                if(Vector3.Distance(vertex, OriginalMATList[num]) < radiusForScore)
+                {
+                    score++;
+                }
+            }
+            NewMATList[num].Score = score;
+        }
+    }
     public Vector3 getLoc3D(int index)
     {
         return NewMATList[index].Loc;
     }
-    public Vector3 getLoc2D(int index)
+    public Vector3 getLoc2D(int index, float yloc)
     {
-        return new Vector3(NewMATList[index].Loc.x, 300, NewMATList[index].Loc.z);
+        return new Vector3(NewMATList[index].Loc.x, yloc, NewMATList[index].Loc.z);
     }
+    public MATBall getBall(int index)
+    {
+        return NewMATList[index];
+    }
+
 }
 
 public class MATBall : Component
 {
     public Vector3 Loc;
+    public int Score;
 
     public MATBall(Vector3 ballLoc) // constructor
     {
         Loc = ballLoc;
     }
 }
+
+
 
