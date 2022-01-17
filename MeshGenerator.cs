@@ -9,7 +9,6 @@ using UnityEngine.UI;
 
 //[ExecuteInEditMode] // this loads terrain in edit mode
 /* to do: 
- - Set automatic mesh creation to file reader
  - Add file writer
  - create component class for output grid
  - Create grid to assign properties
@@ -23,7 +22,6 @@ using UnityEngine.UI;
 public class MeshGenerator : MonoBehaviour
 {
     public TextAsset vertexFile;
-    //public TextAsset triangleFile;
     [SerializeField] public TextMeshProUGUI loadingText;
 
     public int zSizer; //original full 369 small 188
@@ -66,7 +64,6 @@ public class MeshGenerator : MonoBehaviour
                                ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 10),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- 649582) / 10));
             vertices.Add(VectorNew);
-            //idList.Add(values[3].Trim(charsToTrim)); // list in order with vertex id's
             if (VectorNew.y > maxTerrainHeight)
             {
                 maxTerrainHeight = VectorNew.y;
@@ -78,18 +75,6 @@ public class MeshGenerator : MonoBehaviour
             index++;
         }
 
-        /*string TrianglesString = triangleFile.ToString();
-        string[] arrayOfLines2 = TrianglesString.Split('\n');
-        int indexT = 0;
-        string[] valuesT;
-        while (indexT < arrayOfLines2.Length-1 )
-        {
-            valuesT = arrayOfLines2[indexT].Split(' ');
-            triangles.Add(idList.IndexOf(valuesT[0]));
-            triangles.Add(idList.IndexOf(valuesT[1]));
-            triangles.Add(idList.IndexOf(valuesT[2].Trim(charsToTrim)));
-            indexT++;
-        }*/
         zSize = zSizer - 1;
         xSize = xSizer - 1;
         triangles = new int[xSize * zSize * 6];
@@ -100,11 +85,11 @@ public class MeshGenerator : MonoBehaviour
             for (int x = 0; x < xSize; x++)
             {
                 triangles[tris + 0] = vert + 0;
-                triangles[tris + 1] = vert + xSize + 1;
-                triangles[tris + 2] = vert + 1;
+                triangles[tris + 1] = vert + 1;
+                triangles[tris + 2] = vert + xSize + 1;
                 triangles[tris + 3] = vert + 1;
-                triangles[tris + 4] = vert + xSize + 1;
-                triangles[tris + 5] = vert + xSize + 2;
+                triangles[tris + 4] = vert + xSize + 2;
+                triangles[tris + 5] = vert + xSize + 1;
 
                 vert++;
                 tris += 6;
