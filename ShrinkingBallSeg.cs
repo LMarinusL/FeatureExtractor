@@ -60,9 +60,9 @@ public class ShrinkingBallSeg : MonoBehaviour
         float radius = initialRadius;
         while (empty == false)
         {
-            radius -= 1.0f;
+            radius -= 3.0f;
             empty = checkRadius(vertexIndex, radius);
-            if (radius < 50f)
+            if (radius < 10f)
             {
                 return;
             }
@@ -75,7 +75,7 @@ public class ShrinkingBallSeg : MonoBehaviour
     {
         for (int i = 0; i < vertices.ToArray().Length; i++)
         {
-            if (vertices[i].y != 0f)
+            if (vertices[i].y != 0f && normals[i].y>0.4f)
             {
                 getMedialBallCenter(i);
             }
@@ -87,10 +87,47 @@ public class ShrinkingBallSeg : MonoBehaviour
     }
     void InstantiatePoints()
     {
+        MATList list = new MATList(MedialBallCenters);
         for (int vertId = 0; vertId < MedialBallCenters.ToArray().Length; vertId++)
         {
-            Instantiate(dotblue, MedialBallCenters[vertId], transform.rotation);
-            Instantiate(dotred, new Vector3(MedialBallCenters[vertId].x, 300, MedialBallCenters[vertId].z), transform.rotation);
+            Instantiate(dotblue, list.getLoc3D(vertId), transform.rotation);
+            Instantiate(dotred, list.getLoc2D(vertId), transform.rotation);
         }
     }
 }
+
+public class MATList : Component
+{
+    public List<Vector3> OriginalMATList;
+    public List<MATBall> NewMATList = new List<MATBall>();
+
+
+    public MATList(List<Vector3> originalMATList) // constructor
+    {
+        OriginalMATList = originalMATList;
+        foreach (Vector3 ball in OriginalMATList)
+        {
+            NewMATList.Add(new MATBall(ball));
+        }
+    }
+
+    public Vector3 getLoc3D(int index)
+    {
+        return NewMATList[index].Loc;
+    }
+    public Vector3 getLoc2D(int index)
+    {
+        return new Vector3(NewMATList[index].Loc.x, 300, NewMATList[index].Loc.z);
+    }
+}
+
+public class MATBall : Component
+{
+    public Vector3 Loc;
+
+    public MATBall(Vector3 ballLoc) // constructor
+    {
+        Loc = ballLoc;
+    }
+}
+

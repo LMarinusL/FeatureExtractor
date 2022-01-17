@@ -61,7 +61,7 @@ public class MeshGenerator : MonoBehaviour
         {
             values = arrayOfLines[index].Split(' ');
             VectorNew = new Vector3(((float.Parse(values[1], CultureInfo.InvariantCulture)- 1013618) / 10),
-                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 10),
+                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 3),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- 649582) / 10));
             vertices.Add(VectorNew);
             if (VectorNew.y > maxTerrainHeight)
