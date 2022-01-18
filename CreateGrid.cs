@@ -52,7 +52,7 @@ public class CreateGrid : MonoBehaviour
 }
 
 public class Grid : Component
-{
+{ // list of grid cells in same grid order as input cells
     public List<Vector3> OriginalPC;
     public List<Cell> cells = new List<Cell>();
 
