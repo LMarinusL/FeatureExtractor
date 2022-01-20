@@ -9,12 +9,11 @@ using UnityEngine.UI;
 
 //[ExecuteInEditMode] // this loads terrain in edit mode
 /* to do: 
- - create component class for output grid
- - Create grid to assign properties
+ - Remake old params
+ - Make relative height, slope and aspect params
  - Filter the 2D set
  - Create component for medial branches
  - Compute medial branches 
- - assign color to medial ball based on score
 */
 
 
