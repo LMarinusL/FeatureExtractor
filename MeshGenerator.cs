@@ -35,7 +35,10 @@ public class MeshGenerator : MonoBehaviour
     public Gradient gradient;
     public float maxTerrainHeight;
     public float minTerrainHeight;
-    
+    public float xCorrection = 649582f;
+    public float zCorrection = 1013618f;
+
+
 
     Color[] colors;
     char[] charsToTrim = { '*', ' ', '\n', '\r' };
@@ -58,9 +61,9 @@ public class MeshGenerator : MonoBehaviour
         while (index < arrayOfLines.Length -1)
         {
             values = arrayOfLines[index].Split(' ');
-            VectorNew = new Vector3(((float.Parse(values[1], CultureInfo.InvariantCulture)- 1013618) / 10),
+            VectorNew = new Vector3(((float.Parse(values[1], CultureInfo.InvariantCulture)- zCorrection) / 10),
                                ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 3),
-                               ((float.Parse(values[0], CultureInfo.InvariantCulture)- 649582) / 10));
+                               ((float.Parse(values[0], CultureInfo.InvariantCulture)- xCorrection) / 10));
             vertices.Add(VectorNew);
             if (VectorNew.y > maxTerrainHeight)
             {

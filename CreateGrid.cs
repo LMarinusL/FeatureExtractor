@@ -10,6 +10,11 @@ public class CreateGrid : MonoBehaviour
     public MATList MATlist;
     public List<MATBall> MATcol;
     public Grid grid;
+    public Vector2 RM1 = new Vector2(659492f, 1020360f);
+    public Vector2 RM2 = new Vector2(654296f, 1023740f);
+    public Vector2 RM3 = new Vector2(658537f, 1032590f);
+    float xCorrection;
+    float zCorrection;
 
     void Update()
     {
@@ -28,6 +33,9 @@ public class CreateGrid : MonoBehaviour
         GameObject MAT = GameObject.Find("MATLoader");
         ShrinkingBallSeg MATalg = MAT.GetComponent<ShrinkingBallSeg>();
 
+        xCorrection = meshGenerator.xCorrection;
+        zCorrection = meshGenerator.zCorrection;
+
         vertices = MATalg.vertices;
         normals = MATalg.normals;
         MATlist = MATalg.list;
@@ -43,15 +51,27 @@ public class CreateGrid : MonoBehaviour
     {
         string path = "Assets/Output/outputGrid.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("x y h slope aspect");
+        writer.WriteLine("x y h slope aspect RM1 RM2 RM3");
         foreach (Cell cell in grid.cells)
         {
             writer.WriteLine(cell.x + " "+ cell.z + " " + cell.y + " " + 
-                cell.slope + " " + cell.aspect);
+                cell.slope + " " + cell.aspect + " " + DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection))
+                + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
+                + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection)));
         }
         writer.Close();
     }
 
+    public float DistTo(float x, float y , Vector2 Point)
+    {
+        float dist = Mathf.Pow((Mathf.Pow(x - Point.x, 2f) + Mathf.Pow(y - Point.y, 2f)), 0.5f);
+        return dist;
+    }
+
+    public Vector2 Correct2D(Vector2 point, float xcor, float ycor)
+    {
+        return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
+    }
 }
 
 public class Grid : Component
