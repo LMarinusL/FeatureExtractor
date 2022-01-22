@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using UnityEditor;
 
 public class CreateGrid : MonoBehaviour
 {
@@ -57,7 +58,9 @@ public class CreateGrid : MonoBehaviour
             writer.WriteLine(cell.x + " "+ cell.z + " " + cell.y + " " + 
                 cell.slope + " " + cell.aspect + " " + DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
-                + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection)));
+                + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection))
+                + " " + HandleUtility.DistancePointLine(new Vector3(cell.x, cell.y, cell.z), vertices[10], vertices[400])
+                );
         }
         writer.Close();
     }
@@ -72,6 +75,7 @@ public class CreateGrid : MonoBehaviour
     {
         return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
     }
+
 }
 
 public class Grid : Component
