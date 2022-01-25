@@ -170,5 +170,17 @@ using System.IO;
         }
     }
 
+public class MATBranch : Component
+{
+    public Vector3 Head;
+    public Vector3 Tail;
+
+    public MATBranch(Vector3 head, Vector3 tail)
+    {
+        Head = head;
+        Tail = tail;
+    }
+}
+
 
 
