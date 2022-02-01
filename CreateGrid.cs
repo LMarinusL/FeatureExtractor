@@ -16,6 +16,8 @@ public class CreateGrid : MonoBehaviour
     public Vector2 RM3 = new Vector2(658537f, 1032590f);
     float xCorrection;
     float zCorrection;
+    int xSize;
+    int zSize;
 
     void Update()
     {
@@ -36,6 +38,8 @@ public class CreateGrid : MonoBehaviour
 
         xCorrection = meshGenerator.xCorrection;
         zCorrection = meshGenerator.zCorrection;
+        xSize = meshGenerator.xSizer;
+        zSize = meshGenerator.zSizer;
 
         vertices = MATalg.vertices;
         normals = MATalg.normals;
@@ -74,6 +78,22 @@ public class CreateGrid : MonoBehaviour
     public Vector2 Correct2D(Vector2 point, float xcor, float ycor)
     {
         return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
+    }
+
+    public int getIndexFromLoc(int xLoc, int zLoc)
+    {
+        return xLoc * xSize + zLoc * zSize;
+    }
+    
+    public int getXFromIndex(int index)
+    {
+        int result = Mathf.FloorToInt(index / zSize);
+        return result;
+    }
+
+    public int getZFromIndex(int index)
+    {
+        return index - Mathf.FloorToInt(index / zSize);
     }
 
 }
