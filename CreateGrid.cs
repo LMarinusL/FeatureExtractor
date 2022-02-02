@@ -80,6 +80,16 @@ public class CreateGrid : MonoBehaviour
         return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
     }
 
+    void computeRelativeParams(int index, Grid grid)
+    {
+        Cell own = grid.cells[index];
+        int xLoc = getXFromIndex(index);
+        int zLoc = getZFromIndex(index);
+        // check whether own cell is at border
+        // compute average height/slope/aspect of all surrounding cells
+        // add relative params to cells
+    }
+
     public int getIndexFromLoc(int xLoc, int zLoc)
     {
         return xLoc * xSize + zLoc * zSize;
@@ -120,6 +130,10 @@ public class Cell : Component
     public float z;
     public float slope;
     public float aspect;
+    public float relativeHeight;
+    public float relativeSlope;
+    public float relativeAspect;
+
 
     public Cell(Vector3 loc, Vector3 normal)
     {
