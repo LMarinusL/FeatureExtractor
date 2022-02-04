@@ -85,6 +85,40 @@ public class CreateGrid : MonoBehaviour
         Cell own = grid.cells[index];
         int xLoc = getXFromIndex(index);
         int zLoc = getZFromIndex(index);
+        List<int> indexes;
+        if(xLoc > 0)
+        {
+            indexes.Add(getIndexFromLoc(xLoc -1, zLoc));
+            if (zLoc > 0)
+            {
+                indexes.Add(getIndexFromLoc(xLoc - 1, zLoc-1));
+            }
+            if (zLoc < zSize)
+            {
+                indexes.Add(getIndexFromLoc(xLoc - 1, zLoc +1));
+            }
+        }
+        if (zLoc > 0)
+        {
+            indexes.Add(getIndexFromLoc(xLoc , zLoc-1));
+        }
+        if (zLoc < zSize)
+        {
+            indexes.Add(getIndexFromLoc(xLoc, zLoc +1));
+        }
+        if (xLoc < xSize)
+        {
+            indexes.Add(getIndexFromLoc(xLoc + 1, zLoc));
+            if (zLoc > 0)
+            {
+                indexes.Add(getIndexFromLoc(xLoc + 1, zLoc -1));
+            }
+            if (zLoc < zSize)
+            {
+                indexes.Add(getIndexFromLoc(xLoc + 1, zLoc + 1));
+            }
+        }
+
         // check whether own cell is at border
         // compute average height/slope/aspect of all surrounding cells
         // add relative params to cells
