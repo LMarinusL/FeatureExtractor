@@ -80,48 +80,52 @@ public class CreateGrid : MonoBehaviour
         return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
     }
 
-    void computeRelativeParams(int index, Grid grid)
+    List<int> getIndicesOfSurroundingCells(int index, Grid grid)
     {
         Cell own = grid.cells[index];
         int xLoc = getXFromIndex(index);
         int zLoc = getZFromIndex(index);
-        List<int> indexes;
+        List<int> indices;
         if(xLoc > 0)
         {
-            indexes.Add(getIndexFromLoc(xLoc -1, zLoc));
+            indices.Add(getIndexFromLoc(xLoc -1, zLoc));
             if (zLoc > 0)
             {
-                indexes.Add(getIndexFromLoc(xLoc - 1, zLoc-1));
+                indices.Add(getIndexFromLoc(xLoc - 1, zLoc-1));
             }
             if (zLoc < zSize)
             {
-                indexes.Add(getIndexFromLoc(xLoc - 1, zLoc +1));
+                indices.Add(getIndexFromLoc(xLoc - 1, zLoc +1));
             }
         }
         if (zLoc > 0)
         {
-            indexes.Add(getIndexFromLoc(xLoc , zLoc-1));
+            indices.Add(getIndexFromLoc(xLoc , zLoc-1));
         }
         if (zLoc < zSize)
         {
-            indexes.Add(getIndexFromLoc(xLoc, zLoc +1));
+            indices.Add(getIndexFromLoc(xLoc, zLoc +1));
         }
         if (xLoc < xSize)
         {
-            indexes.Add(getIndexFromLoc(xLoc + 1, zLoc));
+            indices.Add(getIndexFromLoc(xLoc + 1, zLoc));
             if (zLoc > 0)
             {
-                indexes.Add(getIndexFromLoc(xLoc + 1, zLoc -1));
+                indices.Add(getIndexFromLoc(xLoc + 1, zLoc -1));
             }
             if (zLoc < zSize)
             {
-                indexes.Add(getIndexFromLoc(xLoc + 1, zLoc + 1));
+                indices.Add(getIndexFromLoc(xLoc + 1, zLoc + 1));
             }
         }
+        return indices;
+    }
 
-        // check whether own cell is at border
-        // compute average height/slope/aspect of all surrounding cells
-        // add relative params to cells
+    float averageHeight(List<int> indices)
+    {
+        float averageHeight;
+        // compute averageHeight
+        return averageHeight;
     }
 
     public int getIndexFromLoc(int xLoc, int zLoc)
