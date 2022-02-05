@@ -52,9 +52,9 @@ public class CreateGrid : MonoBehaviour
         grid = new Grid(verts, normals);
         foreach (Cell cell in grid.cells)
         {
-            cell.relativeHeight = relativeHeight(cell.index, grid);
-            cell.relativeSlope = relativeSlope(cell.index, grid);
-            cell.relativeAspect = relativeAspect(cell.index, grid);
+            cell.relativeHeight = relativeHeight(cell.index, grid, 2);
+            cell.relativeSlope = relativeSlope(cell.index, grid, 2);
+            cell.relativeAspect = relativeAspect(cell.index, grid, 2);
         }
     }
 
@@ -67,7 +67,8 @@ public class CreateGrid : MonoBehaviour
         {
             if(cell.y == 0) { continue; }
             writer.WriteLine(cell.x + " "+ cell.z + " " + cell.y + " " + 
-                cell.slope + " " + cell.aspect + " " + DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection))
+                cell.slope + " " + cell.aspect + " " 
+                + DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection))
                 + " " + HandleUtility.DistancePointLine(new Vector3(cell.x, cell.y, cell.z), vertices[10], vertices[400])
@@ -88,63 +89,69 @@ public class CreateGrid : MonoBehaviour
         return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
     }
 
-    List<int> getIndicesOfSurroundingCells(int index, Grid grid)
+    List<int> getIndicesOfSurroundingCells(int index, Grid grid, int dist)
     {
         Cell own = grid.cells[index];
         int xLoc = getXFromIndex(index);
         int zLoc = getZFromIndex(index);
         List<int> indices = new List<int>();
-        if(xLoc > 0)
+        if(xLoc > 0 + dist )
         {
-            indices.Add(getIndexFromLoc(xLoc -1, zLoc));
-            if (zLoc > 0)
+            indices.Add(getIndexFromLoc(xLoc - dist, zLoc));
+            if (zLoc > 0 + dist)
             {
-                indices.Add(getIndexFromLoc(xLoc - 1, zLoc-1));
+                indices.Add(getIndexFromLoc(xLoc - dist, zLoc- dist));
             }
-            if (zLoc < (zSize - 1))
+            if (zLoc < (zSize - dist))
             {
-                indices.Add(getIndexFromLoc(xLoc - 1, zLoc +1));
+                indices.Add(getIndexFromLoc(xLoc - dist, zLoc + dist));
             }
         }
-        if (zLoc > 0)
+        if (zLoc > 0 + dist)
         {
-            indices.Add(getIndexFromLoc(xLoc , zLoc-1));
+            indices.Add(getIndexFromLoc(xLoc , zLoc- dist));
         }
-        if (zLoc < (zSize - 1))
+        if (zLoc < (zSize - dist))
         {
-            indices.Add(getIndexFromLoc(xLoc, zLoc +1));
+            indices.Add(getIndexFromLoc(xLoc, zLoc + dist));
         }
-        if (xLoc < (xSize-1))
+        if (xLoc < (xSize- dist))
         {
-            indices.Add(getIndexFromLoc(xLoc + 1, zLoc));
-            if (zLoc > 0)
+            indices.Add(getIndexFromLoc(xLoc + dist, zLoc));
+            if (zLoc > 0 + dist)
             {
-                indices.Add(getIndexFromLoc(xLoc + 1, zLoc -1));
+                indices.Add(getIndexFromLoc(xLoc + dist, zLoc - dist));
             }
-            if (zLoc < (zSize - 1))
+            if (zLoc < (zSize - dist))
             {
-                indices.Add(getIndexFromLoc(xLoc + 1, zLoc + 1));
+                indices.Add(getIndexFromLoc(xLoc + dist, zLoc + dist));
             }
         }
         return indices;
     }
 
-    float relativeHeight(int index, Grid grid)
+    float relativeHeight(int index, Grid grid, int dist)
     {
-        List<int> indices = getIndicesOfSurroundingCells(index, grid);
+        List<int> indices = getIndicesOfSurroundingCells(index, grid, dist);
         float averageHeight = 0f;
         float heightSum = 0f;
+        int numOfCells = 0;
         foreach (int i in indices)
         {
             if (grid.cells[i].y != 0) // only take vertices that are not at the height 0
             {
                 heightSum = heightSum + grid.cells[i].y;
+                numOfCells++;
             }
         }
-        averageHeight = heightSum / indices.Count;
-        /*  
+        if (numOfCells == 0) // if there are no cells around it that are not at height zero, prevent dividing by zero
+        {
+            return 0f;
+        }
+        averageHeight = heightSum / numOfCells;
+         
          // THIS LOG CAN BE USED TO SEE THERE ARE POINTS WITH ALL SURROUNDING CELLS HEIGHT ZERO 
-         if (indices.Count == 8)
+         if (indices.Count == 8 && grid.cells[index].y != 0)
            {
                Debug.Log("ownindex" + index + " " + getXFromIndex(index) + " " + getZFromIndex(index) + " height: " + grid.cells[index].y
                    + " index" + indices[0] + ": " + getXFromIndex(indices[0]) + " " + getZFromIndex(indices[0]) + " height: " + grid.cells[indices[0]].y
@@ -155,42 +162,54 @@ public class CreateGrid : MonoBehaviour
                    + " index" + indices[5] + ": " + getXFromIndex(indices[5]) + " " + getZFromIndex(indices[5]) + " height: " + grid.cells[indices[5]].y
                    + " index" + indices[6] + ": " + getXFromIndex(indices[6]) + " " + getZFromIndex(indices[6]) + " height: " + grid.cells[indices[6]].y
                    + " index" + indices[7] + ": " + getXFromIndex(indices[7]) + " " + getZFromIndex(indices[7]) + " height: " + grid.cells[indices[7]].y
-                   + " sum: " + heightSum + " average: " + averageHeight);
-           }*/
+                   + " sum: " + heightSum + " average: " + averageHeight + " value: " + (averageHeight - grid.cells[index].y));
+           }
         float heightOwn = grid.cells[index].y;
         return averageHeight - heightOwn;
     }
 
-    float relativeSlope(int index, Grid grid)
+    float relativeSlope(int index, Grid grid, int dist)
     {
-        List<int> indices = getIndicesOfSurroundingCells(index, grid);
+        List<int> indices = getIndicesOfSurroundingCells(index, grid, dist);
         float averageSlope = 0f;
         float slopeSum = 0f;
+        int numOfCells = 0;
         foreach (int i in indices)
         {
             if (grid.cells[i].y != 0) // only take vertices that are not at the height 0
             {
                 slopeSum = slopeSum + grid.cells[i].slope;
+                numOfCells++;
             }
         }
-        averageSlope = slopeSum / indices.Count;
+        if (numOfCells == 0)
+        {
+            return 0f;
+        }
+        averageSlope = slopeSum / numOfCells;
         float slopeOwn = grid.cells[index].slope;
         return averageSlope - slopeOwn;
     }
 
-    float relativeAspect(int index, Grid grid)
+    float relativeAspect(int index, Grid grid, int dist)
     {
-        List<int> indices = getIndicesOfSurroundingCells(index, grid);
+        List<int> indices = getIndicesOfSurroundingCells(index, grid, dist);
         float averageAspect = 0f;
         float aspectSum = 0f;
+        int numOfCells = 0;
         foreach (int i in indices)
         {
             if (grid.cells[i].y != 0) // only take vertices that are not at the height 0
             {
                 aspectSum = aspectSum + grid.cells[i].aspect;
+                numOfCells++;
             }
         }
-        averageAspect = aspectSum / indices.Count;
+        if (numOfCells == 0)
+        {
+            return 0f;
+        }
+        averageAspect = aspectSum / numOfCells;
         float aspectOwn = grid.cells[index].aspect;
         return averageAspect - aspectOwn;
     }
