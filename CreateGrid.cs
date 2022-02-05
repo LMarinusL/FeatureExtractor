@@ -56,14 +56,16 @@ public class CreateGrid : MonoBehaviour
     {
         string path = "Assets/Output/outputGrid.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("x y h slope aspect RM1 RM2 RM3");
+        writer.WriteLine("x y h slope aspect RM1 RM2 RM3 relativeHeight");
         foreach (Cell cell in grid.cells)
         {
+            if(cell.y == 0) { continue; }
             writer.WriteLine(cell.x + " "+ cell.z + " " + cell.y + " " + 
                 cell.slope + " " + cell.aspect + " " + DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection))
                 + " " + HandleUtility.DistancePointLine(new Vector3(cell.x, cell.y, cell.z), vertices[10], vertices[400])
+                + " " + relativeHeight(cell.index, grid)
                 );
         }
         writer.Close();
@@ -85,7 +87,7 @@ public class CreateGrid : MonoBehaviour
         Cell own = grid.cells[index];
         int xLoc = getXFromIndex(index);
         int zLoc = getZFromIndex(index);
-        List<int> indices;
+        List<int> indices = new List<int>();
         if(xLoc > 0)
         {
             indices.Add(getIndexFromLoc(xLoc -1, zLoc));
@@ -93,7 +95,7 @@ public class CreateGrid : MonoBehaviour
             {
                 indices.Add(getIndexFromLoc(xLoc - 1, zLoc-1));
             }
-            if (zLoc < zSize)
+            if (zLoc < (zSize - 1))
             {
                 indices.Add(getIndexFromLoc(xLoc - 1, zLoc +1));
             }
@@ -102,18 +104,18 @@ public class CreateGrid : MonoBehaviour
         {
             indices.Add(getIndexFromLoc(xLoc , zLoc-1));
         }
-        if (zLoc < zSize)
+        if (zLoc < (zSize - 1))
         {
             indices.Add(getIndexFromLoc(xLoc, zLoc +1));
         }
-        if (xLoc < xSize)
+        if (xLoc < (xSize-1))
         {
             indices.Add(getIndexFromLoc(xLoc + 1, zLoc));
             if (zLoc > 0)
             {
                 indices.Add(getIndexFromLoc(xLoc + 1, zLoc -1));
             }
-            if (zLoc < zSize)
+            if (zLoc < (zSize - 1))
             {
                 indices.Add(getIndexFromLoc(xLoc + 1, zLoc + 1));
             }
@@ -121,16 +123,31 @@ public class CreateGrid : MonoBehaviour
         return indices;
     }
 
-    float averageHeight(List<int> indices)
+    float surrroundingAverageHeight(int index, Grid grid)
     {
-        float averageHeight;
-        // compute averageHeight
+        List<int> indices = getIndicesOfSurroundingCells(index, grid);
+        float averageHeight = 0f;
+        float heightSum = 0f;
+        foreach (int i in indices)
+        {
+            heightSum += grid.cells[i].y;
+        }
+        averageHeight = heightSum / indices.Count;
+        Debug.Log(indices.Count + " " + averageHeight + " " + grid.cells[index].y);
         return averageHeight;
     }
 
+    float relativeHeight(int index, Grid grid)
+    {
+        float averageHeightOther = surrroundingAverageHeight(index, grid);
+        float heightOwn = grid.cells[index].y;
+        return averageHeightOther - heightOwn;
+    }
+
+    // ERROR Remaining: index to and from loc not working correctly!!! 
     public int getIndexFromLoc(int xLoc, int zLoc)
     {
-        return xLoc * xSize + zLoc * zSize;
+        return (xLoc ) + (zLoc * xSize);
     }
     
     public int getXFromIndex(int index)
@@ -141,7 +158,7 @@ public class CreateGrid : MonoBehaviour
 
     public int getZFromIndex(int index)
     {
-        return index - Mathf.FloorToInt(index / zSize);
+        return index - (Mathf.FloorToInt(index / zSize)* zSize);
     }
 
 }
@@ -156,13 +173,14 @@ public class Grid : Component
         OriginalPC = originalPC;
         for (int i = 0; i < originalPC.ToArray().Length; i++)
         {
-            cells.Add(new Cell(originalPC[i], originalNormals[i]));
+            cells.Add(new Cell(i, originalPC[i], originalNormals[i]));
         }
     }
 }
 
 public class Cell : Component
 {
+    public int index;
     public float x;
     public float y;
     public float z;
@@ -173,8 +191,9 @@ public class Cell : Component
     public float relativeAspect;
 
 
-    public Cell(Vector3 loc, Vector3 normal)
+    public Cell(int i, Vector3 loc, Vector3 normal)
     {
+        index = i;
         x = loc.x;
         y = loc.y;
         z = loc.z;
