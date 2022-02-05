@@ -34,8 +34,11 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.Alpha1))
         {
-            getData();
             setMeshSlopeColors();
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            setMeshAspectColors();
         }
     }
 
@@ -245,11 +248,19 @@ public class CreateGrid : MonoBehaviour
     // COLORS
     void setMeshSlopeColors()
     {
-        //Vector3[] normals = mesh.normals;
         colors = new Color[vertices.ToArray().Length];
         for (int i = 0; i < vertices.ToArray().Length; i++)
         {
             colors[i] = new Color(1f * grid.cells[i].slope, 0f, 1f * (1 - grid.cells[i].slope), 1f);
+        }
+        mesh.colors = colors;
+    }
+    void setMeshAspectColors()
+    {
+        colors = new Color[vertices.ToArray().Length];
+        for (int i = 0; i < vertices.ToArray().Length; i++)
+        {
+            colors[i] = new Color(1f * (grid.cells[i].aspect/180), 0f, 1f * ((180 - grid.cells[i].aspect)/180), 1f);
         }
         mesh.colors = colors;
     }
