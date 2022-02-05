@@ -130,10 +130,24 @@ public class CreateGrid : MonoBehaviour
         float heightSum = 0f;
         foreach (int i in indices)
         {
-            heightSum += grid.cells[i].y;
+            heightSum = heightSum + grid.cells[i].y;
         }
         averageHeight = heightSum / indices.Count;
-        Debug.Log(indices.Count + " " + averageHeight + " " + grid.cells[index].y);
+     /*  
+      // THIS LOG CAN BE USED TO SEE THERE ARE POINTS WITH ALL SURROUNDING CELLS HEIGHT ZERO 
+      if (indices.Count == 8)
+        {
+            Debug.Log("ownindex" + index + " " + getXFromIndex(index) + " " + getZFromIndex(index) + " height: " + grid.cells[index].y
+                + " index" + indices[0] + ": " + getXFromIndex(indices[0]) + " " + getZFromIndex(indices[0]) + " height: " + grid.cells[indices[0]].y
+                + " index" + indices[1] + ": " + getXFromIndex(indices[1]) + " " + getZFromIndex(indices[1]) + " height: " + grid.cells[indices[1]].y
+                + " index" + indices[2] + ": " + getXFromIndex(indices[2]) + " " + getZFromIndex(indices[2]) + " height: " + grid.cells[indices[2]].y
+                + " index" + indices[3] + ": " + getXFromIndex(indices[3]) + " " + getZFromIndex(indices[3]) + " height: " + grid.cells[indices[3]].y
+                + " index" + indices[4] + ": " + getXFromIndex(indices[4]) + " " + getZFromIndex(indices[4]) + " height: " + grid.cells[indices[4]].y
+                + " index" + indices[5] + ": " + getXFromIndex(indices[5]) + " " + getZFromIndex(indices[5]) + " height: " + grid.cells[indices[5]].y
+                + " index" + indices[6] + ": " + getXFromIndex(indices[6]) + " " + getZFromIndex(indices[6]) + " height: " + grid.cells[indices[6]].y
+                + " index" + indices[7] + ": " + getXFromIndex(indices[7]) + " " + getZFromIndex(indices[7]) + " height: " + grid.cells[indices[7]].y
+                + " sum: " + heightSum + " average: " + averageHeight);
+        }*/
         return averageHeight;
     }
 
@@ -144,10 +158,9 @@ public class CreateGrid : MonoBehaviour
         return averageHeightOther - heightOwn;
     }
 
-    // ERROR Remaining: index to and from loc not working correctly!!! 
     public int getIndexFromLoc(int xLoc, int zLoc)
     {
-        return (xLoc ) + (zLoc * xSize);
+        return (zLoc ) + (xLoc * zSize);
     }
     
     public int getXFromIndex(int index)
