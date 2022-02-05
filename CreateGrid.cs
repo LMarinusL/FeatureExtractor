@@ -18,6 +18,11 @@ public class CreateGrid : MonoBehaviour
     float zCorrection;
     int xSize;
     int zSize;
+    Mesh mesh;
+    Color[] colors;
+
+
+
 
     void Update()
     {
@@ -26,6 +31,11 @@ public class CreateGrid : MonoBehaviour
             getData();
             InstantiateGrid(vertices, normals);
             WriteString();
+        }
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            getData();
+            setMeshSlopeColors();
         }
     }
 
@@ -40,6 +50,7 @@ public class CreateGrid : MonoBehaviour
         zCorrection = meshGenerator.zCorrection;
         xSize = meshGenerator.xSizer;
         zSize = meshGenerator.zSizer;
+        mesh = meshGenerator.mesh;
 
         vertices = MATalg.vertices;
         normals = MATalg.normals;
@@ -149,7 +160,7 @@ public class CreateGrid : MonoBehaviour
             return 0f;
         }
         averageHeight = heightSum / numOfCells;
-         
+         /*
          // THIS LOG CAN BE USED TO SEE THERE ARE POINTS WITH ALL SURROUNDING CELLS HEIGHT ZERO 
          if (indices.Count == 8 && grid.cells[index].y != 0)
            {
@@ -164,6 +175,7 @@ public class CreateGrid : MonoBehaviour
                    + " index" + indices[7] + ": " + getXFromIndex(indices[7]) + " " + getZFromIndex(indices[7]) + " height: " + grid.cells[indices[7]].y
                    + " sum: " + heightSum + " average: " + averageHeight + " value: " + (averageHeight - grid.cells[index].y));
            }
+         */
         float heightOwn = grid.cells[index].y;
         return averageHeight - heightOwn;
     }
@@ -230,6 +242,19 @@ public class CreateGrid : MonoBehaviour
         return index - (Mathf.FloorToInt(index / zSize)* zSize);
     }
 
+    // COLORS
+    void setMeshSlopeColors()
+    {
+        //Vector3[] normals = mesh.normals;
+        colors = new Color[vertices.ToArray().Length];
+        for (int i = 0; i < vertices.ToArray().Length; i++)
+        {
+            colors[i] = new Color(1f * grid.cells[i].slope, 0f, 1f * (1 - grid.cells[i].slope), 1f);
+        }
+        mesh.colors = colors;
+    }
+
+
 }
 
 public class Grid : Component
@@ -272,7 +297,7 @@ public class Cell : Component
 
     float computeSlope(Vector3 normal)
     {
-        float slope = Mathf.Tan(Mathf.Pow((Mathf.Pow(normal.x, 2f) + Mathf.Pow(normal.z, 2f)), 0.5f)/normal.y);
+        float slope = Mathf.Atan(Mathf.Pow((Mathf.Pow(normal.x, 2f) + Mathf.Pow(normal.z, 2f)), 0.5f)/normal.y);
         return slope;
     }
 

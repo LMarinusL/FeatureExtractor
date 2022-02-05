@@ -57,6 +57,16 @@ public class MeshGenerator : MonoBehaviour
         ReadFile();
         UpdateMesh();
     }
+
+    void Update()
+    {
+        /*
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            setMeshColors();
+        }*/
+    }
+
     void ReadFile()
     {
         string PointsString = vertexFile.ToString();
@@ -104,26 +114,35 @@ public class MeshGenerator : MonoBehaviour
             };
             vert++;
         }
-
         colors = new Color[vertices.ToArray().Length];
-        for ( int i = 0; i < vertices.ToArray().Length; i++)
+        for (int i = 0; i < vertices.ToArray().Length; i++)
         {
-            if(vertices[i].y < 210)
+            if (vertices[i].y < 210)
             {
                 colors[i] = color2;
             }
             else { colors[i] = color3; }
-            
         }
-    }
 
-   public  void AdjustScale(float newScale) {    
+    }
+    /*
+    void setMeshColors()
+    {
+        Vector3[] normals = mesh.normals;
+        colors = new Color[vertices.ToArray().Length];
+        for (int i = 0; i < vertices.ToArray().Length; i++)
+        {
+           colors[i] = new Color(1f* normals[i].y, 0f, 1f*(1- normals[i].y), 1f);
+        }
+        mesh.colors = colors;
+    }*/
+
+    public  void AdjustScale(float newScale) {    
         transform.localScale += new Vector3(0, newScale, 0);
     }
 
     void UpdateMesh()
     {
- 
         mesh.Clear();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles;
