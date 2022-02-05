@@ -32,7 +32,6 @@ public class MeshGenerator : MonoBehaviour
     public List<string> idList;
     public float heightScale = 5.0f;
 
-    public Gradient gradient;
     public float maxTerrainHeight;
     public float minTerrainHeight;
     public float xCorrection = 649582f;
@@ -41,6 +40,11 @@ public class MeshGenerator : MonoBehaviour
 
 
     Color[] colors;
+    public Color color1 = new Color(0f, 0.65f, 0.95f, 95f);
+    public Color color2 = new Color(0f, 0.6f, 0.0f, 0.6f);
+    public Color color3 = new Color(0.8f, 0.8f, 0.8f, 1f);
+    public Material material;
+
     char[] charsToTrim = { '*', ' ', '\n', '\r' };
 
 
@@ -48,6 +52,8 @@ public class MeshGenerator : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        MeshRenderer meshr = this.GetComponent<MeshRenderer>();
+        meshr.material = material;
         ReadFile();
         UpdateMesh();
     }
@@ -102,8 +108,12 @@ public class MeshGenerator : MonoBehaviour
         colors = new Color[vertices.ToArray().Length];
         for ( int i = 0; i < vertices.ToArray().Length; i++)
         {
-            float height = Mathf.InverseLerp(minTerrainHeight, maxTerrainHeight,  vertices[i].y);
-            colors[i] = gradient.Evaluate(height);
+            if(vertices[i].y < 210)
+            {
+                colors[i] = color2;
+            }
+            else { colors[i] = color3; }
+            
         }
     }
 
