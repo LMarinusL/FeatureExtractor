@@ -40,6 +40,18 @@ public class CreateGrid : MonoBehaviour
         {
             setMeshAspectColors();
         }
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            setMeshRelativeSlopeColors();
+        }
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            setMeshRelativeAspectColors();
+        }
+        if (Input.GetKey(KeyCode.Alpha5))
+        {
+            setMeshRelativeHeightColors();
+        }
     }
 
     void getData()
@@ -66,9 +78,9 @@ public class CreateGrid : MonoBehaviour
         grid = new Grid(verts, normals);
         foreach (Cell cell in grid.cells)
         {
-            cell.relativeHeight = relativeHeight(cell.index, grid, 2);
-            cell.relativeSlope = relativeSlope(cell.index, grid, 2);
-            cell.relativeAspect = relativeAspect(cell.index, grid, 2);
+            cell.relativeHeight = relativeHeight(cell.index, grid, 1);
+            cell.relativeSlope = relativeSlope(cell.index, grid, 1);
+            cell.relativeAspect = relativeAspect(cell.index, grid, 1);
         }
     }
 
@@ -251,7 +263,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.ToArray().Length];
         for (int i = 0; i < vertices.ToArray().Length; i++)
         {
-            colors[i] = new Color(1f * grid.cells[i].slope, 0f, 1f * (1 - grid.cells[i].slope), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].slope/1.52f), 1f * (grid.cells[i].slope/1.52f), 1f * (1 - (grid.cells[i].slope/1.52f)), 1f);
         }
         mesh.colors = colors;
     }
@@ -260,11 +272,37 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.ToArray().Length];
         for (int i = 0; i < vertices.ToArray().Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].aspect/180), 0f, 1f * ((180 - grid.cells[i].aspect)/180), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].aspect/180), 1f * (grid.cells[i].aspect / 180), 1f * ((180 - grid.cells[i].aspect)/180), 1f);
         }
         mesh.colors = colors;
     }
-
+    void setMeshRelativeSlopeColors()
+    {
+        colors = new Color[vertices.ToArray().Length];
+        for (int i = 0; i < vertices.ToArray().Length; i++)
+        {
+            colors[i] = new Color(Mathf.Pow(Mathf.Pow(1f - (grid.cells[i].relativeSlope / 1.52f), 2f), 0.5f),  Mathf.Pow(Mathf.Pow(1f - (grid.cells[i].relativeSlope / 1.52f), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope / 1.52f), 2f), 0.5f), 1f);
+        }
+        mesh.colors = colors;
+    }
+    void setMeshRelativeAspectColors()
+    {
+        colors = new Color[vertices.ToArray().Length];
+        for (int i = 0; i < vertices.ToArray().Length; i++)
+        {
+            colors[i] = new Color(1f * (grid.cells[i].relativeAspect / 50), 1f * (grid.cells[i].relativeAspect / 50), 1f * (1-((grid.cells[i].relativeAspect) / 50)), 1f);
+        }
+        mesh.colors = colors;
+    }
+    void setMeshRelativeHeightColors()
+    {
+        colors = new Color[vertices.ToArray().Length];
+        for (int i = 0; i < vertices.ToArray().Length; i++)
+        {
+            colors[i] = new Color(1f * (grid.cells[i].relativeHeight / 20), 1f * (grid.cells[i].relativeHeight / 20), 1f * (1-((grid.cells[i].relativeHeight) /20)), 1f);
+        }
+        mesh.colors = colors;
+    }
 
 }
 
