@@ -9,7 +9,7 @@ using System.IO;
     {
         public Vector3[] vertices;
         public Vector3[] normals;
-        public float initialRadius = 200.0f;
+        public float initialRadius = 100.0f;
         public List<Vector3> MedialBallCenters;
         public List<float> MedialBallRadii;
         public GameObject dotred;
@@ -37,57 +37,55 @@ using System.IO;
             GameObject terrain = GameObject.Find("TerrainLoader");
             MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
             Mesh mesh = meshGenerator.mesh;
-            vertices = mesh.vertices;
+            vertices = meshGenerator.vertices;
             mesh.RecalculateNormals();
-            normals = mesh.normals;
+            normals = meshGenerator.normals;
         }
 
-        bool checkRadius(int vertexIndex, float radius)
-        {
-            Vector3 medialBallCenter = vertices[vertexIndex] + normals[vertexIndex] * radius;
-            Vector3[] list = meshComp.checkSegment(medialBallCenter, radius);
-            foreach (Vector3 vertex in list)
-            {
-                if (Vector3.Distance(vertex, medialBallCenter) < radius)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
 
-        void getMedialBallCenter(int vertexIndex)
+    void iterateVertices()
+    {
+        for (int i = 0; i < vertices.Length; i++)
         {
-            bool empty = false;
-            float radius = initialRadius;
-            while (empty == false)
+            if (vertices[i].y != 0f && normals[i].y > 0.4f)
             {
-                radius -= 3.0f;
-                empty = checkRadius(vertexIndex, radius);
-                if (radius < 10f)
-                {
-                    return;
-                }
-            }
-            MedialBallCenters.Add((vertices[vertexIndex] + normals[vertexIndex] * radius));
-            MedialBallRadii.Add(radius);
-        }
-
-        void iterateVertices()
-        {
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                if (vertices[i].y != 0f && normals[i].y > 0.4f)
-                {
-                    getMedialBallCenter(i);
-                }
+                getMedialBallCenter(i);
             }
         }
-        void filterOnRadius()
-        {
+    }
 
+    void getMedialBallCenter(int vertexIndex)
+    {
+        bool empty = false;
+        float radius = initialRadius;
+        while (empty == false)
+        {
+            radius -= 3.0f;
+            empty = checkRadius(vertexIndex, radius);
+            if (radius < 10f)
+            {
+                return;
+            }
         }
-        void InstantiatePoints()
+        MedialBallCenters.Add((vertices[vertexIndex] + normals[vertexIndex] * radius));
+        MedialBallRadii.Add(radius);
+    }
+
+    bool checkRadius(int vertexIndex, float radius)
+    {
+        Vector3 medialBallCenter = vertices[vertexIndex] + normals[vertexIndex] * radius;
+        Vector3[] list = meshComp.checkSegment(medialBallCenter, radius);
+        foreach (Vector3 vertex in list)
+        {
+            if (Vector3.Distance(vertex, medialBallCenter) < radius)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void InstantiatePoints()
         {
             list = new MATList(MedialBallCenters.ToArray());
             list.setScores();

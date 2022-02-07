@@ -8,8 +8,8 @@ public class MeshComponent : Component
     public Vector3[] OriginalPC;
     public List<float> Bounds = new List<float>();
     public List<Segment> Segments = new List<Segment>();
-    public int numberofSegmentsX = 20;
-    public int numberofSegmentsZ = 10;
+    public int numberofSegmentsX = 30;
+    public int numberofSegmentsZ = 30;
 
 
     public MeshComponent(Vector3[] originalPC) // constructor
