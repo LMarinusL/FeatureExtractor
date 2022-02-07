@@ -7,8 +7,8 @@ using System.IO;
 
     public class ShrinkingBallSeg : MonoBehaviour
     {
-        public List<Vector3> vertices;
-        public List<Vector3> normals;
+        public Vector3[] vertices;
+        public Vector3[] normals;
         public float initialRadius = 200.0f;
         public List<Vector3> filteredList;
         public List<Vector3> MedialBallCenters;
@@ -39,8 +39,8 @@ using System.IO;
             GameObject terrain = GameObject.Find("TerrainLoader");
             MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
             Mesh mesh = meshGenerator.mesh;
-            vertices = mesh.vertices.ToList();
-            normals = mesh.normals.ToList();
+            vertices = mesh.vertices;
+            normals = mesh.normals;
         }
 
         bool checkRadius(int vertexIndex, float radius)
@@ -76,7 +76,7 @@ using System.IO;
 
         void iterateVertices()
         {
-            for (int i = 0; i < vertices.ToArray().Length; i++)
+            for (int i = 0; i < vertices.Length; i++)
             {
                 if (vertices[i].y != 0f && normals[i].y > 0.4f)
                 {
@@ -90,7 +90,7 @@ using System.IO;
         }
         void InstantiatePoints()
         {
-            list = new MATList(MedialBallCenters);
+            list = new MATList(MedialBallCenters.ToArray());
             list.setScores();
             //WriteString(MedialBallCenters);
             for (int vertId = 0; vertId < MedialBallCenters.ToArray().Length; vertId++)
@@ -114,11 +114,11 @@ using System.IO;
 
     public class MATList : Component
     {
-        public List<Vector3> OriginalMATList;
+        public Vector3[] OriginalMATList;
         public List<MATBall> NewMATList = new List<MATBall>();
 
 
-        public MATList(List<Vector3> originalMATList) // constructor
+        public MATList(Vector3[] originalMATList) // constructor
         {
             OriginalMATList = originalMATList;
             foreach (Vector3 ball in OriginalMATList)

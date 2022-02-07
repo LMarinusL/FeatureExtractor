@@ -6,8 +6,8 @@ using UnityEditor;
 
 public class CreateGrid : MonoBehaviour
 {
-    public List<Vector3> vertices;
-    public List<Vector3> normals;
+    public Vector3[] vertices;
+    public Vector3[] normals;
     public MATList MATlist;
     public List<MATBall> MATcol;
     public Grid grid;
@@ -77,7 +77,7 @@ public class CreateGrid : MonoBehaviour
         MATcol = MATlist.NewMATList;
     }
 
-    public void InstantiateGrid(List<Vector3> verts, List<Vector3> normals)
+    public void InstantiateGrid(Vector3[] verts, Vector3[] normals)
     {
         grid = new Grid(verts, normals);
         foreach (Cell cell in grid.cells)
@@ -266,8 +266,8 @@ public class CreateGrid : MonoBehaviour
     // todo: get max values to set colors
     void setMeshSlopeColors()
     {
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].slope/1.52f), 1f * (grid.cells[i].slope/1.52f), 1f * (1 - (grid.cells[i].slope/1.52f)), 1f);
         }
@@ -275,8 +275,8 @@ public class CreateGrid : MonoBehaviour
     }
     void setMeshAspectColors()
     {
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].aspect/180), 1f * (grid.cells[i].aspect / 180), 1f * ((180 - grid.cells[i].aspect)/180), 1f);
         }
@@ -284,8 +284,8 @@ public class CreateGrid : MonoBehaviour
     }
     void setMeshRelativeSlopeColors()
     {
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f),  Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f), 1f);
         }
@@ -293,8 +293,8 @@ public class CreateGrid : MonoBehaviour
     }
     void setMeshRelativeAspectColors()
     {
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].relativeAspect / 50), 1f * (grid.cells[i].relativeAspect / 50), 1f * (1-((grid.cells[i].relativeAspect) / 50)), 1f);
         }
@@ -302,8 +302,8 @@ public class CreateGrid : MonoBehaviour
     }
     void setMeshRelativeHeightColors()
     {
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].relativeHeight / 20), 1f * (grid.cells[i].relativeHeight / 20), 1f * (1-((grid.cells[i].relativeHeight) /20)), 1f);
         }
@@ -311,8 +311,8 @@ public class CreateGrid : MonoBehaviour
     }
     void setMeshdRM1Colors()
     {
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].dRM1/700), 1f * (grid.cells[i].dRM1/700), 1f * (grid.cells[i].dRM1/700), 1f);
         }
@@ -323,15 +323,16 @@ public class CreateGrid : MonoBehaviour
 
 public class Grid : Component
 { // list of grid cells in same grid order as input cells
-    public List<Vector3> OriginalPC;
-    public List<Cell> cells = new List<Cell>();
+    public Vector3[] OriginalPC;
+    public Cell[] cells;
 
-    public Grid(List<Vector3> originalPC, List<Vector3> originalNormals)
+    public Grid(Vector3[] originalPC, Vector3[] originalNormals)
     {
         OriginalPC = originalPC;
-        for (int i = 0; i < originalPC.ToArray().Length; i++)
+        cells = new Cell[originalPC.Length];
+        for (int i = 0; i < originalPC.Length; i++)
         {
-            cells.Add(new Cell(i, originalPC[i], originalNormals[i]));
+            cells[i] = new Cell(i, originalPC[i], originalNormals[i]);
         }
     }
 }

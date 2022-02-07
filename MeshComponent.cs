@@ -5,14 +5,14 @@ using UnityEngine;
 public class MeshComponent : Component
 {
 
-    public List<Vector3> OriginalPC;
+    public Vector3[] OriginalPC;
     public List<float> Bounds = new List<float>();
     public List<Segment> Segments = new List<Segment>();
-    public int numberofSegmentsX = 10;
-    public int numberofSegmentsZ = 3;
+    public int numberofSegmentsX = 20;
+    public int numberofSegmentsZ = 10;
 
 
-    public MeshComponent(List<Vector3> originalPC) // constructor
+    public MeshComponent(Vector3[] originalPC) // constructor
     {
         OriginalPC = originalPC;
         getBounds();
