@@ -28,6 +28,7 @@ public class MeshGenerator : MonoBehaviour
     int xSize;
     public Mesh mesh;
     public Vector3[] vertices;
+    public Vector3[] normals;
     public int[] triangles;
     public List<string> idList;
     public float heightScale = 5.0f;
@@ -116,7 +117,7 @@ public class MeshGenerator : MonoBehaviour
         {
             values = arrayOfLines[index].Split(' ');
             VectorNew = new Vector3(((float.Parse(values[1], CultureInfo.InvariantCulture)- zCorrection) / 10),
-                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 3),
+                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 6),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- xCorrection) / 10));
             vertices[index] = VectorNew;
             index++;
@@ -179,5 +180,6 @@ public class MeshGenerator : MonoBehaviour
         mesh.triangles = triangles;
         mesh.colors = colors;
         mesh.RecalculateNormals();
+        normals = mesh.normals;
     }
 }

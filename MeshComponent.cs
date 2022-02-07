@@ -62,12 +62,14 @@ public class MeshComponent : Component
 
 
                 List<Vector3> segmentPoints = new List<Vector3>();
+                int index = 0;
                 foreach (Vector3 vertex in OriginalPC)
                 {
 
                     if ((vertex.x >= minX) && (vertex.x < maxX) && (vertex.z >= minZ) && (vertex.z < maxZ))
                     {
                         segmentPoints.Add(vertex);
+                        index++;
                     }
                 }
                 var list = new List<float>();

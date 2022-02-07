@@ -10,7 +10,6 @@ using System.IO;
         public Vector3[] vertices;
         public Vector3[] normals;
         public float initialRadius = 200.0f;
-        public List<Vector3> filteredList;
         public List<Vector3> MedialBallCenters;
         public List<float> MedialBallRadii;
         public GameObject dotred;
@@ -20,7 +19,6 @@ using System.IO;
 
         void Start()
         {
-
         }
 
         void Update()
@@ -40,6 +38,7 @@ using System.IO;
             MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
             Mesh mesh = meshGenerator.mesh;
             vertices = mesh.vertices;
+            mesh.RecalculateNormals();
             normals = mesh.normals;
         }
 
@@ -92,24 +91,13 @@ using System.IO;
         {
             list = new MATList(MedialBallCenters.ToArray());
             list.setScores();
-            //WriteString(MedialBallCenters);
             for (int vertId = 0; vertId < MedialBallCenters.ToArray().Length; vertId++)
             {
                 Instantiate(dotblue, list.getLoc3D(vertId), transform.rotation);
-                Instantiate(dotred, list.getLoc2D(vertId, 300f), transform.rotation);
+                //Instantiate(dotred, list.getLoc2D(vertId, 300f), transform.rotation);
             }
         }
 
-        /*public static void WriteString(List<Vector3> list)
-        {
-            string path = "Assets/Output/test.txt";
-            StreamWriter writer = new StreamWriter(path, false);
-            foreach (Vector3 vector in list)
-            {
-                writer.WriteLine(vector.x + " " + vector.y + " " + vector.z);
-            }
-            writer.Close();
-        }*/
     }
 
     public class MATList : Component
@@ -133,7 +121,7 @@ using System.IO;
         {
             MeshComponent matComp = new MeshComponent(OriginalMATList);
             float radiusForScore = 100f;
-            for (int num = 0; num < OriginalMATList.ToArray().Length; num++)
+            for (int num = 0; num < OriginalMATList.Length; num++)
             {
                 Vector3[] listToCheck = matComp.checkSegment(OriginalMATList[num], radiusForScore);
                 int score = 0;

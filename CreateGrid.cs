@@ -31,6 +31,7 @@ public class CreateGrid : MonoBehaviour
             getData();
             InstantiateGrid(vertices, normals);
             WriteString();
+            Debug.Log("Output written");
         }
         if (Input.GetKey(KeyCode.Alpha1))
         {
@@ -71,8 +72,8 @@ public class CreateGrid : MonoBehaviour
         zSize = meshGenerator.zSizer;
         mesh = meshGenerator.mesh;
 
-        vertices = MATalg.vertices;
-        normals = MATalg.normals;
+        vertices = meshGenerator.vertices;
+        normals = meshGenerator.normals;
         MATlist = MATalg.list;
         MATcol = MATlist.NewMATList;
     }
@@ -83,7 +84,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid.cells)
         {
             cell.relativeHeight = relativeHeight(cell.index, grid, 1);
-            cell.relativeSlope = relativeSlope(cell.index, grid, 5);
+            cell.relativeSlope = relativeSlope(cell.index, grid, 1);
             cell.relativeAspect = relativeAspect(cell.index, grid, 1);
             cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
         }
