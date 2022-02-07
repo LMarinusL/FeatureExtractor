@@ -22,18 +22,16 @@ public class MeshGenerator : MonoBehaviour
     public TextAsset vertexFile;
     [SerializeField] public TextMeshProUGUI loadingText;
 
-    public int zSizer; //original full 369 small 188
-    public int xSizer; // original full 752 small 93
+    public int zSizer; //original full 752 small 188
+    public int xSizer; // original full 369 small 93
     int zSize;
     int xSize;
     public Mesh mesh;
-    public List<Vector3> vertices = null;
+    public Vector3[] vertices;
     public int[] triangles;
     public List<string> idList;
     public float heightScale = 5.0f;
 
-    public float maxTerrainHeight;
-    public float minTerrainHeight;
     public float xCorrection = 649582f;
     public float zCorrection = 1013618f;
 
@@ -51,6 +49,7 @@ public class MeshGenerator : MonoBehaviour
     void Start()
     {
         mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         GetComponent<MeshFilter>().mesh = mesh;
         MeshRenderer meshr = this.GetComponent<MeshRenderer>();
         meshr.material = material;
@@ -60,11 +59,49 @@ public class MeshGenerator : MonoBehaviour
 
     void Update()
     {
-        /*
-        if (Input.GetKey(KeyCode.Alpha1))
+        
+        if (Input.GetKey(KeyCode.L))
         {
-            setMeshColors();
-        }*/
+            CreateShape();
+            UpdateMesh();
+        }
+    }
+
+    void CreateShape()
+    {
+        float randomNum1 = Random.Range(0.3f, 2.4f);
+        float randomNum2 = Random.Range(0.3f, 2.4f);
+        vertices = new Vector3[xSize * zSize];
+        for (int i = 0, z = 0; z <= zSize; z++)
+        {
+            for (int x = 0; x <= xSize; x++)
+            {
+                float y = (Mathf.PerlinNoise(x * .015f * randomNum2, z * .02f * randomNum1) * 45f) + (Mathf.PerlinNoise(x * .04f * randomNum1, z * .025f * randomNum2) * 40f) ;
+                vertices[i] = new Vector3(5*x + 1300, 5*y - 200, 5*z + 200);
+                i++;
+            }
+        }
+
+        triangles = new int[xSize * zSize * 6];
+        int vert = 0;
+        int tris = 0;
+        for (int z = 0; z < zSize; z++)
+        {
+            for (int x = 0; x < xSize; x++)
+            {
+                triangles[tris + 0] = vert + 0;
+                triangles[tris + 1] = vert + xSize + 1;
+                triangles[tris + 2] = vert + 1;
+                triangles[tris + 3] = vert + 1;
+                triangles[tris + 4] = vert + xSize + 1;
+                triangles[tris + 5] = vert + xSize + 2;
+
+                vert++;
+                tris += 6;
+
+            };
+            vert++;
+        }
     }
 
     void ReadFile()
@@ -73,6 +110,7 @@ public class MeshGenerator : MonoBehaviour
         string[] arrayOfLines = PointsString.Split('\n');
         int index = 0;
         string[] values;
+        vertices = new Vector3[xSizer * zSizer];
         Vector3 VectorNew;
         while (index < arrayOfLines.Length -1)
         {
@@ -80,15 +118,7 @@ public class MeshGenerator : MonoBehaviour
             VectorNew = new Vector3(((float.Parse(values[1], CultureInfo.InvariantCulture)- zCorrection) / 10),
                                ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 3),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- xCorrection) / 10));
-            vertices.Add(VectorNew);
-            if (VectorNew.y > maxTerrainHeight)
-            {
-                maxTerrainHeight = VectorNew.y;
-            }
-            if (VectorNew.y < minTerrainHeight)
-            {
-                minTerrainHeight = VectorNew.y;
-            }
+            vertices[index] = VectorNew;
             index++;
         }
 
@@ -114,8 +144,8 @@ public class MeshGenerator : MonoBehaviour
             };
             vert++;
         }
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             if (vertices[i].y < 210)
             {
@@ -143,8 +173,9 @@ public class MeshGenerator : MonoBehaviour
 
     void UpdateMesh()
     {
+        Debug.Log(" Verts: " + vertices.Length + " trians: " + triangles.Length);
         mesh.Clear();
-        mesh.vertices = vertices.ToArray();
+        mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.colors = colors;
         mesh.RecalculateNormals();

@@ -11,6 +11,9 @@ public class BoundaryComputer : MonoBehaviour
     public List<Vector2> boundaryList;
     int secondVert;
     public GameObject dot;
+    public float maxTerrainHeight;
+    public float minTerrainHeight;
+
 
 
 
@@ -34,10 +37,21 @@ public class BoundaryComputer : MonoBehaviour
     {
         GameObject terrain = GameObject.Find("TerrainLoader");
         MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
-        Vertices = meshGenerator.vertices.ToArray();
+        Vertices = meshGenerator.vertices;
         foreach (Vector3 vertex in Vertices)
         {
-            if ((meshGenerator.minTerrainHeight + 10) > vertex.y && vertex.y > (meshGenerator.minTerrainHeight + 9.95))
+            if (vertex.y > maxTerrainHeight)
+            {
+                maxTerrainHeight = vertex.y;
+            }
+            if (vertex.y < minTerrainHeight)
+            {
+                minTerrainHeight = vertex.y;
+            }
+        }
+        foreach (Vector3 vertex in Vertices)
+        {
+            if ((minTerrainHeight + 10) > vertex.y && vertex.y > (minTerrainHeight + 9.95))
             {
                 boundingVectors.Add(new Vector2(vertex.x, vertex.z));
             }

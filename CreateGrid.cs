@@ -52,6 +52,10 @@ public class CreateGrid : MonoBehaviour
         {
             setMeshRelativeHeightColors();
         }
+        if (Input.GetKey(KeyCode.Alpha6))
+        {
+            setMeshdRM1Colors();
+        }
     }
 
     void getData()
@@ -79,8 +83,9 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid.cells)
         {
             cell.relativeHeight = relativeHeight(cell.index, grid, 1);
-            cell.relativeSlope = relativeSlope(cell.index, grid, 1);
+            cell.relativeSlope = relativeSlope(cell.index, grid, 5);
             cell.relativeAspect = relativeAspect(cell.index, grid, 1);
+            cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
         }
     }
 
@@ -258,6 +263,7 @@ public class CreateGrid : MonoBehaviour
     }
 
     // COLORS
+    // todo: get max values to set colors
     void setMeshSlopeColors()
     {
         colors = new Color[vertices.ToArray().Length];
@@ -281,7 +287,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.ToArray().Length];
         for (int i = 0; i < vertices.ToArray().Length; i++)
         {
-            colors[i] = new Color(Mathf.Pow(Mathf.Pow(1f - (grid.cells[i].relativeSlope / 1.52f), 2f), 0.5f),  Mathf.Pow(Mathf.Pow(1f - (grid.cells[i].relativeSlope / 1.52f), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope / 1.52f), 2f), 0.5f), 1f);
+            colors[i] = new Color(Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f),  Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f), 1f);
         }
         mesh.colors = colors;
     }
@@ -300,6 +306,15 @@ public class CreateGrid : MonoBehaviour
         for (int i = 0; i < vertices.ToArray().Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].relativeHeight / 20), 1f * (grid.cells[i].relativeHeight / 20), 1f * (1-((grid.cells[i].relativeHeight) /20)), 1f);
+        }
+        mesh.colors = colors;
+    }
+    void setMeshdRM1Colors()
+    {
+        colors = new Color[vertices.ToArray().Length];
+        for (int i = 0; i < vertices.ToArray().Length; i++)
+        {
+            colors[i] = new Color(1f * (grid.cells[i].dRM1/700), 1f * (grid.cells[i].dRM1/700), 1f * (grid.cells[i].dRM1/700), 1f);
         }
         mesh.colors = colors;
     }
@@ -332,6 +347,7 @@ public class Cell : Component
     public float relativeHeight;
     public float relativeSlope;
     public float relativeAspect;
+    public float dRM1;
 
 
     public Cell(int i, Vector3 loc, Vector3 normal)
