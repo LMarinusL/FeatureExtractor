@@ -9,7 +9,7 @@ public class CreateGrid : MonoBehaviour
     public Vector3[] vertices;
     public Vector3[] normals;
     public MATList MATlist;
-    public List<MATBall> MATcol;
+    public MATBall[] MATcol;
     public Grid grid;
     public Vector2 RM1 = new Vector2(659492f, 1020360f);
     public Vector2 RM2 = new Vector2(654296f, 1023740f);

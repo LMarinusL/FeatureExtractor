@@ -46,7 +46,7 @@ using System.IO;
         bool checkRadius(int vertexIndex, float radius)
         {
             Vector3 medialBallCenter = vertices[vertexIndex] + normals[vertexIndex] * radius;
-            List<Vector3> list = meshComp.checkSegment(medialBallCenter, radius);
+            Vector3[] list = meshComp.checkSegment(medialBallCenter, radius);
             foreach (Vector3 vertex in list)
             {
                 if (Vector3.Distance(vertex, medialBallCenter) < radius)
@@ -115,15 +115,18 @@ using System.IO;
     public class MATList : Component
     {
         public Vector3[] OriginalMATList;
-        public List<MATBall> NewMATList = new List<MATBall>();
+        public MATBall[] NewMATList;
 
 
         public MATList(Vector3[] originalMATList) // constructor
         {
             OriginalMATList = originalMATList;
+            NewMATList = new MATBall[originalMATList.Length];
+            int i = 0;
             foreach (Vector3 ball in OriginalMATList)
             {
-                NewMATList.Add(new MATBall(ball));
+                NewMATList[i] = new MATBall(ball);
+                i++;
             }
         }
         public void setScores()
@@ -132,7 +135,7 @@ using System.IO;
             float radiusForScore = 100f;
             for (int num = 0; num < OriginalMATList.ToArray().Length; num++)
             {
-                List<Vector3> listToCheck = matComp.checkSegment(OriginalMATList[num], radiusForScore);
+                Vector3[] listToCheck = matComp.checkSegment(OriginalMATList[num], radiusForScore);
                 int score = 0;
                 foreach (Vector3 vertex in listToCheck)
                 {

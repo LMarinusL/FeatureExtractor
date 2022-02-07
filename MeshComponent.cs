@@ -75,12 +75,12 @@ public class MeshComponent : Component
                 list.Add(minZ);
                 list.Add(maxX);
                 list.Add(maxZ);
-                Segments.Add(new Segment(segmentPoints, ((10*j) + (i + 1)), list));
+                Segments.Add(new Segment(segmentPoints.ToArray(), ((10*j) + (i + 1)), list));
             }
         }
     }
     
-    public List<Vector3> checkSegment(Vector3 center, float range) {
+    public Vector3[] checkSegment(Vector3 center, float range) {
         List<Vector3> outputList = new List<Vector3>();
         foreach (Segment segment in Segments)
         {
@@ -89,17 +89,17 @@ public class MeshComponent : Component
                 outputList.AddRange(segment.SegmentPC);
             }
         }
-    return outputList;
+    return outputList.ToArray();
     }
 
 }
 
 public class Segment : Component
 {
-    public List<Vector3> SegmentPC { get; set; }
+    public Vector3[] SegmentPC { get; set; }
     public int ID;
     public List<float> Bounds; // min x, min y, max x, max y
-    public Segment(List<Vector3> PC, int id, List<float> bounds)
+    public Segment(Vector3[] PC, int id, List<float> bounds)
     {
         SegmentPC = PC;
         ID = id;
