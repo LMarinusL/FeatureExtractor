@@ -78,6 +78,17 @@ public class CreateGrid : MonoBehaviour
             }
             InstantiateRunoff(startAt, 3000, 20f);
         }
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            List<int> startAt = new List<int>();
+            for (int i = 0; i < 1000; i++)
+            {
+                startAt.Add(UnityEngine.Random.Range(100, 250000));
+            }
+            setMeshRunoffColors(startAt, 3000, 20f);
+        }
+
+        
     }
 
     void getData()
@@ -325,13 +336,26 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
+    void setMeshRunoffColors(List<int> starts, int num, float margin)
+    {
+        int[] patterns = getRunoffPatterns(starts, num, margin);
+
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            colors[i] = new Color(0f , 1f * (grid.cells[i].runoffScore / 10), 1f * (grid.cells[i].runoffScore / 10), 1f);
+        }
+        mesh.colors = colors;
+    }
 
     int[] getRunoffPatterns(List<int> startingPoints, int numOfIterations, float margin)
     {
         List<int> patterns = new List<int>();
-        foreach(int start in startingPoints)
+        List<int> currentPattern = new List<int>();
+        foreach (int start in startingPoints)
         {
             patterns.Add(start);
+            currentPattern.Clear();
             int previousIndex = 0;
             int ownIndex = start;
             bool keepRolling = true;
@@ -339,16 +363,15 @@ public class CreateGrid : MonoBehaviour
             while (keepRolling == true)
             {
                 iteration++;
-                int[] currentPattern = new int[numOfIterations];
+                
                 if (iteration == numOfIterations) { keepRolling = false; }
                 float ownHeight = grid.cells[ownIndex].y;
                 List<int> possiblePaths = getIndicesOfSurroundingCells(ownIndex, grid, 1);
                 int lowestHeightIndex = ownIndex;
-                int pos = 0;
                 float lowestHeight = ownHeight + margin;
                 foreach( int index in possiblePaths)
                 { 
-                    if (grid.cells[index].y < lowestHeight && index != previousIndex && grid.cells[index].y != 0 && Array.Exists(currentPattern, element => element == index) == false)
+                    if (grid.cells[index].y < lowestHeight && index != previousIndex && grid.cells[index].y != 0 && currentPattern.Contains(index) == false)
                     {
                         lowestHeight = grid.cells[index].y;
                         lowestHeightIndex = index;
@@ -358,8 +381,7 @@ public class CreateGrid : MonoBehaviour
                 else {
                     grid.cells[lowestHeightIndex].runoffScore += 1;
                     patterns.Add(lowestHeightIndex);
-                    currentPattern[pos] = lowestHeightIndex;
-                    pos++;
+                    currentPattern.Add(lowestHeightIndex);
                     previousIndex = ownIndex;
                     ownIndex = lowestHeightIndex;
                     }
@@ -373,9 +395,8 @@ public class CreateGrid : MonoBehaviour
         int[] patterns = getRunoffPatterns(starts, num, margin);
         foreach (int point in patterns)
         {
-            GameObject dot = 
-            Instantiate(dotgreen, new Vector3(grid.cells[point].x, grid.cells[point].y, grid.cells[point].z),  transform.rotation);
-            dot.GetComponent<MeshRenderer>().material.color = new Color(1f, (grid.cells[point].runoffScore/10) *1f, (grid.cells[point].runoffScore / 10) * 1f, 1f);
+            GameObject dot = Instantiate(dotgreen, new Vector3(grid.cells[point].x, grid.cells[point].y, grid.cells[point].z),  transform.rotation);
+            dot.GetComponent<MeshRenderer>().material.color = new Color((grid.cells[point].runoffScore / 10) * 1f, (grid.cells[point].runoffScore/10) *1f, (grid.cells[point].runoffScore / 10) * 1f, 1f);
             
         }
     }
