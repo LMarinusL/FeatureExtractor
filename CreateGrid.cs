@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEditor;
+using System.Linq;
+using System;
 
 public class CreateGrid : MonoBehaviour
 {
@@ -72,7 +74,7 @@ public class CreateGrid : MonoBehaviour
         {
             List<int> startAt = new List<int>();
             for(int i = 0; i < 100; i++){
-                startAt.Add(Random.Range(100, 250000));
+                startAt.Add(UnityEngine.Random.Range(100, 250000));
             }
             InstantiateRunoff(startAt, 3000, 20f);
         }
@@ -337,14 +339,16 @@ public class CreateGrid : MonoBehaviour
             while (keepRolling == true)
             {
                 iteration++;
+                int[] currentPattern = new int[numOfIterations];
                 if (iteration == numOfIterations) { keepRolling = false; }
                 float ownHeight = grid.cells[ownIndex].y;
                 List<int> possiblePaths = getIndicesOfSurroundingCells(ownIndex, grid, 1);
                 int lowestHeightIndex = ownIndex;
+                int pos = 0;
                 float lowestHeight = ownHeight + margin;
                 foreach( int index in possiblePaths)
                 { 
-                    if (grid.cells[index].y < lowestHeight && index != previousIndex && grid.cells[index].y != 0 && patterns.Contains(index) == false)
+                    if (grid.cells[index].y < lowestHeight && index != previousIndex && grid.cells[index].y != 0 && Array.Exists(currentPattern, element => element == index) == false)
                     {
                         lowestHeight = grid.cells[index].y;
                         lowestHeightIndex = index;
@@ -352,7 +356,10 @@ public class CreateGrid : MonoBehaviour
                 }
                 if (lowestHeightIndex == ownIndex) { keepRolling = false; }
                 else {
+                    grid.cells[lowestHeightIndex].runoffScore += 1;
                     patterns.Add(lowestHeightIndex);
+                    currentPattern[pos] = lowestHeightIndex;
+                    pos++;
                     previousIndex = ownIndex;
                     ownIndex = lowestHeightIndex;
                     }
@@ -363,13 +370,13 @@ public class CreateGrid : MonoBehaviour
 
     void InstantiateRunoff(List<int> starts, int num, float margin)
     {
-      //  Debug.Log(" ownIndex: " + 2 + " newindex: " + 754 + " dist: " + Vector2.Distance(new Vector2(grid.cells[2].x, grid.cells[2].z), new Vector2(grid.cells[754].x, grid.cells[754].z)));
-
-
         int[] patterns = getRunoffPatterns(starts, num, margin);
         foreach (int point in patterns)
         {
-            Instantiate(dotgreen, new Vector3(grid.cells[point].x, grid.cells[point].y, grid.cells[point].z), transform.rotation);
+            GameObject dot = 
+            Instantiate(dotgreen, new Vector3(grid.cells[point].x, grid.cells[point].y, grid.cells[point].z),  transform.rotation);
+            dot.GetComponent<MeshRenderer>().material.color = new Color(1f, (grid.cells[point].runoffScore/10) *1f, (grid.cells[point].runoffScore / 10) * 1f, 1f);
+            
         }
     }
 }
@@ -403,6 +410,7 @@ public class Cell : Component
     public float relativeAspect;
     public float dRM1;
     public float dLN1;
+    public int runoffScore;
 
 
 
@@ -414,6 +422,7 @@ public class Cell : Component
         z = loc.z;
         slope = computeSlope(normal);
         aspect = computeAspect(normal);
+        runoffScore = 0;
     }
 
     float computeSlope(Vector3 normal)
