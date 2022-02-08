@@ -23,7 +23,7 @@ using System.IO;
 
         void Update()
         {
-            if (Input.GetKey(KeyCode.I))
+            if (Input.GetKeyDown(KeyCode.I))
             {
                 getMesh();
                 meshComp = new MeshComponent(vertices);

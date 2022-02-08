@@ -18,6 +18,7 @@ public class CreateGrid : MonoBehaviour
     float zCorrection;
     int xSize;
     int zSize;
+    public GameObject dotgreen;
     Mesh mesh;
     Color[] colors;
 
@@ -56,6 +57,24 @@ public class CreateGrid : MonoBehaviour
         if (Input.GetKey(KeyCode.Alpha6))
         {
             setMeshdLN1Colors();
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            List<int> startAt = new List<int>();
+            startAt.Add(101331);
+            startAt.Add(86161);
+            startAt.Add(188001);
+            startAt.Add(244188);
+            startAt.Add(263387);
+            InstantiateRunoff(startAt, 3000, 20f);
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            List<int> startAt = new List<int>();
+            for(int i = 0; i < 100; i++){
+                startAt.Add(Random.Range(100, 250000));
+            }
+            InstantiateRunoff(startAt, 3000, 20f);
         }
     }
 
@@ -234,18 +253,18 @@ public class CreateGrid : MonoBehaviour
 
     public int getIndexFromLoc(int xLoc, int zLoc)
     {
-        return (zLoc ) + (xLoc * zSize);
+        return (xLoc ) + (zLoc * xSize); 
     }
     
-    public int getXFromIndex(int index)
+    public int getZFromIndex(int index)
     {
-        int result = Mathf.FloorToInt(index / zSize);
+        int result = Mathf.FloorToInt(index / xSize);
         return result;
     }
 
-    public int getZFromIndex(int index)
+    public int getXFromIndex(int index)
     {
-        return index - (Mathf.FloorToInt(index / zSize)* zSize);
+        return index - (getZFromIndex(index) * xSize);
     }
 
     // COLORS
@@ -255,7 +274,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].slope/1.52f), 1f * (grid.cells[i].slope/1.52f), 1f * (1 - (grid.cells[i].slope/1.52f)), 1f);
+            colors[i] = new Color(1f , 1f * (1 - grid.cells[i].slope/1.52f), 0f, 1f);
         }
         mesh.colors = colors;
     }
@@ -305,21 +324,54 @@ public class CreateGrid : MonoBehaviour
         mesh.colors = colors;
     }
 
-    void getRunoffPatterns(Vector3[] startingPoints)
+    int[] getRunoffPatterns(List<int> startingPoints, int numOfIterations, float margin)
     {
-        // for each starting point
-            // add the starting point to an array 
-            // previousCell = index 0
-            // ownindex = startingpoint
-                // while the drop can continue rolling
-                    // go to next lowest point that is not a previous point, add next point to the array
-                    // previousindex = ownindex
-                    // ownindex = nextcell
-                    // getIdexOfSurroundingCells if not previouscell
-                    // points cannot have height 0
-
+        List<int> patterns = new List<int>();
+        foreach(int start in startingPoints)
+        {
+            patterns.Add(start);
+            int previousIndex = 0;
+            int ownIndex = start;
+            bool keepRolling = true;
+            int iteration = 0;
+            while (keepRolling == true)
+            {
+                iteration++;
+                if (iteration == numOfIterations) { keepRolling = false; }
+                float ownHeight = grid.cells[ownIndex].y;
+                List<int> possiblePaths = getIndicesOfSurroundingCells(ownIndex, grid, 1);
+                int lowestHeightIndex = ownIndex;
+                float lowestHeight = ownHeight + margin;
+                foreach( int index in possiblePaths)
+                { 
+                    if (grid.cells[index].y < lowestHeight && index != previousIndex && grid.cells[index].y != 0 && patterns.Contains(index) == false)
+                    {
+                        lowestHeight = grid.cells[index].y;
+                        lowestHeightIndex = index;
+                    }
+                }
+                if (lowestHeightIndex == ownIndex) { keepRolling = false; }
+                else {
+                    patterns.Add(lowestHeightIndex);
+                    previousIndex = ownIndex;
+                    ownIndex = lowestHeightIndex;
+                    }
+            }
+        }
+        return patterns.ToArray();
     }
 
+    void InstantiateRunoff(List<int> starts, int num, float margin)
+    {
+      //  Debug.Log(" ownIndex: " + 2 + " newindex: " + 754 + " dist: " + Vector2.Distance(new Vector2(grid.cells[2].x, grid.cells[2].z), new Vector2(grid.cells[754].x, grid.cells[754].z)));
+
+
+        int[] patterns = getRunoffPatterns(starts, num, margin);
+        foreach (int point in patterns)
+        {
+            Instantiate(dotgreen, new Vector3(grid.cells[point].x, grid.cells[point].y, grid.cells[point].z), transform.rotation);
+        }
+    }
 }
 
 public class Grid : Component
