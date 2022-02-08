@@ -55,7 +55,7 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.Alpha6))
         {
-            setMeshdRM1Colors();
+            setMeshdLN1Colors();
         }
     }
 
@@ -87,6 +87,7 @@ public class CreateGrid : MonoBehaviour
             cell.relativeSlope = relativeSlope(cell.index, grid, 1);
             cell.relativeAspect = relativeAspect(cell.index, grid, 1);
             cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
+            cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new Vector3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
     }
 
@@ -181,22 +182,6 @@ public class CreateGrid : MonoBehaviour
             return 0f;
         }
         averageHeight = heightSum / numOfCells;
-         /*
-         // THIS LOG CAN BE USED TO SEE THERE ARE POINTS WITH ALL SURROUNDING CELLS HEIGHT ZERO 
-         if (indices.Count == 8 && grid.cells[index].y != 0)
-           {
-               Debug.Log("ownindex" + index + " " + getXFromIndex(index) + " " + getZFromIndex(index) + " height: " + grid.cells[index].y
-                   + " index" + indices[0] + ": " + getXFromIndex(indices[0]) + " " + getZFromIndex(indices[0]) + " height: " + grid.cells[indices[0]].y
-                   + " index" + indices[1] + ": " + getXFromIndex(indices[1]) + " " + getZFromIndex(indices[1]) + " height: " + grid.cells[indices[1]].y
-                   + " index" + indices[2] + ": " + getXFromIndex(indices[2]) + " " + getZFromIndex(indices[2]) + " height: " + grid.cells[indices[2]].y
-                   + " index" + indices[3] + ": " + getXFromIndex(indices[3]) + " " + getZFromIndex(indices[3]) + " height: " + grid.cells[indices[3]].y
-                   + " index" + indices[4] + ": " + getXFromIndex(indices[4]) + " " + getZFromIndex(indices[4]) + " height: " + grid.cells[indices[4]].y
-                   + " index" + indices[5] + ": " + getXFromIndex(indices[5]) + " " + getZFromIndex(indices[5]) + " height: " + grid.cells[indices[5]].y
-                   + " index" + indices[6] + ": " + getXFromIndex(indices[6]) + " " + getZFromIndex(indices[6]) + " height: " + grid.cells[indices[6]].y
-                   + " index" + indices[7] + ": " + getXFromIndex(indices[7]) + " " + getZFromIndex(indices[7]) + " height: " + grid.cells[indices[7]].y
-                   + " sum: " + heightSum + " average: " + averageHeight + " value: " + (averageHeight - grid.cells[index].y));
-           }
-         */
         float heightOwn = grid.cells[index].y;
         return averageHeight - heightOwn;
     }
@@ -310,14 +295,29 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshdRM1Colors()
+    void setMeshdLN1Colors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].dRM1/700), 1f * (grid.cells[i].dRM1/700), 1f * (grid.cells[i].dRM1/700), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].dLN1/10000), 1f * (grid.cells[i].dLN1/10000), 1f * (grid.cells[i].dLN1/10000), 1f);
         }
         mesh.colors = colors;
+    }
+
+    void getRunoffPatterns(Vector3[] startingPoints)
+    {
+        // for each starting point
+            // add the starting point to an array 
+            // previousCell = index 0
+            // ownindex = startingpoint
+                // while the drop can continue rolling
+                    // go to next lowest point that is not a previous point, add next point to the array
+                    // previousindex = ownindex
+                    // ownindex = nextcell
+                    // getIdexOfSurroundingCells if not previouscell
+                    // points cannot have height 0
+
     }
 
 }
@@ -350,6 +350,8 @@ public class Cell : Component
     public float relativeSlope;
     public float relativeAspect;
     public float dRM1;
+    public float dLN1;
+
 
 
     public Cell(int i, Vector3 loc, Vector3 normal)

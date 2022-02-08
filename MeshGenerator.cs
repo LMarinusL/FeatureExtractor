@@ -7,15 +7,6 @@ using System.Globalization;
 using TMPro;
 using UnityEngine.UI;
 
-//[ExecuteInEditMode] // this loads terrain in edit mode
-/* to do: 
- - Remake old params
- - Make relative height, slope and aspect params
- - Filter the 2D set
- - Create component for medial branches
- - Compute medial branches 
-*/
-
 
 public class MeshGenerator : MonoBehaviour
 {
@@ -66,6 +57,7 @@ public class MeshGenerator : MonoBehaviour
             CreateShape();
             UpdateMesh();
         }
+
     }
 
     void CreateShape()
