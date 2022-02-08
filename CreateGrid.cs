@@ -60,16 +60,6 @@ public class CreateGrid : MonoBehaviour
         {
             setMeshdLN1Colors();
         }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            List<int> startAt = new List<int>();
-            startAt.Add(101331);
-            startAt.Add(86161);
-            startAt.Add(188001);
-            startAt.Add(244188);
-            startAt.Add(263387);
-            InstantiateRunoff(startAt, 3000, 20f);
-        }
         if (Input.GetKeyDown(KeyCode.T))
         {
             List<int> startAt = new List<int>();
@@ -87,8 +77,12 @@ public class CreateGrid : MonoBehaviour
             }
             setMeshRunoffColors(startAt, 3000, 20f);
         }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            StartCoroutine(iterate(1000));
+        }
 
-        
+
     }
 
     void getData()
@@ -339,7 +333,6 @@ public class CreateGrid : MonoBehaviour
     void setMeshRunoffColors(List<int> starts, int num, float margin)
     {
         int[] patterns = getRunoffPatterns(starts, num, margin);
-
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
@@ -388,6 +381,17 @@ public class CreateGrid : MonoBehaviour
             }
         }
         return patterns.ToArray();
+    }
+
+    IEnumerator iterate(int num)
+    {
+        List<int> startAt = new List<int>();
+        for (int j = 0; j < num; j++)
+        {
+            startAt.Add(UnityEngine.Random.Range(100, 250000));
+            setMeshRunoffColors(startAt, 3000, 20f);
+            yield return new WaitForSeconds(.01f);
+        }
     }
 
     void InstantiateRunoff(List<int> starts, int num, float margin)
