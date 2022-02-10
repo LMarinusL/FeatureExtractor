@@ -19,8 +19,8 @@ public class CreateGrid : MonoBehaviour
     public Vector2 RM3 = new Vector2(658537f, 1032590f);
     float xCorrection;
     float zCorrection;
-    int xSize;
-    int zSize;
+    public int xSize;
+    public int zSize;
     public GameObject dotgreen;
     Mesh mesh;
     Color[] colors;
@@ -60,6 +60,10 @@ public class CreateGrid : MonoBehaviour
         if (Input.GetKey(KeyCode.Alpha6))
         {
             setMeshdLN1Colors();
+        }
+        if (Input.GetKey(KeyCode.Alpha7))
+        {
+            setMeshContourColors();
         }
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -152,7 +156,7 @@ public class CreateGrid : MonoBehaviour
         return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
     }
 
-    List<int> getIndicesOfSurroundingCells(int index, Grid grid, int dist)
+    public List<int> getIndicesOfSurroundingCells(int index, Grid grid, int dist)
     {
         Cell own = grid.cells[index];
         int xLoc = getXFromIndex(index);
@@ -331,6 +335,21 @@ public class CreateGrid : MonoBehaviour
         for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].dLN1/10000), 1f * (grid.cells[i].dLN1/10000), 1f * (grid.cells[i].dLN1/10000), 1f);
+        }
+        mesh.colors = colors;
+    }
+    void setMeshContourColors()
+    {
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            if (grid.cells[i].y < 100)
+            {
+                colors[i] = new Color(1f, 1f , 1f, 1f);
+            }
+            else {
+                colors[i] = new Color(0f, 0f, 0f , 1f);
+            }
         }
         mesh.colors = colors;
     }
