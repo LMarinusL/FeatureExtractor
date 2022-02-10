@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.IO;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
 
 
-    public class ShrinkingBallSeg : MonoBehaviour
+public class ShrinkingBallSeg : MonoBehaviour
     {
-        public Vector3[] vertices;
-        public Vector3[] normals;
+        public float3[] vertices;
+        public float3[] normals;
         public float initialRadius = 100.0f;
-        public List<Vector3> MedialBallCenters;
+        public List<float3> MedialBallCenters;
         public List<float> MedialBallRadii;
         public GameObject dotred;
         public GameObject dotblue;
@@ -73,11 +75,11 @@ using System.IO;
 
     bool checkRadius(int vertexIndex, float radius)
     {
-        Vector3 medialBallCenter = vertices[vertexIndex] + normals[vertexIndex] * radius;
-        Vector3[] list = meshComp.checkSegment(medialBallCenter, radius);
-        foreach (Vector3 vertex in list)
+        float3 medialBallCenter = vertices[vertexIndex] + normals[vertexIndex] * radius;
+        float3[] list = meshComp.checkSegment(medialBallCenter, radius);
+        foreach (float3 vertex in list)
         {
-            if (Vector3.Distance(vertex, medialBallCenter) < radius)
+            if (Distance(vertex, medialBallCenter) < radius)
             {
                 return false;
             }
@@ -95,21 +97,26 @@ using System.IO;
                 //Instantiate(dotred, list.getLoc2D(vertId, 300f), transform.rotation);
             }
         }
+    
+    float Distance(float3 point1, float3 point2)
+    {
+        return Mathf.Pow(Mathf.Pow(point1.x - point2.x, 2f) + Mathf.Pow(point1.y - point2.y, 2f) + Mathf.Pow(point1.z - point2.z, 2f), 0.5f);
+    }
 
     }
 
     public class MATList : Component
     {
-        public Vector3[] OriginalMATList;
+        public float3[] OriginalMATList;
         public MATBall[] NewMATList;
 
 
-        public MATList(Vector3[] originalMATList) // constructor
+        public MATList(float3[] originalMATList) // constructor
         {
             OriginalMATList = originalMATList;
             NewMATList = new MATBall[originalMATList.Length];
             int i = 0;
-            foreach (Vector3 ball in OriginalMATList)
+            foreach (float3 ball in OriginalMATList)
             {
                 NewMATList[i] = new MATBall(ball);
                 i++;
@@ -121,11 +128,11 @@ using System.IO;
             float radiusForScore = 100f;
             for (int num = 0; num < OriginalMATList.Length; num++)
             {
-                Vector3[] listToCheck = matComp.checkSegment(OriginalMATList[num], radiusForScore);
+            float3[] listToCheck = matComp.checkSegment(OriginalMATList[num], radiusForScore);
                 int score = 0;
-                foreach (Vector3 vertex in listToCheck)
+                foreach (float3 vertex in listToCheck)
                 {
-                    if (Vector3.Distance(vertex, OriginalMATList[num]) < radiusForScore)
+                    if (Distance(vertex, OriginalMATList[num]) < radiusForScore)
                     {
                         score++;
                     }
@@ -133,27 +140,32 @@ using System.IO;
                 NewMATList[num].Score = score;
             }
         }
-        public Vector3 getLoc3D(int index)
+        public float3 getLoc3D(int index)
         {
             return NewMATList[index].Loc;
         }
-        public Vector3 getLoc2D(int index, float yloc)
+        public float3 getLoc2D(int index, float yloc)
         {
-            return new Vector3(NewMATList[index].Loc.x, yloc, NewMATList[index].Loc.z);
+            return new float3(NewMATList[index].Loc.x, yloc, NewMATList[index].Loc.z);
         }
         public MATBall getBall(int index)
         {
             return NewMATList[index];
         }
 
+    float Distance(float3 point1, float3 point2)
+    {
+        return Mathf.Pow(Mathf.Pow(point1.x - point2.x, 2f) + Mathf.Pow(point1.y - point2.y, 2f) + Mathf.Pow(point1.z - point2.z, 2f), 0.5f);
     }
+
+}
 
     public class MATBall : Component
     {
-        public Vector3 Loc;
+        public float3 Loc;
         public int Score;
 
-        public MATBall(Vector3 ballLoc) // constructor
+        public MATBall(float3 ballLoc) // constructor
         {
             Loc = ballLoc;
         }
@@ -161,10 +173,10 @@ using System.IO;
 
 public class MATBranch : Component
 {
-    public Vector3 Head;
-    public Vector3 Tail;
+    public float3 Head;
+    public float3 Tail;
 
-    public MATBranch(Vector3 head, Vector3 tail)
+    public MATBranch(float3 head, float3 tail)
     {
         Head = head;
         Tail = tail;

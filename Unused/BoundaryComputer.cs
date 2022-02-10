@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BoundaryComputer : MonoBehaviour
-{
+{/*
     public Vector3[] Vertices;
     public List<Vector2> boundingVectors;
     public Vector2 leftVertex;
@@ -117,4 +117,5 @@ public class BoundaryComputer : MonoBehaviour
             Instantiate(dot, new Vector3(boundaryList[vertId].x, 80, boundaryList[vertId].y) , transform.rotation);
         }
     }
+    */
 }

@@ -5,11 +5,12 @@ using System.IO;
 using UnityEditor;
 using System.Linq;
 using System;
+using Unity.Mathematics;
 
 public class CreateGrid : MonoBehaviour
 {
-    public Vector3[] vertices;
-    public Vector3[] normals;
+    public float3[] vertices;
+    public float3[] normals;
     public MATList MATlist;
     public MATBall[] MATcol;
     public Grid grid;
@@ -62,11 +63,14 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.T))
         {
-            List<int> startAt = new List<int>();
-            for(int i = 0; i < 100; i++){
-                startAt.Add(UnityEngine.Random.Range(100, 250000));
+            int index = 0;
+            int[] array = new int[vertices.Length];
+            while ( index < vertices.Length)
+            {
+                array[index] = index;
+                index++;
             }
-            InstantiateRunoff(startAt, 3000, 20f);
+            setMeshRunoffColors(array, 3000, 20f);
         }
         if (Input.GetKeyDown(KeyCode.Y))
         {
@@ -75,7 +79,7 @@ public class CreateGrid : MonoBehaviour
             {
                 startAt.Add(UnityEngine.Random.Range(100, 250000));
             }
-            setMeshRunoffColors(startAt, 3000, 20f);
+            setMeshRunoffColors(startAt.ToArray(), 3000, 20f);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -104,7 +108,7 @@ public class CreateGrid : MonoBehaviour
         MATcol = MATlist.NewMATList;
     }
 
-    public void InstantiateGrid(Vector3[] verts, Vector3[] normals)
+    public void InstantiateGrid(float3[] verts, float3[] normals)
     {
         grid = new Grid(verts, normals);
         foreach (Cell cell in grid.cells)
@@ -113,7 +117,7 @@ public class CreateGrid : MonoBehaviour
             cell.relativeSlope = relativeSlope(cell.index, grid, 1);
             cell.relativeAspect = relativeAspect(cell.index, grid, 1);
             cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
-            cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new Vector3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
+            cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
     }
 
@@ -130,7 +134,7 @@ public class CreateGrid : MonoBehaviour
                 + DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection))
-                + " " + HandleUtility.DistancePointLine(new Vector3(cell.x, cell.y, cell.z), vertices[10], vertices[400])
+                + " " + HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[400])
                 + " " + cell.relativeHeight + " " + cell.relativeSlope + " " + cell.relativeAspect
                 );
         }
@@ -287,7 +291,7 @@ public class CreateGrid : MonoBehaviour
     }
     void setMeshAspectColors()
     {
-        colors = new Color[vertices.Length];
+        colors = new Color[vertices.Length]; 
         for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].aspect/180), 1f * (grid.cells[i].aspect / 180), 1f * ((180 - grid.cells[i].aspect)/180), 1f);
@@ -330,7 +334,7 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshRunoffColors(List<int> starts, int num, float margin)
+    void setMeshRunoffColors(int[] starts, int num, float margin)
     {
         int[] patterns = getRunoffPatterns(starts, num, margin);
         colors = new Color[vertices.Length];
@@ -341,7 +345,7 @@ public class CreateGrid : MonoBehaviour
         mesh.colors = colors;
     }
 
-    int[] getRunoffPatterns(List<int> startingPoints, int numOfIterations, float margin)
+    int[] getRunoffPatterns(int[] startingPoints, int numOfIterations, float margin)
     {
         List<int> patterns = new List<int>();
         List<int> currentPattern = new List<int>();
@@ -389,12 +393,12 @@ public class CreateGrid : MonoBehaviour
         for (int j = 0; j < num; j++)
         {
             startAt.Add(UnityEngine.Random.Range(100, 250000));
-            setMeshRunoffColors(startAt, 3000, 20f);
+            setMeshRunoffColors(startAt.ToArray(), 3000, 20f);
             yield return new WaitForSeconds(.01f);
         }
     }
-
-    void InstantiateRunoff(List<int> starts, int num, float margin)
+    /*
+    void InstantiateRunoff(int[] starts, int num, float margin)
     {
         int[] patterns = getRunoffPatterns(starts, num, margin);
         foreach (int point in patterns)
@@ -403,15 +407,15 @@ public class CreateGrid : MonoBehaviour
             dot.GetComponent<MeshRenderer>().material.color = new Color((grid.cells[point].runoffScore / 10) * 1f, (grid.cells[point].runoffScore/10) *1f, (grid.cells[point].runoffScore / 10) * 1f, 1f);
             
         }
-    }
+    }*/
 }
 
 public class Grid : Component
 { // list of grid cells in same grid order as input cells
-    public Vector3[] OriginalPC;
+    public float3[] OriginalPC;
     public Cell[] cells;
 
-    public Grid(Vector3[] originalPC, Vector3[] originalNormals)
+    public Grid(float3[] originalPC, float3[] originalNormals)
     {
         OriginalPC = originalPC;
         cells = new Cell[originalPC.Length];
@@ -439,7 +443,7 @@ public class Cell : Component
 
 
 
-    public Cell(int i, Vector3 loc, Vector3 normal)
+    public Cell(int i, float3 loc, float3 normal)
     {
         index = i;
         x = loc.x;
@@ -450,13 +454,13 @@ public class Cell : Component
         runoffScore = 0;
     }
 
-    float computeSlope(Vector3 normal)
+    float computeSlope(float3 normal)
     {
         float slope = Mathf.Atan(Mathf.Pow((Mathf.Pow(normal.x, 2f) + Mathf.Pow(normal.z, 2f)), 0.5f)/normal.y);
         return slope;
     }
 
-    float computeAspect(Vector3 normal)
+    float computeAspect(float3 normal)
     {
         float aspect;
         if(normal.x > 0)

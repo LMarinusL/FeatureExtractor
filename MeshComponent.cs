@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
 
 public class MeshComponent : Component
 {
 
-    public Vector3[] OriginalPC;
+    public float3[] OriginalPC;
     public List<float> Bounds = new List<float>();
     public List<Segment> Segments = new List<Segment>();
     public int numberofSegmentsX = 30;
     public int numberofSegmentsZ = 30;
 
 
-    public MeshComponent(Vector3[] originalPC) // constructor
+    public MeshComponent(float3[] originalPC) // constructor
     {
         OriginalPC = originalPC;
         getBounds();
@@ -26,7 +28,7 @@ public class MeshComponent : Component
         Bounds.Add(OriginalPC[1].x);
         Bounds.Add(OriginalPC[1].y);
 
-        foreach (Vector3 vertex in OriginalPC)
+        foreach (float3 vertex in OriginalPC)
         {
             if (Bounds[0] > vertex.x)
             {
@@ -61,9 +63,9 @@ public class MeshComponent : Component
                 float maxZ = (Bounds[1] + ((j + 1) * ((Bounds[3] - Bounds[1]) / numberofSegmentsZ)));
 
 
-                List<Vector3> segmentPoints = new List<Vector3>();
+                List<float3> segmentPoints = new List<float3>();
                 int index = 0;
-                foreach (Vector3 vertex in OriginalPC)
+                foreach (float3 vertex in OriginalPC)
                 {
 
                     if ((vertex.x >= minX) && (vertex.x < maxX) && (vertex.z >= minZ) && (vertex.z < maxZ))
@@ -82,8 +84,8 @@ public class MeshComponent : Component
         }
     }
     
-    public Vector3[] checkSegment(Vector3 center, float range) {
-        List<Vector3> outputList = new List<Vector3>();
+    public float3[] checkSegment(float3 center, float range) {
+        List<float3> outputList = new List<float3>();
         foreach (Segment segment in Segments)
         {
             if (segment.Bounds[0] < (center.x + range) && segment.Bounds[2] > (center.x - range) && segment.Bounds[1] < (center.z + range) && segment.Bounds[3] > (center.z - range))
@@ -98,10 +100,10 @@ public class MeshComponent : Component
 
 public class Segment : Component
 {
-    public Vector3[] SegmentPC { get; set; }
+    public float3[] SegmentPC { get; set; }
     public int ID;
     public List<float> Bounds; // min x, min y, max x, max y
-    public Segment(Vector3[] PC, int id, List<float> bounds)
+    public Segment(float3[] PC, int id, List<float> bounds)
     {
         SegmentPC = PC;
         ID = id;
