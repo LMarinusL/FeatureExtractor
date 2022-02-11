@@ -15,9 +15,12 @@ public class ContourGenerator : MonoBehaviour
     public GameObject dotone;
     public GameObject dottwo;
     public GameObject dotthree;
+    public GameObject lineObject;
     public Vector3[] vectorList;
     public List<float3> contourVertices;
-
+    public LineRenderer line;
+    public Material material;
+    public Vector3[] orderedArray;
 
     void Update()
     {
@@ -25,9 +28,9 @@ public class ContourGenerator : MonoBehaviour
         {
             getData();
             getContourVertices(100f, dotone);
-            getContourVertices(110f, dottwo);
-            getContourVertices(90f, dotthree);
-
+            //getContourVertices(110f, dottwo);
+            //getContourVertices(90f, dotthree);
+            createLine(vectorList);
         }
 
     }
@@ -67,7 +70,7 @@ public class ContourGenerator : MonoBehaviour
                     currentCell.z));
             }
         }
-            foreach (Cell cell in grid.cells)
+          /*  foreach (Cell cell in grid.cells)
             {
                 currentCell = cell;
 
@@ -84,15 +87,37 @@ public class ContourGenerator : MonoBehaviour
                         currentCell.z + (zStep * ratio)));
                 }
             }
-        }
+        } */
         Debug.Log("contour: "+ contourVertices.ToArray().Length);
         GameObject terrain = GameObject.Find("TerrainLoader");
         MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
         vectorList = meshGenerator.float3ToVector3Array(contourVertices.ToArray());
-        foreach (Vector3 point in vectorList)
-        {
-            Instantiate(dot, point, transform.rotation);
-        }
+        //foreach (Vector3 point in vectorList)
+        //{
+        //    Instantiate(dot, point, transform.rotation);
+        //}
 
+    }
+
+    void followHeight()
+    {
+        // start at triangle with one vertex above/below and two at other side of height line
+        // at the side of the triangle where there is one vertex below and one above,
+            // add vertex and move to the adjacent triangle
+        // nowagain check which side of triengle is on the border, add vertex, and move to adjacent triangle of that edge
+    }
+
+    void createLine(Vector3[] vectorList)
+    {
+        lineObject = new GameObject("Line");
+        line = lineObject.AddComponent<LineRenderer>();
+        line.startWidth = 2f;
+        line.endWidth = 2f;
+        line.positionCount = vectorList.Length;
+        line.material = material;
+        for (int i=0; i < vectorList.Length; i++)
+        {
+            line.SetPosition(i, vectorList[i]);
+        }
     }
 }
