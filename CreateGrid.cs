@@ -11,6 +11,7 @@ public class CreateGrid : MonoBehaviour
 {
     public float3[] vertices;
     public float3[] normals;
+    public int[] triangles;
     public MATList MATlist;
     public MATBall[] MATcol;
     public Grid grid;
@@ -33,7 +34,7 @@ public class CreateGrid : MonoBehaviour
         if (Input.GetKey(KeyCode.P))
         {
             getData();
-            InstantiateGrid(vertices, normals);
+            InstantiateGrid(vertices, normals, triangles);
             WriteString();
             Debug.Log("Output written");
         }
@@ -108,13 +109,14 @@ public class CreateGrid : MonoBehaviour
 
         vertices = meshGenerator.vertices;
         normals = meshGenerator.normals;
+        triangles = meshGenerator.triangles;
         MATlist = MATalg.list;
         MATcol = MATlist.NewMATList;
     }
 
-    public void InstantiateGrid(float3[] verts, float3[] normals)
+    public void InstantiateGrid(float3[] verts, float3[] normals, int[] triangles)
     {
-        grid = new Grid(verts, normals);
+        grid = new Grid(verts, normals, triangles);
         foreach (Cell cell in grid.cells)
         {
             cell.relativeHeight = relativeHeight(cell.index, grid, 1);
@@ -325,7 +327,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].relativeHeight / 20), 1f * (grid.cells[i].relativeHeight / 20), 1f * (1-((grid.cells[i].relativeHeight) /20)), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].attachedTriangles[0].index / 558208f), 1f * (1-(grid.cells[i].attachedTriangles[0].index / 558208f)), 1f * (grid.cells[i].attachedTriangles[0].index / 558208f), 1f);
         }
         mesh.colors = colors;
     }
@@ -362,6 +364,17 @@ public class CreateGrid : MonoBehaviour
             colors[i] = new Color(0f , 1f * (grid.cells[i].runoffScore / 10), 1f * (grid.cells[i].runoffScore / 10), 1f);
         }
         mesh.colors = colors;
+    }
+
+    IEnumerator iterate(int num)
+    {
+        List<int> startAt = new List<int>();
+        for (int j = 0; j < num; j++)
+        {
+            startAt.Add(UnityEngine.Random.Range(100, 250000));
+            setMeshRunoffColors(startAt.ToArray(), 3000, 20f);
+            yield return new WaitForSeconds(.01f);
+        }
     }
 
     int[] getRunoffPatterns(int[] startingPoints, int numOfIterations, float margin)
@@ -406,16 +419,7 @@ public class CreateGrid : MonoBehaviour
         return patterns.ToArray();
     }
 
-    IEnumerator iterate(int num)
-    {
-        List<int> startAt = new List<int>();
-        for (int j = 0; j < num; j++)
-        {
-            startAt.Add(UnityEngine.Random.Range(100, 250000));
-            setMeshRunoffColors(startAt.ToArray(), 3000, 20f);
-            yield return new WaitForSeconds(.01f);
-        }
-    }
+
     /*
     void InstantiateRunoff(int[] starts, int num, float margin)
     {
@@ -433,15 +437,79 @@ public class Grid : Component
 { // list of grid cells in same grid order as input cells
     public float3[] OriginalPC;
     public Cell[] cells;
+    public Triangle[] triangles;
 
-    public Grid(float3[] originalPC, float3[] originalNormals)
+    public Grid(float3[] originalPC, float3[] originalNormals, int[] triangleMesh)
     {
         OriginalPC = originalPC;
         cells = new Cell[originalPC.Length];
+        triangles = new Triangle[triangleMesh.Length];
         for (int i = 0; i < originalPC.Length; i++)
         {
             cells[i] = new Cell(i, originalPC[i], originalNormals[i]);
         }
+        setTriangles(triangleMesh);
+    }
+
+    public void setTriangles(int[] trianglesInput )
+    {
+        int j = 0;
+        for ( int i = 0; i < trianglesInput.Length; i += 3)
+        {
+            int[] tri = new int[3] { trianglesInput[i], trianglesInput[i+1] , trianglesInput[i+2]};
+            triangles[j] = new Triangle(j, tri, cells, this);
+            j++;
+        }
+    }
+
+}
+
+public class Triangle : Component
+{
+    public int index;
+    public Cell[] vertices;
+    public Face[] faces;
+
+    public Triangle(int i, int[] vertindex, Cell[] cells, Grid grid)
+    {
+        index = i;
+        vertices = new Cell[vertindex.Length];
+        for (int p = 0; p < vertindex.Length; p++)
+        {
+            vertices[p] = grid.cells[vertindex[p]];
+        }
+        faces = new Face[3];
+        faces[0] = new Face(vertices[0].index, vertices[0], vertices[1], this, grid); 
+        faces[1] = new Face(vertices[1].index, vertices[1], vertices[2], this, grid);
+        faces[2] = new Face(vertices[2].index, vertices[2], vertices[0], this, grid);
+
+
+        for(int k = 0; k < vertices.Length; k++)
+        {
+            vertices[k].attachedFaces.Add(faces[k]);
+            vertices[k].attachedTriangles.Add(this);
+        }
+
+    }
+
+}
+
+public class Face : Component
+{
+    public int index;
+    public Cell startVertex;
+    public Cell endVertex;
+    public Triangle ownTriangle;
+    public Face faceTwin;
+
+
+
+    public Face(int i, Cell start, Cell end, Triangle own, Grid grid)
+    {
+        index = i;
+        startVertex = start;
+        endVertex = end;
+        ownTriangle = own;
     }
 }
 
@@ -459,6 +527,8 @@ public class Cell : Component
     public float dRM1;
     public float dLN1;
     public int runoffScore;
+    public List<Triangle> attachedTriangles;
+    public List<Face> attachedFaces;
 
 
 
@@ -471,7 +541,9 @@ public class Cell : Component
         slope = computeSlope(normal);
         aspect = computeAspect(normal);
         runoffScore = 0;
-    }
+        attachedTriangles = new List<Triangle>();
+        attachedFaces = new List<Face>();
+}
 
     float computeSlope(float3 normal)
     {
