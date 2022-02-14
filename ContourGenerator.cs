@@ -99,8 +99,14 @@ public class ContourGenerator : MonoBehaviour
 
     }
 
-    void followHeight()
+    void findTriangle(float contourHeight)
     {
+        // find triangles crossing contour height 
+    }
+
+    void followHeight(Triangle start, float contourHeight)
+    {
+
         // start at triangle with one vertex above/below and two at other side of height line
         // at the side of the triangle where there is one vertex below and one above,
             // add vertex and move to the adjacent triangle

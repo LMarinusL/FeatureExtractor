@@ -38,31 +38,31 @@ public class CreateGrid : MonoBehaviour
             WriteString();
             Debug.Log("Output written");
         }
-        if (Input.GetKey(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             setMeshSlopeColors();
         }
-        if (Input.GetKey(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             setMeshAspectColors();
         }
-        if (Input.GetKey(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             setMeshRelativeSlopeColors();
         }
-        if (Input.GetKey(KeyCode.Alpha4))
+        if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             setMeshRelativeAspectColors();
         }
-        if (Input.GetKey(KeyCode.Alpha5))
+        if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             setMeshRelativeHeightColors();
         }
-        if (Input.GetKey(KeyCode.Alpha6))
+        if (Input.GetKeyDown(KeyCode.Alpha6))
         {
             setMeshdLN1Colors();
         }
-        if (Input.GetKey(KeyCode.Alpha7))
+        if (Input.GetKeyDown(KeyCode.Alpha7))
         {
             setMeshContourColors();
         }
@@ -327,7 +327,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].attachedTriangles[0].index / 558208f), 1f * (1-(grid.cells[i].attachedTriangles[0].index / 558208f)), 1f * (grid.cells[i].attachedTriangles[0].index / 558208f), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].attachedFaces[0].index / 5500208f), 1f * (1-(grid.cells[i].attachedFaces[0].index / 5500208f)), 1f * (grid.cells[i].attachedFaces[0].index / 5500208f), 1f);
         }
         mesh.colors = colors;
     }
@@ -449,6 +449,7 @@ public class Grid : Component
             cells[i] = new Cell(i, originalPC[i], originalNormals[i]);
         }
         setTriangles(triangleMesh);
+        setTwins();
     }
 
     public void setTriangles(int[] trianglesInput )
@@ -459,6 +460,28 @@ public class Grid : Component
             int[] tri = new int[3] { trianglesInput[i], trianglesInput[i+1] , trianglesInput[i+2]};
             triangles[j] = new Triangle(j, tri, cells, this);
             j++;
+        }
+    }
+    public void setTwins()
+    {
+        for (int i = 0; i < cells.Length; i++)
+        {
+            foreach(Face face in cells[i].attachedFaces)
+            {
+                int start = face.startVertex.index;
+                if (face.faceTwin == null)
+                {
+                    foreach (Face face2 in cells[i].attachedFaces)
+                    {
+                        int end = face2.endVertex.index;
+                        if (face2.faceTwin == null && start == end)
+                        {
+                            face.faceTwin = face2;
+                            face2.faceTwin = face;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -479,9 +502,9 @@ public class Triangle : Component
             vertices[p] = grid.cells[vertindex[p]];
         }
         faces = new Face[3];
-        faces[0] = new Face(vertices[0].index, vertices[0], vertices[1], this, grid); 
-        faces[1] = new Face(vertices[1].index, vertices[1], vertices[2], this, grid);
-        faces[2] = new Face(vertices[2].index, vertices[2], vertices[0], this, grid);
+        faces[0] = new Face((i*10)+1, vertices[0], vertices[1], this, grid); 
+        faces[1] = new Face((i * 10) + 2, vertices[1], vertices[2], this, grid);
+        faces[2] = new Face((i * 10) + 3, vertices[2], vertices[0], this, grid);
 
 
         for(int k = 0; k < vertices.Length; k++)
@@ -489,6 +512,12 @@ public class Triangle : Component
             vertices[k].attachedFaces.Add(faces[k]);
             vertices[k].attachedTriangles.Add(this);
         }
+
+        vertices[0].attachedFaces.Add(faces[2]);
+        vertices[1].attachedFaces.Add(faces[0]);
+        vertices[2].attachedFaces.Add(faces[1]);
+
+
 
     }
 
