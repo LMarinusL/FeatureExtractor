@@ -24,12 +24,18 @@ public class ContourGenerator : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.J))
         {
             getData();
             getContourVertices(100f, dotone);
             //getContourVertices(110f, dottwo);
             //getContourVertices(90f, dotthree);
+            createLine(vectorList);
+        }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            getData();
+            findTriangle();
             createLine(vectorList);
         }
 
@@ -52,7 +58,7 @@ public class ContourGenerator : MonoBehaviour
     {
         Cell currentCell = grid.cells[0];
         Cell previousCell;
-        Cell sideCell; 
+        
         float xStep = grid.cells[4 + xSize + 1].x - grid.cells[4].x;
         float zStep = grid.cells[4 + xSize + 1].z - grid.cells[4].z;
         foreach (Cell cell in grid.cells)
@@ -70,25 +76,26 @@ public class ContourGenerator : MonoBehaviour
                     currentCell.z));
             }
         }
-          /*  foreach (Cell cell in grid.cells)
-            {
-                currentCell = cell;
+        /*  
+        Cell sideCell; 
+        foreach (Cell cell in grid.cells)
+          {
+              currentCell = cell;
 
-                if (cell.index < grid.cells.Length - xSize -1)
-            {
-                sideCell = grid.cells[cell.index + xSize];
-                if (currentCell.y == 0 || sideCell.y == 0 ||
-                Mathf.Pow(Mathf.Pow(currentCell.x - sideCell.x, 2) + Mathf.Pow(currentCell.z - sideCell.z, 2), 0.5f) > 2 * zStep) { continue; }
-                if ((currentCell.y <= height && sideCell.y > height) ||
-                    (currentCell.y >= height && sideCell.y < height))
-                {
-                    float ratio = ((currentCell.y - height) / (sideCell.y - currentCell.y));
-                    contourVertices.Add(new float3(currentCell.x, height,
-                        currentCell.z + (zStep * ratio)));
-                }
-            }
-        } */
-        Debug.Log("contour: "+ contourVertices.ToArray().Length);
+              if (cell.index < grid.cells.Length - xSize -1)
+          {
+              sideCell = grid.cells[cell.index + xSize];
+              if (currentCell.y == 0 || sideCell.y == 0 ||
+              Mathf.Pow(Mathf.Pow(currentCell.x - sideCell.x, 2) + Mathf.Pow(currentCell.z - sideCell.z, 2), 0.5f) > 2 * zStep) { continue; }
+              if ((currentCell.y <= height && sideCell.y > height) ||
+                  (currentCell.y >= height && sideCell.y < height))
+              {
+                  float ratio = ((currentCell.y - height) / (sideCell.y - currentCell.y));
+                  contourVertices.Add(new float3(currentCell.x, height,
+                      currentCell.z + (zStep * ratio)));
+              }
+          }
+      } */
         GameObject terrain = GameObject.Find("TerrainLoader");
         MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
         vectorList = meshGenerator.float3ToVector3Array(contourVertices.ToArray());
@@ -99,18 +106,50 @@ public class ContourGenerator : MonoBehaviour
 
     }
 
-    void findTriangle(float contourHeight)
+    void findTriangle()
     {
         // find triangles crossing contour height 
+        int vertint = 27105;
+        float initHeight = 110f;
+        int count = 0;
+        List<Face> listFaces = new List<Face>();
+        List<Vector3> listFacesV = new List<Vector3>();
+        List<Face> outputList;
+        outputList = followHeight(grid.cells[vertint].attachedFaces[0], initHeight, listFaces, count);
+        Debug.Log(" length contour: " + outputList.ToArray().Length);
+        foreach (Face face in outputList)
+        {
+            listFacesV.Add(new Vector3(face.endVertex.x, face.endVertex.y, face.endVertex.z));
+        }
+        vectorList = listFacesV.ToArray();
     }
 
-    void followHeight(Triangle start, float contourHeight)
+    public List<Face> followHeight(Face start, float contourHeight, List<Face> facesOnHeight, int count)
     {
-
-        // start at triangle with one vertex above/below and two at other side of height line
-        // at the side of the triangle where there is one vertex below and one above,
-            // add vertex and move to the adjacent triangle
-        // nowagain check which side of triengle is on the border, add vertex, and move to adjacent triangle of that edge
+        facesOnHeight.Add(start);
+        count++;
+        if (((start.next().ownTriangle.index == facesOnHeight[0].ownTriangle.index || start.previous().ownTriangle.index == facesOnHeight[0].ownTriangle.index) && count > 5 )|| count > 3000)
+        {
+            return facesOnHeight;
+        }
+        else
+        {
+            if ((start.next().endVertex.y >= contourHeight && start.next().startVertex.y < contourHeight)||
+                (start.next().endVertex.y < contourHeight && start.next().startVertex.y >= contourHeight))
+            {
+                return followHeight(start.next().faceTwin, contourHeight, facesOnHeight, count);
+            }else {
+                if ((start.previous().endVertex.y >= contourHeight && start.previous().startVertex.y < contourHeight )||(
+               start.previous().endVertex.y < contourHeight && start.previous().startVertex.y >= contourHeight))
+                {
+                    return followHeight(start.previous().faceTwin, contourHeight, facesOnHeight, count); // must go to twin
+                }
+                else
+                {
+                    return facesOnHeight;
+                }
+            }
+        }
     }
 
     void createLine(Vector3[] vectorList)

@@ -57,6 +57,9 @@ public class CreateGrid : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             setMeshRelativeHeightColors();
+            Debug.Log(" y1: " + grid.cells[56150].attachedFaces[0].endVertex.y + " 2: " + grid.cells[56150].attachedFaces[0].startVertex.y);
+         
+
         }
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
@@ -468,13 +471,16 @@ public class Grid : Component
         {
             foreach(Face face in cells[i].attachedFaces)
             {
-                int start = face.startVertex.index;
+                int start1 = face.startVertex.index;
+                int end1 = face.endVertex.index;
+
                 if (face.faceTwin == null)
                 {
                     foreach (Face face2 in cells[i].attachedFaces)
                     {
-                        int end = face2.endVertex.index;
-                        if (face2.faceTwin == null && start == end)
+                        int end2 = face2.endVertex.index;
+                        int start2 = face2.startVertex.index;
+                        if (face2.faceTwin == null && start1 == end2 && start2 == end1)
                         {
                             face.faceTwin = face2;
                             face2.faceTwin = face;
@@ -539,6 +545,34 @@ public class Face : Component
         startVertex = start;
         endVertex = end;
         ownTriangle = own;
+    }
+
+    public Face next()
+    {
+        Face nextFace = null;
+        Face[] faces = this.ownTriangle.faces;
+        foreach (Face face in faces)
+        {
+            if(face.startVertex.index == this.endVertex.index)
+            {
+                nextFace = face;
+            }
+        }
+        return nextFace;
+    }
+
+    public Face previous()
+    {
+        Face previousFace = null;
+        Face[] faces = this.ownTriangle.faces;
+        foreach (Face face in faces)
+        {
+            if (face.endVertex.index == this.startVertex.index)
+            {
+                previousFace = face;
+            }
+        }
+        return previousFace;
     }
 }
 
