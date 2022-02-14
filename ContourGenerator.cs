@@ -21,6 +21,7 @@ public class ContourGenerator : MonoBehaviour
     public LineRenderer line;
     public Material material;
     public Vector3[] orderedArray;
+    public List<Face> faces;
 
     void Update()
     {
@@ -35,7 +36,11 @@ public class ContourGenerator : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.H))
         {
             getData();
-            findTriangle();
+            contourSegment(90f);
+            contourSegment(100f);
+            contourSegment(110f);
+
+
             createLine(vectorList);
         }
 
@@ -106,50 +111,99 @@ public class ContourGenerator : MonoBehaviour
 
     }
 
-    void findTriangle()
+    int findFace(float height)
     {
-        // find triangles crossing contour height 
-        int vertint = 27105;
-        float initHeight = 110f;
-        int count = 0;
-        List<Face> listFaces = new List<Face>();
-        List<Vector3> listFacesV = new List<Vector3>();
-        List<Face> outputList;
-        outputList = followHeight(grid.cells[vertint].attachedFaces[0], initHeight, listFaces, count);
-        Debug.Log(" length contour: " + outputList.ToArray().Length);
-        foreach (Face face in outputList)
+        int toCheck = 0;
+        bool found = false;
+        int iter = 0;
+        while (found == false && iter<10000)
         {
-            listFacesV.Add(new Vector3(face.endVertex.x, face.endVertex.y, face.endVertex.z));
+
+            toCheck = UnityEngine.Random.Range(0, grid.cells.Length);
+            float height1 = grid.cells[toCheck].attachedFaces[0].startVertex.y;
+            float height2 = grid.cells[toCheck].attachedFaces[0].endVertex.y;
+            if ((height1 >= height && height2 < height) || (height1 < height && height2 >= height))
+            {
+                found = true;
+                Debug.Log("vertex: " + grid.cells[toCheck].x + " " + grid.cells[toCheck].y + " " + grid.cells[toCheck].z);
+            }
+            iter++;
         }
-        vectorList = listFacesV.ToArray();
+        return toCheck;
     }
 
-    public List<Face> followHeight(Face start, float contourHeight, List<Face> facesOnHeight, int count)
+        void contourSegment(float height)
+    {
+        int vert = findFace(height);
+        int count = 0;
+        List<Face> listFaces = new List<Face>();
+        List<Vector3> listVertices;
+        List<Face> outputList;
+        int maxCount = 5000;
+        outputList = followHeight(grid.cells[vert].attachedFaces[0], height, count, maxCount, listFaces);
+        faces.AddRange(outputList);
+        listVertices = faceToVertex(outputList, height);
+        Debug.Log(" length contour: " + outputList.ToArray().Length);
+        vectorList = listVertices.ToArray();
+    }
+
+    public List<Face> followHeight(Face start, float contourHeight, int count, int maxCount, List<Face> facesOnHeight)
     {
         facesOnHeight.Add(start);
         count++;
-        if (((start.next().ownTriangle.index == facesOnHeight[0].ownTriangle.index || start.previous().ownTriangle.index == facesOnHeight[0].ownTriangle.index) && count > 5 )|| count > 3000)
+        try
         {
-            return facesOnHeight;
-        }
-        else
-        {
-            if ((start.next().endVertex.y >= contourHeight && start.next().startVertex.y < contourHeight)||
-                (start.next().endVertex.y < contourHeight && start.next().startVertex.y >= contourHeight))
+            if (((start.next().ownTriangle.index == facesOnHeight[0].ownTriangle.index || start.previous().ownTriangle.index == facesOnHeight[0].ownTriangle.index) && count > 5) || count > maxCount)
             {
-                return followHeight(start.next().faceTwin, contourHeight, facesOnHeight, count);
-            }else {
-                if ((start.previous().endVertex.y >= contourHeight && start.previous().startVertex.y < contourHeight )||(
-               start.previous().endVertex.y < contourHeight && start.previous().startVertex.y >= contourHeight))
+                return facesOnHeight;
+            }
+            else
+            {
+                if ((start.next().endVertex.y >= contourHeight && start.next().startVertex.y < contourHeight) ||
+                    (start.next().endVertex.y < contourHeight && start.next().startVertex.y >= contourHeight))
                 {
-                    return followHeight(start.previous().faceTwin, contourHeight, facesOnHeight, count); // must go to twin
+                    return followHeight(start.next().faceTwin, contourHeight, count, maxCount, facesOnHeight);
                 }
                 else
                 {
-                    return facesOnHeight;
+                    if ((start.previous().endVertex.y >= contourHeight && start.previous().startVertex.y < contourHeight) || (
+                   start.previous().endVertex.y < contourHeight && start.previous().startVertex.y >= contourHeight))
+                    {
+                        return followHeight(start.previous().faceTwin, contourHeight, count, maxCount, facesOnHeight);
+                    }
+                    else
+                    {
+                        return facesOnHeight;
+                    }
                 }
             }
         }
+        catch
+        {
+            Debug.Log(" an error ocurred here");
+            facesOnHeight.RemoveAt(facesOnHeight.Count - 1);
+            return facesOnHeight;
+        }
+    }
+
+    List<Vector3> faceToVertex(List<Face> facesOnHeight, float height)
+    {
+        float xStep = grid.cells[4 + xSize + 1].x - grid.cells[4].x;
+        float zStep = grid.cells[4 + xSize + 1].z - grid.cells[4].z;
+        List<Vector3> outputList = new List<Vector3>();
+        int i = 0;
+        foreach(Face face in facesOnHeight)
+        {
+            if (face.startVertex.y != 0 && face.endVertex.y != 0)
+            {
+                float ratio = ((face.startVertex.y - height) / (face.endVertex.y - face.startVertex.y));
+                outputList.Add( new Vector3(face.startVertex.x + (xStep * ratio), height,
+                    face.startVertex.z + (zStep * ratio)));
+                i++;
+            }
+        }
+        return outputList;
+
     }
 
     void createLine(Vector3[] vectorList)

@@ -57,8 +57,9 @@ public class CreateGrid : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             setMeshRelativeHeightColors();
-            Debug.Log(" y1: " + grid.cells[56150].attachedFaces[0].endVertex.y + " 2: " + grid.cells[56150].attachedFaces[0].startVertex.y);
-         
+            Debug.Log(" y1: " + grid.cells[156250].attachedFaces[0].endVertex.y + " 2: " + grid.cells[156250].attachedFaces[0].startVertex.y);
+            Debug.Log(" y1: " + grid.cells[156230].attachedFaces[0].endVertex.y + " 2: " + grid.cells[156230].attachedFaces[0].startVertex.y); 
+            Debug.Log(" y1: " + grid.cells[156240].attachedFaces[0].endVertex.y + " 2: " + grid.cells[156240].attachedFaces[0].startVertex.y);
 
         }
         if (Input.GetKeyDown(KeyCode.Alpha6))
