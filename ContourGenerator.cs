@@ -28,14 +28,13 @@ public class ContourGenerator : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.H))
         {
             getData();
-            for (int i = 0; i < 100; i++)
+
+            for (float j = 50f;j < 110f; j+=3f)
             {
-                createLine(contourSegment(90f));
-                createLine(contourSegment(100f));
-                createLine(contourSegment(110f));
-                createLine(contourSegment(80f));
-                createLine(contourSegment(70f));
-                createLine(contourSegment(60f));
+                for (int i = 0; i < 20; i++)
+                {
+                    createLine(contourSegment(j));
+                }
             }
         }
 
@@ -68,7 +67,6 @@ public class ContourGenerator : MonoBehaviour
             if ((height1 >= height && height2 < height) || (height1 < height && height2 >= height))
             {
                 found = true;
-                Debug.Log("vertex: " + grid.cells[toCheck].x + " " + grid.cells[toCheck].y + " " + grid.cells[toCheck].z);
             }
             iter++;
         }
@@ -84,6 +82,18 @@ public class ContourGenerator : MonoBehaviour
         List<Face> outputList;
         int maxCount = 1000;
         outputList = followHeight(grid.cells[vert].attachedFaces[0], height, count, maxCount, listFaces);
+        int iteration = 0;
+        int maxIterations = 20;
+        while (outputList[0].ownTriangle.index != outputList[outputList.Count - 1].ownTriangle.index && iteration < maxIterations)
+        {
+            List<Face> listFaceAdd = new List<Face>();
+            int newcount = 0;
+            List<Face> outputListAdd;
+            outputListAdd = followHeight(outputList[outputList.Count - 1], height, newcount, maxCount, listFaceAdd);
+            outputList.AddRange(outputListAdd);
+            Debug.Log(" output: " + outputList.Count + " ouput add: " + outputListAdd.Count);
+            iteration++;
+        }
         faces.AddRange(outputList);
         listVertices = faceToVertex(outputList, height);
         Debug.Log(" length contour: " + outputList.ToArray().Length);
@@ -96,7 +106,7 @@ public class ContourGenerator : MonoBehaviour
         count++;
         try
         {
-            if (((start.next().ownTriangle.index == facesOnHeight[0].ownTriangle.index || start.previous().ownTriangle.index == facesOnHeight[0].ownTriangle.index) && count > 5) || count > maxCount)
+            if (((start.index == facesOnHeight[0].index || start.faceTwin.index == facesOnHeight[0].index) && count > 5) || count > maxCount)
             {
                 return facesOnHeight;
             }
@@ -131,14 +141,14 @@ public class ContourGenerator : MonoBehaviour
 
     List<Vector3> faceToVertex(List<Face> facesOnHeight, float height)
     {
-        float xStep = grid.cells[4 + xSize + 1].x - grid.cells[4].x;
-        float zStep = grid.cells[4 + xSize + 1].z - grid.cells[4].z;
         List<Vector3> outputList = new List<Vector3>();
         int i = 0;
         foreach(Face face in facesOnHeight)
         {
             if (face.startVertex.y != 0 && face.endVertex.y != 0)
             {
+                float xStep = face.startVertex.x - face.endVertex.x;
+                float zStep = face.startVertex.z - face.endVertex.z;
                 float ratio = ((face.startVertex.y - height) / (face.endVertex.y - face.startVertex.y));
                 outputList.Add( new Vector3(face.startVertex.x + (xStep * ratio), height,
                     face.startVertex.z + (zStep * ratio)));
@@ -153,10 +163,11 @@ public class ContourGenerator : MonoBehaviour
     {
         lineObject = new GameObject("Line");
         line = lineObject.AddComponent<LineRenderer>();
-        line.startWidth = 2f;
-        line.endWidth = 2f;
+        line.startWidth = 0.5f;
+        line.endWidth = 0.5f;
         line.positionCount = vectorList.Length;
         line.material = material;
+        line.material.color = new Color(0f, 0f, 0f, 1f);
         for (int i=0; i < vectorList.Length; i++)
         {
             line.SetPosition(i, vectorList[i]);
