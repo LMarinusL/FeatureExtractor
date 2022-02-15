@@ -105,7 +105,6 @@ public class ContourGenerator : MonoBehaviour
             {
                 contourExists = true;
                 contourTemp = cont;
-
                 break;
             }
         }
@@ -114,7 +113,6 @@ public class ContourGenerator : MonoBehaviour
         }
         else
         {
-            Debug.Log()
             contour = contourTemp;
         }
         if (contourExists)
