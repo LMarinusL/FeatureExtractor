@@ -30,7 +30,7 @@ public class ContourGenerator : MonoBehaviour
         {
             getData();
 
-            for (float j = 50f;j < 120f; j+=3f)
+            for (float j = 90f;j < 92f; j+=3f)
             {
                 for (int i = 0; i < 40; i++)
                 {
@@ -41,7 +41,6 @@ public class ContourGenerator : MonoBehaviour
             {
                 createLine(contours[k]);
             }
-            Debug.Log("contours length: " + contours.Count);
         }
 
     }
@@ -123,7 +122,6 @@ public class ContourGenerator : MonoBehaviour
         {
             contour.faces = outputList;
         }
-        //contour.faces = outputList;
         int iteration = 0;
         int maxIterations = 20;
         while (contour.faces[0].ownTriangle.index != contour.faces[contour.faces.Count - 1].ownTriangle.index && iteration < maxIterations)
@@ -192,22 +190,20 @@ public class ContourGenerator : MonoBehaviour
         line.positionCount = contour.vertices.Count;
         line.material = material;
         line.material.color = new Color(0f, 0f, 0f, 1f);
-        for (int i=0; i < contour.vertices.Count; i++)
+        for (int i = 0; i < contour.vertices.Count; i++)
         {
-            line.SetPosition(i, contour.vertices[i]);
+            line.SetPosition(i, contour.vertices[i].position);
         }
     }
 }
 
 public class Contour : Component
 {
-    int index;
+    public int index;
     public float height;
     public List<Face> faces;
-    public List<Vector3> vertices;
+    public List<ContourCell> vertices;
     Grid grid;
-
-
 
     public Contour(int i, float h, Grid gridLink)
     {
@@ -224,7 +220,7 @@ public class Contour : Component
 
     public void faceToVertex()
     {
-        vertices = new List<Vector3>();
+        vertices = new List<ContourCell>();
         int i = 0;
         foreach (Face face in this.faces)
         {
@@ -234,11 +230,27 @@ public class Contour : Component
                 float zStep = face.startVertex.z - face.endVertex.z;
                 face.onContourLine = this.index;
                 float ratio = ((face.startVertex.y - height) / (face.endVertex.y - face.startVertex.y));
-                this.vertices.Add(new Vector3(face.startVertex.x + (xStep * ratio), height,
-                    face.startVertex.z + (zStep * ratio)));
+                this.vertices.Add(new ContourCell(i * 10000 + face.index, new Vector3(face.startVertex.x + (xStep * ratio), height,
+                    face.startVertex.z + (zStep * ratio)), this));
                 i++;
             }
         }
 
+    }
+}
+
+public class ContourCell : Component
+{
+    int index;
+    int contourindex;
+    public Vector3 position;
+    Contour contour;
+
+    public ContourCell(int i, Vector3 pos, Contour cont)
+    {
+        index = i;
+        position = pos;
+        contour = cont;
+        contourindex = cont.index;
     }
 }

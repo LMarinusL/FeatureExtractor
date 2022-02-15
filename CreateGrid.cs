@@ -596,6 +596,7 @@ public class Cell : Component
     public int runoffScore;
     public List<Triangle> attachedTriangles;
     public List<Face> attachedFaces;
+    public ContourCell contourVertex;
 
 
 
