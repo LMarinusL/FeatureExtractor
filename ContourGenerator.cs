@@ -22,6 +22,7 @@ public class ContourGenerator : MonoBehaviour
     public Material material;
     public Vector3[] orderedArray;
     public List<Face> faces;
+    public List<Contour> contours;
 
     void Update()
     {
@@ -29,13 +30,18 @@ public class ContourGenerator : MonoBehaviour
         {
             getData();
 
-            for (float j = 50f;j < 110f; j+=3f)
+            for (float j = 50f;j < 120f; j+=3f)
             {
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < 40; i++)
                 {
-                    createLine(contourSegment(j));
+                    contourSegment(j);
                 }
             }
+            for (int k = 0; k < contours.Count; k++)
+            {
+                createLine(contours[k]);
+            }
+            Debug.Log("contours length: " + contours.Count);
         }
 
     }
@@ -51,6 +57,8 @@ public class ContourGenerator : MonoBehaviour
 
         GameObject terrain = GameObject.Find("TerrainLoader");
         MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
+        contours = new List<Contour>();
+
     }
 
     int findFace(float height)
@@ -62,6 +70,11 @@ public class ContourGenerator : MonoBehaviour
         {
 
             toCheck = UnityEngine.Random.Range(0, grid.cells.Length);
+            if(grid.cells[toCheck].attachedFaces[0].onContourLine != 0) 
+            {
+                iter++;
+                continue; 
+            }
             float height1 = grid.cells[toCheck].attachedFaces[0].startVertex.y;
             float height2 = grid.cells[toCheck].attachedFaces[0].endVertex.y;
             if ((height1 >= height && height2 < height) || (height1 < height && height2 >= height))
@@ -73,31 +86,47 @@ public class ContourGenerator : MonoBehaviour
         return toCheck;
     }
 
-        Vector3[] contourSegment(float height)
+        void contourSegment(float height)
     {
         int vert = findFace(height);
         int count = 0;
+        Contour contour;
         List<Face> listFaces = new List<Face>();
-        List<Vector3> listVertices;
         List<Face> outputList;
         int maxCount = 1000;
         outputList = followHeight(grid.cells[vert].attachedFaces[0], height, count, maxCount, listFaces);
+        bool contourExists = false;
+        contour = new Contour(vert, height, grid);
+       /* foreach (Contour cont in contours)
+        {
+            if(height == cont.height)
+            {
+                contourExists = true;
+                contour = cont;
+            }
+        }
+        if (contourExists)
+        {
+            contour.addToList(outputList);
+        }
+        else
+        {*/
+            contour.faces = outputList;
+        //}
+        
         int iteration = 0;
         int maxIterations = 20;
-        while (outputList[0].ownTriangle.index != outputList[outputList.Count - 1].ownTriangle.index && iteration < maxIterations)
+        while (contour.faces[0].ownTriangle.index != contour.faces[contour.faces.Count - 1].ownTriangle.index && iteration < maxIterations)
         {
             List<Face> listFaceAdd = new List<Face>();
             int newcount = 0;
             List<Face> outputListAdd;
             outputListAdd = followHeight(outputList[outputList.Count - 1], height, newcount, maxCount, listFaceAdd);
-            outputList.AddRange(outputListAdd);
-            Debug.Log(" output: " + outputList.Count + " ouput add: " + outputListAdd.Count);
+            contour.addToList(outputListAdd);
             iteration++;
         }
-        faces.AddRange(outputList);
-        listVertices = faceToVertex(outputList, height);
-        Debug.Log(" length contour: " + outputList.ToArray().Length);
-        return listVertices.ToArray();
+        contour.faceToVertex();
+        contours.Add(contour);
     }
 
     public List<Face> followHeight(Face start, float contourHeight, int count, int maxCount, List<Face> facesOnHeight)
@@ -139,38 +168,64 @@ public class ContourGenerator : MonoBehaviour
         }
     }
 
-    List<Vector3> faceToVertex(List<Face> facesOnHeight, float height)
-    {
-        List<Vector3> outputList = new List<Vector3>();
-        int i = 0;
-        foreach(Face face in facesOnHeight)
-        {
-            if (face.startVertex.y != 0 && face.endVertex.y != 0)
-            {
-                float xStep = face.startVertex.x - face.endVertex.x;
-                float zStep = face.startVertex.z - face.endVertex.z;
-                float ratio = ((face.startVertex.y - height) / (face.endVertex.y - face.startVertex.y));
-                outputList.Add( new Vector3(face.startVertex.x + (xStep * ratio), height,
-                    face.startVertex.z + (zStep * ratio)));
-                i++;
-            }
-        }
-        return outputList;
 
-    }
 
-    void createLine(Vector3[] vectorList)
+    void createLine(Contour contour)
     {
         lineObject = new GameObject("Line");
         line = lineObject.AddComponent<LineRenderer>();
         line.startWidth = 0.5f;
         line.endWidth = 0.5f;
-        line.positionCount = vectorList.Length;
+        line.positionCount = contour.vertices.Count;
         line.material = material;
         line.material.color = new Color(0f, 0f, 0f, 1f);
-        for (int i=0; i < vectorList.Length; i++)
+        for (int i=0; i < contour.vertices.Count; i++)
         {
-            line.SetPosition(i, vectorList[i]);
+            line.SetPosition(i, contour.vertices[i]);
         }
+    }
+}
+
+public class Contour : Component
+{
+    int index;
+    public float height;
+    public List<Face> faces;
+    public List<Vector3> vertices;
+    Grid grid;
+
+
+
+    public Contour(int i, float h, Grid gridLink)
+    {
+        index = i;
+        height = h;
+        grid = gridLink;
+        faces = new List<Face>();
+    }
+
+    public void addToList(List<Face> toAdd)
+    {
+        faces.AddRange(toAdd);
+    }
+
+    public void faceToVertex()
+    {
+        vertices = new List<Vector3>();
+        int i = 0;
+        foreach (Face face in this.faces)
+        {
+            if (face.startVertex.y != 0 && face.endVertex.y != 0)
+            {
+                float xStep = face.startVertex.x - face.endVertex.x;
+                float zStep = face.startVertex.z - face.endVertex.z;
+                face.onContourLine = this.index;
+                float ratio = ((face.startVertex.y - height) / (face.endVertex.y - face.startVertex.y));
+                this.vertices.Add(new Vector3(face.startVertex.x + (xStep * ratio), height,
+                    face.startVertex.z + (zStep * ratio)));
+                i++;
+            }
+        }
+
     }
 }

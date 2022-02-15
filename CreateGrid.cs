@@ -537,6 +537,8 @@ public class Face : Component
     public Cell endVertex;
     public Triangle ownTriangle;
     public Face faceTwin;
+    public int onContourLine;
+
 
 
 
@@ -546,6 +548,7 @@ public class Face : Component
         startVertex = start;
         endVertex = end;
         ownTriangle = own;
+        onContourLine = 0;
     }
 
     public Face next()
