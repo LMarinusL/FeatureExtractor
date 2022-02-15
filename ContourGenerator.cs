@@ -91,29 +91,41 @@ public class ContourGenerator : MonoBehaviour
         int vert = findFace(height);
         int count = 0;
         Contour contour;
+        Contour contourTemp;
+
         List<Face> listFaces = new List<Face>();
         List<Face> outputList;
         int maxCount = 1000;
         outputList = followHeight(grid.cells[vert].attachedFaces[0], height, count, maxCount, listFaces);
         bool contourExists = false;
-        contour = new Contour(vert, height, grid);
-       /* foreach (Contour cont in contours)
+        contourTemp = new Contour(444, 444f, grid);
+        foreach (Contour cont in contours)
         {
             if(height == cont.height)
             {
                 contourExists = true;
-                contour = cont;
+                contourTemp = cont;
+
+                break;
             }
         }
-        if (contourExists)
+        if (!contourExists) {
+            contour = new Contour(vert, height, grid);
+        }
+        else
         {
+            Debug.Log()
+            contour = contourTemp;
+        }
+        if (contourExists)
+        { 
             contour.addToList(outputList);
         }
         else
-        {*/
+        {
             contour.faces = outputList;
-        //}
-        
+        }
+        //contour.faces = outputList;
         int iteration = 0;
         int maxIterations = 20;
         while (contour.faces[0].ownTriangle.index != contour.faces[contour.faces.Count - 1].ownTriangle.index && iteration < maxIterations)
@@ -126,7 +138,10 @@ public class ContourGenerator : MonoBehaviour
             iteration++;
         }
         contour.faceToVertex();
-        contours.Add(contour);
+        if (!contourExists)
+        {
+            contours.Add(contour);
+        }
     }
 
     public List<Face> followHeight(Face start, float contourHeight, int count, int maxCount, List<Face> facesOnHeight)
@@ -162,7 +177,7 @@ public class ContourGenerator : MonoBehaviour
         }
         catch
         {
-            Debug.Log(" an error ocurred here");
+            //Debug.Log(" an error ocurred here");
             facesOnHeight.RemoveAt(facesOnHeight.Count - 1);
             return facesOnHeight;
         }
