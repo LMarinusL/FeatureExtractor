@@ -42,7 +42,6 @@ public class ContourGenerator : MonoBehaviour
                 createLine(contours[k]);
             }
         }
-
     }
 
     void getData()
@@ -91,7 +90,6 @@ public class ContourGenerator : MonoBehaviour
         int count = 0;
         Contour contour;
         Contour contourTemp;
-
         List<Face> listFaces = new List<Face>();
         List<Face> outputList;
         int maxCount = 1000;
@@ -179,20 +177,19 @@ public class ContourGenerator : MonoBehaviour
         }
     }
 
-
-
     void createLine(Contour contour)
     {
         lineObject = new GameObject("Line");
         line = lineObject.AddComponent<LineRenderer>();
         line.startWidth = 0.5f;
         line.endWidth = 0.5f;
-        line.positionCount = contour.vertices.Count;
+        line.positionCount = contour.cells.Count;
         line.material = material;
         line.material.color = new Color(0f, 0f, 0f, 1f);
-        for (int i = 0; i < contour.vertices.Count; i++)
+        for (int i = 0; i < contour.cells.Count; i++)
         {
-            line.SetPosition(i, contour.vertices[i].position);
+            line.SetPosition(i, contour.cells[i].position);
+            contour.cells[i].computeCurvature(1);
         }
     }
 }
@@ -202,7 +199,7 @@ public class Contour : Component
     public int index;
     public float height;
     public List<Face> faces;
-    public List<ContourCell> vertices;
+    public List<ContourCell> cells;
     Grid grid;
 
     public Contour(int i, float h, Grid gridLink)
@@ -220,7 +217,7 @@ public class Contour : Component
 
     public void faceToVertex()
     {
-        vertices = new List<ContourCell>();
+        cells = new List<ContourCell>();
         int i = 0;
         foreach (Face face in this.faces)
         {
@@ -230,27 +227,49 @@ public class Contour : Component
                 float zStep = face.startVertex.z - face.endVertex.z;
                 face.onContourLine = this.index;
                 float ratio = ((face.startVertex.y - height) / (face.endVertex.y - face.startVertex.y));
-                this.vertices.Add(new ContourCell(i * 10000 + face.index, new Vector3(face.startVertex.x + (xStep * ratio), height,
-                    face.startVertex.z + (zStep * ratio)), this));
+                this.cells.Add(new ContourCell(i * 10000 + face.index, 
+                    new Vector3(face.startVertex.x + (xStep * ratio), height, face.startVertex.z + (zStep * ratio)),
+                    this, i));
                 i++;
             }
         }
-
     }
 }
 
 public class ContourCell : Component
 {
     int index;
-    int contourindex;
+    int contourIndex;
     public Vector3 position;
     Contour contour;
+    int positionOnContour;
+    float curvature;
 
-    public ContourCell(int i, Vector3 pos, Contour cont)
+    public ContourCell(int i, Vector3 pos, Contour cont, int posOnCont)
     {
         index = i;
         position = pos;
+        positionOnContour = posOnCont;
         contour = cont;
-        contourindex = cont.index;
+        contourIndex = cont.index;
+    }
+
+    public void computeCurvature(int spacing)
+    {
+        try
+        {
+            if (this.positionOnContour > 0 && this.positionOnContour < this.contour.cells.Count)
+            {
+                Vector3 expectedLocation = new Vector3(((this.contour.cells[this.positionOnContour - spacing].position.x - this.contour.cells[this.positionOnContour + spacing].position.x) /2)+ this.contour.cells[this.positionOnContour - spacing].position.x,
+                                                        ((this.contour.cells[this.positionOnContour - spacing].position.y - this.contour.cells[this.positionOnContour + spacing].position.y)/2)+ this.contour.cells[this.positionOnContour - spacing].position.y,
+                                                        ((this.contour.cells[this.positionOnContour - spacing].position.z - this.contour.cells[this.positionOnContour + spacing].position.z)/2)+ this.contour.cells[this.positionOnContour - spacing].position.z);
+                this.curvature = Vector3.Distance(this.position, expectedLocation);
+            }
+            Debug.Log(" curvature: " + this.curvature);
+        }
+        catch
+        {
+            Debug.Log(" error in curvatureComp");
+        }
     }
 }
