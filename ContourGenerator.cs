@@ -30,7 +30,7 @@ public class ContourGenerator : MonoBehaviour
         {
             getData();
 
-            for (float j = 90f;j < 92f; j+=3f)
+            for (float j = 70f;j < 110f; j+=5f)
             {
                 for (int i = 0; i < 40; i++)
                 {
@@ -41,6 +41,10 @@ public class ContourGenerator : MonoBehaviour
             {
                 createLine(contours[k]);
             }
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            connectCells();
         }
     }
 
@@ -192,6 +196,40 @@ public class ContourGenerator : MonoBehaviour
             contour.cells[i].computeCurvature(1);
         }
     }
+
+    void connectCells()
+    {
+        foreach (Cell cell in grid.cells)
+        {
+            if(cell.y != 0)
+            {
+                Contour closestContour = null;
+                float heightDiffMin = 100f;
+                foreach(Contour contour in contours)
+                {
+                    if(Mathf.Pow(Mathf.Pow((contour.height - cell.y),2),0.5f) < heightDiffMin)
+                    {
+                        closestContour = contour;
+                        heightDiffMin = contour.height - cell.y;
+                    }
+                }
+
+                ContourCell closestCell = null;
+                float cellDistMin = 1000f;
+                foreach (ContourCell contourCell in closestContour.cellsArray)
+                {
+                    float currentDistance = Vector3.Distance(cell.position, contourCell.position);
+                    if(currentDistance < cellDistMin)
+                    {
+                        cellDistMin = currentDistance;
+                        closestCell = contourCell;
+                    }
+                }
+                cell.contourCell = closestCell;
+            }
+        }
+        Debug.Log("done");
+    }
 }
 
 public class Contour : Component
@@ -200,6 +238,7 @@ public class Contour : Component
     public float height;
     public List<Face> faces;
     public List<ContourCell> cells;
+    public ContourCell[] cellsArray;
     Grid grid;
 
     public Contour(int i, float h, Grid gridLink)
@@ -233,6 +272,7 @@ public class Contour : Component
                 i++;
             }
         }
+        cellsArray = cells.ToArray();
     }
 }
 
@@ -243,7 +283,7 @@ public class ContourCell : Component
     public Vector3 position;
     Contour contour;
     int positionOnContour;
-    float curvature;
+    public float curvature;
 
     public ContourCell(int i, Vector3 pos, Contour cont, int posOnCont)
     {
@@ -265,7 +305,6 @@ public class ContourCell : Component
                                                         ((this.contour.cells[this.positionOnContour - spacing].position.z - this.contour.cells[this.positionOnContour + spacing].position.z)/2)+ this.contour.cells[this.positionOnContour - spacing].position.z);
                 this.curvature = Vector3.Distance(this.position, expectedLocation);
             }
-            Debug.Log(" curvature: " + this.curvature);
         }
         catch
         {
