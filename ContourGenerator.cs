@@ -30,10 +30,11 @@ public class ContourGenerator : MonoBehaviour
         {
             getData();
 
-            for (float j = 70f;j < 110f; j+=5f)
+            for (float j = 70f;j < 110f; j+=2f)
             {
                 for (int i = 0; i < 40; i++)
                 {
+                    contourSegment(j);
                     contourSegment(j);
                 }
             }
@@ -42,10 +43,10 @@ public class ContourGenerator : MonoBehaviour
                 createLine(contours[k]);
             }
         }
-        if (Input.GetKeyDown(KeyCode.J))
+        /*if (Input.GetKeyDown(KeyCode.J))
         {
             connectCells();
-        }
+        }*/
     }
 
     void getData()
@@ -88,7 +89,7 @@ public class ContourGenerator : MonoBehaviour
         return toCheck;
     }
 
-        void contourSegment(float height)
+    void contourSegment(float height)
     {
         int vert = findFace(height);
         int count = 0;
@@ -113,17 +114,17 @@ public class ContourGenerator : MonoBehaviour
             contour = new Contour(vert, height, grid);
         }
         else
-        {
+       {
             contour = contourTemp;
-        }
-        if (contourExists)
-        { 
-            contour.addToList(outputList);
-        }
-        else
-        {
+      }
+       if (contourExists)
+       { 
+           contour.addToList(outputList);
+       }
+       else
+       {
             contour.faces = outputList;
-        }
+       }
         int iteration = 0;
         int maxIterations = 20;
         while (contour.faces[0].ownTriangle.index != contour.faces[contour.faces.Count - 1].ownTriangle.index && iteration < maxIterations)
@@ -266,9 +267,9 @@ public class Contour : Component
                 float zStep = face.startVertex.z - face.endVertex.z;
                 face.onContourLine = this.index;
                 float ratio = ((face.startVertex.y - height) / (face.endVertex.y - face.startVertex.y));
-                this.cells.Add(new ContourCell(i * 10000 + face.index, 
-                    new Vector3(face.startVertex.x + (xStep * ratio), height, face.startVertex.z + (zStep * ratio)),
-                    this, i));
+                ContourCell newCell = new ContourCell(i * 10000 + face.index, new Vector3(face.startVertex.x + (xStep * ratio), height, face.startVertex.z + (zStep * ratio)), this, i);
+                face.startVertex.contourCell = newCell;
+                this.cells.Add(newCell);
                 i++;
             }
         }
@@ -300,10 +301,10 @@ public class ContourCell : Component
         {
             if (this.positionOnContour > 0 && this.positionOnContour < this.contour.cells.Count)
             {
-                Vector3 expectedLocation = new Vector3(((this.contour.cells[this.positionOnContour - spacing].position.x - this.contour.cells[this.positionOnContour + spacing].position.x) /2)+ this.contour.cells[this.positionOnContour - spacing].position.x,
-                                                        ((this.contour.cells[this.positionOnContour - spacing].position.y - this.contour.cells[this.positionOnContour + spacing].position.y)/2)+ this.contour.cells[this.positionOnContour - spacing].position.y,
-                                                        ((this.contour.cells[this.positionOnContour - spacing].position.z - this.contour.cells[this.positionOnContour + spacing].position.z)/2)+ this.contour.cells[this.positionOnContour - spacing].position.z);
-                this.curvature = Vector3.Distance(this.position, expectedLocation);
+                Vector3 expectedLocation = new Vector3(((this.contour.cells[this.positionOnContour - spacing].position.x - this.contour.cells[this.positionOnContour + spacing].position.x) /2)+ this.contour.cells[this.positionOnContour + spacing].position.x,
+                                                        ((this.contour.cells[this.positionOnContour - spacing].position.y - this.contour.cells[this.positionOnContour + spacing].position.y)/2)+ this.contour.cells[this.positionOnContour + spacing].position.y,
+                                                        ((this.contour.cells[this.positionOnContour - spacing].position.z - this.contour.cells[this.positionOnContour + spacing].position.z)/2)+ this.contour.cells[this.positionOnContour + spacing].position.z);
+                this.curvature = Mathf.Pow(Mathf.Pow(Vector3.Distance(this.position, expectedLocation), 2), 0.5f);
             }
         }
         catch

@@ -119,6 +119,7 @@ public class CreateGrid : MonoBehaviour
         grid = new Grid(verts, normals, triangles);
         foreach (Cell cell in grid.cells)
         {
+            computeCurvature(cell);
             cell.relativeHeight = relativeHeight(cell.index, grid, 1);
             cell.relativeSlope = relativeSlope(cell.index, grid, 1);
             cell.relativeAspect = relativeAspect(cell.index, grid, 1);
@@ -327,16 +328,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            try
-            {
-                
-                    Debug.Log(grid.cells[i].contourCell.curvature);
-                    colors[i] = new Color(1f * (grid.cells[i].contourCell.curvature / 10), 1f * ((grid.cells[i].contourCell.curvature / 10)), 1f * (grid.cells[i].contourCell.curvature /10), 1f);
-
-            }
-            catch {
-                colors[i] = new Color(0f, 0f, 0f, 1f);
-                    }
+            colors[i] = new Color(1f * (grid.cells[i].curvature), 1f * (grid.cells[i].curvature), 1f * (1 - ((grid.cells[i].curvature))), 1f);
         }
         mesh.colors = colors;
     }
@@ -426,6 +418,56 @@ public class CreateGrid : MonoBehaviour
             }
         }
         return patterns.ToArray();
+    }
+
+    void computeCurvature(Cell cell)
+    {
+
+        if (cell.y == 0) {
+            cell.curvature = 0f;
+        } else {
+            try {
+                Face[] crossingFaces = new Face[2];
+                Vector3[] crossingVertices = new Vector3[2];
+
+                int indexNewFace = 0;
+                foreach (Triangle triangle in cell.attachedTriangles)
+                {
+                    Debug.Log("add face" + cell.attachedTriangles.Count);
+                    foreach (Face face in triangle.faces)
+                    {
+                        if ((face.startVertex.y < cell.y && face.endVertex.y > cell.y) ||
+                            (face.startVertex.y > cell.y && face.endVertex.y < cell.y))
+                        {
+                            crossingFaces[indexNewFace] = face;
+                            indexNewFace++;
+                        }
+                    }
+                }
+                int indexNewLoc = 0;
+
+                foreach (Face face in crossingFaces)
+                {
+                    if (face.startVertex.y != 0 && face.endVertex.y != 0)
+                    {
+                        float xStep = face.startVertex.x - face.endVertex.x;
+                        float zStep = face.startVertex.z - face.endVertex.z;
+
+                        float ratio = ((face.startVertex.y - cell.y) / (face.endVertex.y - face.startVertex.y));
+                        Vector3 crossPoint = new Vector3(face.startVertex.x + (xStep * ratio), cell.y, face.startVertex.z + (zStep * ratio));
+                        crossingVertices[indexNewLoc] = crossPoint;
+                        indexNewLoc++;
+                    }
+                }
+                Vector3 expectedPosition = ((crossingVertices[0] - crossingVertices[1]) / 2) + crossingVertices[1];
+                float distance = Mathf.Pow(Mathf.Pow(Vector3.Distance(expectedPosition, cell.position), 2), 0.5f);
+                cell.curvature = distance;
+            }
+            catch
+            {
+                cell.curvature = 0;
+            }
+            }
     }
 
 
