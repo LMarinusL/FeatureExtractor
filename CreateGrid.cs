@@ -62,10 +62,7 @@ public class CreateGrid : MonoBehaviour
         {
             setMeshdLN1Colors();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha7))
-        {
-            setMeshContourColors();
-        }
+
         if (Input.GetKeyDown(KeyCode.T))
         {
             int index = 0;
@@ -119,10 +116,7 @@ public class CreateGrid : MonoBehaviour
         grid = new Grid(verts, normals, triangles);
         foreach (Cell cell in grid.cells)
         {
-            //computeCurvatureX(cell);
-            //computeCurvatureY(cell);
-            computeESRICurvature(cell);
-            //Debug.Log(cell.curvature);
+            cell.curvature = computeESRICurvature(cell, 2, 4);
             cell.relativeHeight = relativeHeight(cell.index, grid, 1);
             cell.relativeSlope = relativeSlope(cell.index, grid, 1);
             cell.relativeAspect = relativeAspect(cell.index, grid, 1);
@@ -345,21 +339,7 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshContourColors()
-    {
-        colors = new Color[vertices.Length];
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            if (grid.cells[i].y < 100)
-            {
-                colors[i] = new Color(1f, 1f , 1f, 1f);
-            }
-            else {
-                colors[i] = new Color(0f, 0f, 0f , 1f);
-            }
-        }
-        mesh.colors = colors;
-    }
+
     void setMeshRunoffColors(int[] starts, int num, float margin)
     {
         int[] patterns = getRunoffPatterns(starts, num, margin);
@@ -452,8 +432,6 @@ public class CreateGrid : MonoBehaviour
                 int indexNewLoc = 0;
                 if(indexNewFace != 2)
                 {
-                //GameObject dot = Instantiate(dotgreen, cell.position, transform.rotation);
-                //Debug.Log("faces" + indexNewFace);
                     cell.curvatureY = 2.5f;
                     return;
                 }
@@ -483,50 +461,8 @@ public class CreateGrid : MonoBehaviour
     }
 
 
-    void computeCurvatureX(Cell cell)
+    float computeESRICurvature(Cell cell, int dist, int connectivity)
     {
-        if (cell.y == 0 || cell.attachedTriangles.Count != 6)
-        {
-            cell.curvatureX = 0f;
-            return;
-        }
-        else
-        {
-            Cell[] Xcells = new Cell[2];
-            Xcells[0] = new Cell(0, vertices[0], normals[0]);
-            int index = 0;
-      
-                foreach (Face face in cell.attachedFaces)
-            {
-                
-                    if (face.endVertex.x == cell.x && face.endVertex.z != cell.z && Xcells[0].index != face.endVertex.index &&  index<2)
-                    {
-                        Xcells[index] = face.endVertex;
-                        index++;
-                    }
-                    if (face.startVertex.x == cell.x && face.startVertex.z != cell.z && Xcells[0].index != face.startVertex.index && index < 2)
-                    {
-
-                        Xcells[index] = face.startVertex;
-                        index++;
-                    }
-                }
-           if (index < 2)
-                {
-                    cell.curvatureX = 0;
-                }
-                else
-                {
-                    float avgHeight = (Xcells[0].y + Xcells[1].y) / 2;
-                    cell.curvatureX = Mathf.Pow(Mathf.Pow((cell.y - avgHeight), 2), 0.5f);
-                }
-            
-        }
-    }
-
-    void computeESRICurvature(Cell cell)
-    {
-        //https://gis.stackexchange.com/questions/37066/how-to-calculate-terrain-curvature
         //http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//00q90000000t000000
         //D = [(Z4 + Z6) /2 - Z5] / L2
         //E = [(Z2 + Z8) /2 - Z5] / L2
@@ -534,9 +470,8 @@ public class CreateGrid : MonoBehaviour
         //Curvature = -2(D + E) * 100
 
         if (cell.y == 0 || cell.attachedTriangles.Count != 6)
-        {
-            cell.curvature = 0f;
-            return;
+        { 
+            return 0f;
         }
         else
         {
@@ -546,55 +481,93 @@ public class CreateGrid : MonoBehaviour
             Zcells[0] = new Cell(0, vertices[0], normals[0]);
             int Xindex = 0;
             int Zindex = 0;
-
-            foreach (Face face in cell.attachedFaces)
+            Cell Z2 = null;
+            Cell Z4 = null;
+            Cell Z6 = null;
+            Cell Z8 = null;
+            List<Cell> cells = getSurroundingCells(cell, grid, dist, connectivity);
+            if (cells.Count == connectivity)
             {
-
-                if (face.endVertex.x == cell.x && face.endVertex.z != cell.z && Xcells[0].index != face.endVertex.index && Xindex < 2)
+                foreach (Cell surroundingCell in cells)
                 {
-                    Xcells[Xindex] = face.endVertex;
-                    Xindex++;
-                }
-                if (face.startVertex.x == cell.x && face.startVertex.z != cell.z && Xcells[0].index != face.startVertex.index && Xindex < 2)
-                {
-
-                    Xcells[Xindex] = face.startVertex;
-                    Xindex++;
-                }
-                if (face.endVertex.z == cell.z && face.endVertex.x != cell.x && Zcells[0].index != face.endVertex.index && Zindex < 2)
-                {
-                    Zcells[Zindex] = face.endVertex;
-                    Zindex++;
-                }
-                if (face.startVertex.z == cell.z && face.startVertex.x != cell.x && Zcells[0].index != face.startVertex.index && Zindex < 2)
-                {
-
-                    Zcells[Zindex] = face.startVertex;
-                    Zindex++;
+                    if (surroundingCell.x == cell.x && surroundingCell.z < cell.z)
+                    {
+                        Z8 = surroundingCell;
+                    }
+                    if (surroundingCell.x == cell.x && surroundingCell.z > cell.z)
+                    {
+                        Z2 = surroundingCell;
+                    }
+                    if (surroundingCell.x > cell.x && surroundingCell.z == cell.z)
+                    {
+                        Z6 = surroundingCell;
+                    }
+                    if (surroundingCell.x < cell.x && surroundingCell.z == cell.z)
+                    {
+                        Z4 = surroundingCell;
+                    }
                 }
             }
+            else 
+            { 
+            return 0f; 
+            }
+            
             float xStep = cell.attachedFaces[2].startVertex.x - cell.attachedFaces[2].endVertex.x;
             float zStep = cell.attachedFaces[0].startVertex.z - cell.attachedFaces[0].endVertex.z;
-            Debug.Log(xStep);
-            float D = (((Xcells[0].y + Xcells[1].y) / 2) - cell.y) / (zStep * 2);
-            float E = (((Zcells[0].y + Zcells[1].y) / 2) - cell.y) / (xStep * 2);
-            cell.curvature = -2 * (D + E);
-
+            float D = (((Z4.y + Z6.y) / 2) - cell.y) / (zStep * 2);
+            float E = (((Z2.y + Z8.y) / 2) - cell.y) / (xStep * 2);
+            float curvature = -2 * (D + E);
+            return curvature;
         }
     }
-   
 
-    /*
-    void InstantiateRunoff(int[] starts, int num, float margin)
+
+    public List<Cell> getSurroundingCells(Cell own, Grid grid, int dist, int connectivity)
     {
-        int[] patterns = getRunoffPatterns(starts, num, margin);
-        foreach (int point in patterns)
+        int xLoc = getXFromIndex(own.index);
+        int zLoc = getZFromIndex(own.index);
+        List<Cell> cells = new List<Cell>();
+        if (connectivity != 8 && connectivity != 4)
         {
-            GameObject dot = Instantiate(dotgreen, new Vector3(grid.cells[point].x, grid.cells[point].y, grid.cells[point].z),  transform.rotation);
-            dot.GetComponent<MeshRenderer>().material.color = new Color((grid.cells[point].runoffScore / 10) * 1f, (grid.cells[point].runoffScore/10) *1f, (grid.cells[point].runoffScore / 10) * 1f, 1f);
-            
+            Debug.Log(" incorrect connectivity ");
+            return cells;
         }
-    }*/
+        if (xLoc > 0 + dist)
+        {
+            cells.Add(grid.cells[getIndexFromLoc(xLoc - dist, zLoc)]);
+            if (zLoc > 0 + dist && connectivity == 8)
+            {
+                cells.Add(grid.cells[getIndexFromLoc(xLoc - dist, zLoc - dist)]);
+            }
+            if (zLoc < (zSize - dist) && connectivity == 8)
+            {
+                cells.Add(grid.cells[getIndexFromLoc(xLoc - dist, zLoc + dist)]);
+            }
+        }
+        if (zLoc > 0 + dist)
+        {
+            cells.Add(grid.cells[getIndexFromLoc(xLoc, zLoc - dist)]);
+        }
+        if (zLoc < (zSize - dist))
+        {
+            cells.Add(grid.cells[getIndexFromLoc(xLoc, zLoc + dist)]);
+        }
+        if (xLoc < (xSize - dist))
+        {
+            cells.Add(grid.cells[getIndexFromLoc(xLoc + dist, zLoc)]);
+            if (zLoc > 0 + dist && connectivity == 8)
+            {
+                cells.Add(grid.cells[getIndexFromLoc(xLoc + dist, zLoc - dist)]);
+            }
+            if (zLoc < (zSize - dist) && connectivity == 8)
+            {
+                cells.Add(grid.cells[getIndexFromLoc(xLoc + dist, zLoc + dist)]);
+            }
+        }
+        return cells;
+    }
+
 }
 
 
