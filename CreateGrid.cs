@@ -26,68 +26,17 @@ public class CreateGrid : MonoBehaviour
     Mesh mesh;
     Color[] colors;
 
-
-
+  void Start()
+    {
+        getData();
+        InstantiateGrid(vertices, normals, triangles);
+        WriteString();
+        Debug.Log("Output written");
+    }
+  
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.P))
-        {
-            getData();
-            InstantiateGrid(vertices, normals, triangles);
-            WriteString();
-            Debug.Log("Output written");
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            setMeshSlopeColors();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            setMeshAspectColors();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            setMeshRelativeSlopeColors();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            setMeshRelativeAspectColors();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            setMeshCurveColors();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            setMeshdLN1Colors();
-        }
-
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            int index = 0;
-            int[] array = new int[vertices.Length];
-            while ( index < vertices.Length)
-            {
-                array[index] = index;
-                index++;
-            }
-            setMeshRunoffColors(array, 3000, 20f);
-        }
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            List<int> startAt = new List<int>();
-            for (int i = 0; i < 1000; i++)
-            {
-                startAt.Add(UnityEngine.Random.Range(100, 250000));
-            }
-            setMeshRunoffColors(startAt.ToArray(), 3000, 20f);
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            StartCoroutine(iterate(1000));
-        }
-
 
     }
 
@@ -97,7 +46,7 @@ public class CreateGrid : MonoBehaviour
         MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
         GameObject MAT = GameObject.Find("MATLoader");
         ShrinkingBallSeg MATalg = MAT.GetComponent<ShrinkingBallSeg>();
-
+        meshGenerator.StartPipe();
         xCorrection = meshGenerator.xCorrection;
         zCorrection = meshGenerator.zCorrection;
         xSize = meshGenerator.xSizer;
@@ -197,7 +146,7 @@ public class CreateGrid : MonoBehaviour
         return indices;
     }
 
-    float relativeHeight(int index, Grid grid, int dist)
+    public float relativeHeight(int index, Grid grid, int dist)
     {
         List<int> indices = getIndicesOfSurroundingCells(index, grid, dist);
         float averageHeight = 0f;
@@ -220,7 +169,7 @@ public class CreateGrid : MonoBehaviour
         return averageHeight - heightOwn;
     }
 
-    float relativeSlope(int index, Grid grid, int dist)
+    public float relativeSlope(int index, Grid grid, int dist)
     {
         List<int> indices = getIndicesOfSurroundingCells(index, grid, dist);
         float averageSlope = 0f;
@@ -243,7 +192,7 @@ public class CreateGrid : MonoBehaviour
         return averageSlope - slopeOwn;
     }
 
-    float relativeAspect(int index, Grid grid, int dist)
+    public float relativeAspect(int index, Grid grid, int dist)
     {
         List<int> indices = getIndicesOfSurroundingCells(index, grid, dist);
         float averageAspect = 0f;
@@ -284,7 +233,7 @@ public class CreateGrid : MonoBehaviour
 
     // COLORS
     // todo: get max values to set colors
-    void setMeshSlopeColors()
+    public void setMeshSlopeColors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
@@ -293,7 +242,7 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshAspectColors()
+    public void setMeshAspectColors()
     {
         colors = new Color[vertices.Length]; 
         for (int i = 0; i < vertices.Length; i++)
@@ -302,7 +251,7 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshRelativeSlopeColors()
+    public void setMeshRelativeSlopeColors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
@@ -311,7 +260,7 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshRelativeAspectColors()
+    public void setMeshRelativeAspectColors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
@@ -320,7 +269,16 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshCurveColors()
+    public void setMeshRelativeHeightColors()
+    {
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            colors[i] = new Color(1f * (grid.cells[i].relativeHeight / 5), 1f * (grid.cells[i].relativeHeight / 5), 1f * (1 - ((grid.cells[i].relativeHeight) / 5)), 1f);
+        }
+        mesh.colors = colors;
+    }
+    public void setMeshCurveColors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
@@ -340,7 +298,7 @@ public class CreateGrid : MonoBehaviour
         mesh.colors = colors;
     }
 
-    void setMeshRunoffColors(int[] starts, int num, float margin)
+    public void setMeshRunoffColors(int[] starts, int num, float margin)
     {
         int[] patterns = getRunoffPatterns(starts, num, margin);
         colors = new Color[vertices.Length];
@@ -351,7 +309,7 @@ public class CreateGrid : MonoBehaviour
         mesh.colors = colors;
     }
 
-    IEnumerator iterate(int num)
+    public IEnumerator iterate(int num)
     {
         List<int> startAt = new List<int>();
         for (int j = 0; j < num; j++)
@@ -475,12 +433,6 @@ public class CreateGrid : MonoBehaviour
         }
         else
         {
-            Cell[] Xcells = new Cell[2];
-            Xcells[0] = new Cell(0, vertices[0], normals[0]);
-            Cell[] Zcells = new Cell[2];
-            Zcells[0] = new Cell(0, vertices[0], normals[0]);
-            int Xindex = 0;
-            int Zindex = 0;
             Cell Z2 = null;
             Cell Z4 = null;
             Cell Z6 = null;

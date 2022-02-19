@@ -40,7 +40,7 @@ public class MeshGenerator : MonoBehaviour
     char[] charsToTrim = { '*', ' ', '\n', '\r' };
 
 
-    void Start()
+    public void StartPipe()
     {
         mesh = new Mesh();
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
