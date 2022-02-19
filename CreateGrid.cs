@@ -46,7 +46,7 @@ public class CreateGrid : MonoBehaviour
         MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
         GameObject MAT = GameObject.Find("MATLoader");
         ShrinkingBallSeg MATalg = MAT.GetComponent<ShrinkingBallSeg>();
-        meshGenerator.StartPipe();
+        meshGenerator.StartPipe(meshGenerator.vertexFile2018);
         xCorrection = meshGenerator.xCorrection;
         zCorrection = meshGenerator.zCorrection;
         xSize = meshGenerator.xSizer;

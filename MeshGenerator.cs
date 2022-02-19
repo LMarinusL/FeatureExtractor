@@ -12,7 +12,11 @@ using Unity.Mathematics;
 
 public class MeshGenerator : MonoBehaviour
 {
-    public TextAsset vertexFile;
+    public TextAsset vertexFile1997;
+    public TextAsset vertexFile2008;
+    public TextAsset vertexFile2012;
+    public TextAsset vertexFile2018;
+
     [SerializeField] public TextMeshProUGUI loadingText;
 
     public int zSizer; //original full 752 small 188
@@ -40,14 +44,14 @@ public class MeshGenerator : MonoBehaviour
     char[] charsToTrim = { '*', ' ', '\n', '\r' };
 
 
-    public void StartPipe()
+    public void StartPipe(TextAsset vertexfile)
     {
         mesh = new Mesh();
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         GetComponent<MeshFilter>().mesh = mesh;
         MeshRenderer meshr = this.GetComponent<MeshRenderer>();
         meshr.material = material;
-        ReadFile();
+        ReadFile(vertexfile);
         UpdateMesh();
     }
 
@@ -99,9 +103,9 @@ public class MeshGenerator : MonoBehaviour
         }
     }
 
-    void ReadFile()
+    void ReadFile(TextAsset vertexfile)
     {
-        string PointsString = vertexFile.ToString();
+        string PointsString = vertexfile.ToString();
         string[] arrayOfLines = PointsString.Split('\n');
         int index = 0;
         string[] values;

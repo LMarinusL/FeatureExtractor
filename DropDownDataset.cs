@@ -6,7 +6,7 @@ using Unity.Mathematics;
 
 
 
-public class DropDown : MonoBehaviour
+public class DropDownDataset : MonoBehaviour
 {
     public CreateGrid gridImporter;
     public float3[] vertices;
@@ -14,19 +14,17 @@ public class DropDown : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject gridcreator = GameObject.Find("GridCreator");
-        gridImporter = gridcreator.GetComponent<CreateGrid>();
-        vertices = gridImporter.vertices;
+
 
         var dropdown = transform.GetComponent<Dropdown>();
         dropdown.options.Clear();
 
-        List<string> items = new List<string>(); 
-        items.Add("Choose parameter");
-        items.Add("slope");
+        List<string> items = new List<string>();
+        items.Add("Chooeter");
+        items.Add("sloe");
         items.Add("aspect");
         items.Add("relative slope");
-        items.Add("relative aspect");
+        items.Add("reive aspect");
         items.Add("relative height");
         items.Add("curve");
         items.Add("run-off random");
@@ -44,7 +42,7 @@ public class DropDown : MonoBehaviour
         dropdown.onValueChanged.AddListener(delegate { DropdownItemSelected(dropdown); });
     }
 
-    
+
     void DropdownItemSelected(Dropdown dropdown)
     {
         int index = dropdown.value;
@@ -64,7 +62,7 @@ public class DropDown : MonoBehaviour
             case 4:
                 gridImporter.setMeshRelativeAspectColors();
                 break;
-           case 5:
+            case 5:
                 gridImporter.setMeshRelativeHeightColors();
                 break;
             case 6:
@@ -100,6 +98,6 @@ public class DropDown : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
