@@ -164,6 +164,9 @@ public class Cell : Component
     public float relativeAspect;
     public float dRM1;
     public float dLN1;
+    public float curvatureX;
+    public float curvatureY;
+    public float curvatureZ;
     public float curvature;
     public int runoffScore;
     public List<Triangle> attachedTriangles;

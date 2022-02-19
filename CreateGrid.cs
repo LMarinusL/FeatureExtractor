@@ -56,7 +56,7 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            setMeshRelativeHeightColors();
+            setMeshCurveColors();
         }
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
@@ -119,7 +119,10 @@ public class CreateGrid : MonoBehaviour
         grid = new Grid(verts, normals, triangles);
         foreach (Cell cell in grid.cells)
         {
-            computeCurvature(cell);
+            //computeCurvatureX(cell);
+            //computeCurvatureY(cell);
+            computeESRICurvature(cell);
+            //Debug.Log(cell.curvature);
             cell.relativeHeight = relativeHeight(cell.index, grid, 1);
             cell.relativeSlope = relativeSlope(cell.index, grid, 1);
             cell.relativeAspect = relativeAspect(cell.index, grid, 1);
@@ -323,12 +326,13 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshRelativeHeightColors()
+    void setMeshCurveColors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].curvature), 1f * (grid.cells[i].curvature), 1f * (1 - ((grid.cells[i].curvature))), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].curvature), 1f * (grid.cells[i].curvature ), 1f * (grid.cells[i].curvature), 1f);
+
         }
         mesh.colors = colors;
     }
@@ -420,24 +424,25 @@ public class CreateGrid : MonoBehaviour
         return patterns.ToArray();
     }
 
-    void computeCurvature(Cell cell)
+    void computeCurvatureY(Cell cell)
     {
-
-        if (cell.y == 0) {
-            cell.curvature = 0f;
-        } else {
-            try {
+        if (cell.y == 0 || cell.attachedTriangles.Count != 6) 
+        {
+            cell.curvatureY = 0f;
+            return;
+        } 
+        else 
+        {
                 Face[] crossingFaces = new Face[2];
                 Vector3[] crossingVertices = new Vector3[2];
 
                 int indexNewFace = 0;
                 foreach (Triangle triangle in cell.attachedTriangles)
                 {
-                    Debug.Log("add face" + cell.attachedTriangles.Count);
                     foreach (Face face in triangle.faces)
                     {
-                        if ((face.startVertex.y < cell.y && face.endVertex.y > cell.y) ||
-                            (face.startVertex.y > cell.y && face.endVertex.y < cell.y))
+                        if (((face.startVertex.y < cell.y && face.endVertex.y > cell.y) ||
+                            (face.startVertex.y > cell.y && face.endVertex.y < cell.y)) && indexNewFace< 2)
                         {
                             crossingFaces[indexNewFace] = face;
                             indexNewFace++;
@@ -445,7 +450,13 @@ public class CreateGrid : MonoBehaviour
                     }
                 }
                 int indexNewLoc = 0;
-
+                if(indexNewFace != 2)
+                {
+                //GameObject dot = Instantiate(dotgreen, cell.position, transform.rotation);
+                //Debug.Log("faces" + indexNewFace);
+                    cell.curvatureY = 2.5f;
+                    return;
+                }
                 foreach (Face face in crossingFaces)
                 {
                     if (face.startVertex.y != 0 && face.endVertex.y != 0)
@@ -458,18 +469,120 @@ public class CreateGrid : MonoBehaviour
                         crossingVertices[indexNewLoc] = crossPoint;
                         indexNewLoc++;
                     }
+                    else
+                    {
+                        cell.curvatureY = 0;
+                        return;
+                    }
                 }
-                Vector3 expectedPosition = ((crossingVertices[0] - crossingVertices[1]) / 2) + crossingVertices[1];
-                float distance = Mathf.Pow(Mathf.Pow(Vector3.Distance(expectedPosition, cell.position), 2), 0.5f);
-                cell.curvature = distance;
-            }
-            catch
-            {
-                cell.curvature = 0;
-            }
+                Vector3 expectedLocation = new Vector3(((crossingVertices[0].x - crossingVertices[1].x) / 2) + crossingVertices[1].x,
+                                                        ((crossingVertices[0].y - crossingVertices[1].y) / 2) + crossingVertices[1].y,
+                                                        ((crossingVertices[0].z - crossingVertices[1].z) / 2) + crossingVertices[1].z);
+                cell.curvatureY = Mathf.Pow(Mathf.Pow(Vector3.Distance(cell.position, expectedLocation), 2), 0.5f);
             }
     }
 
+
+    void computeCurvatureX(Cell cell)
+    {
+        if (cell.y == 0 || cell.attachedTriangles.Count != 6)
+        {
+            cell.curvatureX = 0f;
+            return;
+        }
+        else
+        {
+            Cell[] Xcells = new Cell[2];
+            Xcells[0] = new Cell(0, vertices[0], normals[0]);
+            int index = 0;
+      
+                foreach (Face face in cell.attachedFaces)
+            {
+                
+                    if (face.endVertex.x == cell.x && face.endVertex.z != cell.z && Xcells[0].index != face.endVertex.index &&  index<2)
+                    {
+                        Xcells[index] = face.endVertex;
+                        index++;
+                    }
+                    if (face.startVertex.x == cell.x && face.startVertex.z != cell.z && Xcells[0].index != face.startVertex.index && index < 2)
+                    {
+
+                        Xcells[index] = face.startVertex;
+                        index++;
+                    }
+                }
+           if (index < 2)
+                {
+                    cell.curvatureX = 0;
+                }
+                else
+                {
+                    float avgHeight = (Xcells[0].y + Xcells[1].y) / 2;
+                    cell.curvatureX = Mathf.Pow(Mathf.Pow((cell.y - avgHeight), 2), 0.5f);
+                }
+            
+        }
+    }
+
+    void computeESRICurvature(Cell cell)
+    {
+        //https://gis.stackexchange.com/questions/37066/how-to-calculate-terrain-curvature
+        //http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//00q90000000t000000
+        //D = [(Z4 + Z6) /2 - Z5] / L2
+        //E = [(Z2 + Z8) /2 - Z5] / L2
+        //The output of the Curvature tool is the second derivative of the surface—for example, the slope of the slope—such that:
+        //Curvature = -2(D + E) * 100
+
+        if (cell.y == 0 || cell.attachedTriangles.Count != 6)
+        {
+            cell.curvature = 0f;
+            return;
+        }
+        else
+        {
+            Cell[] Xcells = new Cell[2];
+            Xcells[0] = new Cell(0, vertices[0], normals[0]);
+            Cell[] Zcells = new Cell[2];
+            Zcells[0] = new Cell(0, vertices[0], normals[0]);
+            int Xindex = 0;
+            int Zindex = 0;
+
+            foreach (Face face in cell.attachedFaces)
+            {
+
+                if (face.endVertex.x == cell.x && face.endVertex.z != cell.z && Xcells[0].index != face.endVertex.index && Xindex < 2)
+                {
+                    Xcells[Xindex] = face.endVertex;
+                    Xindex++;
+                }
+                if (face.startVertex.x == cell.x && face.startVertex.z != cell.z && Xcells[0].index != face.startVertex.index && Xindex < 2)
+                {
+
+                    Xcells[Xindex] = face.startVertex;
+                    Xindex++;
+                }
+                if (face.endVertex.z == cell.z && face.endVertex.x != cell.x && Zcells[0].index != face.endVertex.index && Zindex < 2)
+                {
+                    Zcells[Zindex] = face.endVertex;
+                    Zindex++;
+                }
+                if (face.startVertex.z == cell.z && face.startVertex.x != cell.x && Zcells[0].index != face.startVertex.index && Zindex < 2)
+                {
+
+                    Zcells[Zindex] = face.startVertex;
+                    Zindex++;
+                }
+            }
+            float xStep = cell.attachedFaces[2].startVertex.x - cell.attachedFaces[2].endVertex.x;
+            float zStep = cell.attachedFaces[0].startVertex.z - cell.attachedFaces[0].endVertex.z;
+            Debug.Log(xStep);
+            float D = (((Xcells[0].y + Xcells[1].y) / 2) - cell.y) / (zStep * 2);
+            float E = (((Zcells[0].y + Zcells[1].y) / 2) - cell.y) / (xStep * 2);
+            cell.curvature = -2 * (D + E);
+
+        }
+    }
+   
 
     /*
     void InstantiateRunoff(int[] starts, int num, float margin)
