@@ -45,50 +45,45 @@ public class DropDownDataset : MonoBehaviour
 
     void DropdownItemSelected(Dropdown dropdown)
     {
+        GameObject terrain = GameObject.Find("TerrainLoader");
+        MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
+        GameObject gridcreator = GameObject.Find("GridCreator");
+        gridImporter = gridcreator.GetComponent<CreateGrid>();
         int index = dropdown.value;
         switch (index)
         {
             case 0:
+                meshGenerator.StartPipe(meshGenerator.vertexFile2018);
+                gridImporter.getData();
+                gridImporter.InstantiateGrid();
+                gridImporter.WriteString();
+                Debug.Log("Output written 2018");
                 break;
             case 1:
-                gridImporter.setMeshSlopeColors();
+                meshGenerator.StartPipe(meshGenerator.vertexFile1997);
+                gridImporter.getData();
+                gridImporter.InstantiateGrid();
+                gridImporter.WriteString();
+                Debug.Log("Output written 1997");
                 break;
             case 2:
-                gridImporter.setMeshAspectColors();
-                break;
+                meshGenerator.StartPipe(meshGenerator.vertexFile2008);
+                gridImporter.getData();
+                gridImporter.InstantiateGrid();
+                gridImporter.WriteString();
+                Debug.Log("Output written 2008"); break;
             case 3:
-                gridImporter.setMeshRelativeSlopeColors();
-                break;
+                meshGenerator.StartPipe(meshGenerator.vertexFile2012);
+                gridImporter.getData();
+                gridImporter.InstantiateGrid();
+                gridImporter.WriteString();
+                Debug.Log("Output written 2012"); break;
             case 4:
-                gridImporter.setMeshRelativeAspectColors();
-                break;
-            case 5:
-                gridImporter.setMeshRelativeHeightColors();
-                break;
-            case 6:
-                gridImporter.setMeshCurveColors();
-                break;
-            case 7:
-                List<int> startAt = new List<int>();
-                for (int i = 0; i < 1000; i++)
-                {
-                    startAt.Add(UnityEngine.Random.Range(100, 250000));
-                }
-                gridImporter.setMeshRunoffColors(startAt.ToArray(), 3000, 20f);
-                break;
-            case 8:
-                int ind = 0;
-                int[] array = new int[vertices.Length];
-                while (ind < vertices.Length)
-                {
-                    array[ind] = ind;
-                    ind++;
-                }
-                gridImporter.setMeshRunoffColors(array, 3000, 20f);
-                break;
-            case 9:
-                gridImporter.StartCoroutine(gridImporter.iterate(1000));
-                break;
+                meshGenerator.StartPipe(meshGenerator.vertexFile2018);
+                gridImporter.getData();
+                gridImporter.InstantiateGrid();
+                gridImporter.WriteString();
+                Debug.Log("Output written 2018"); break;
             default:
                 // code block
                 break;

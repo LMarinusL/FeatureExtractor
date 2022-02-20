@@ -29,7 +29,7 @@ public class CreateGrid : MonoBehaviour
   void Start()
     {
         getData();
-        InstantiateGrid(vertices, normals, triangles);
+        InstantiateGrid();
         WriteString();
         Debug.Log("Output written");
     }
@@ -40,13 +40,13 @@ public class CreateGrid : MonoBehaviour
 
     }
 
-    void getData()
+    public void getData()
     {
         GameObject terrain = GameObject.Find("TerrainLoader");
         MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
         GameObject MAT = GameObject.Find("MATLoader");
         ShrinkingBallSeg MATalg = MAT.GetComponent<ShrinkingBallSeg>();
-        meshGenerator.StartPipe(meshGenerator.vertexFile2018);
+        //meshGenerator.StartPipe(meshGenerator.vertexFile2018);
         xCorrection = meshGenerator.xCorrection;
         zCorrection = meshGenerator.zCorrection;
         xSize = meshGenerator.xSizer;
@@ -60,9 +60,9 @@ public class CreateGrid : MonoBehaviour
         MATcol = MATlist.NewMATList;
     }
 
-    public void InstantiateGrid(float3[] verts, float3[] normals, int[] triangles)
+    public void InstantiateGrid()
     {
-        grid = new Grid(verts, normals, triangles);
+        grid = new Grid(vertices, normals, triangles);
         foreach (Cell cell in grid.cells)
         {
             cell.curvature = computeESRICurvature(cell, 2, 4);

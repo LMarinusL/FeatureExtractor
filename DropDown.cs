@@ -16,6 +16,8 @@ public class DropDown : MonoBehaviour
     {
         GameObject gridcreator = GameObject.Find("GridCreator");
         gridImporter = gridcreator.GetComponent<CreateGrid>();
+
+
         vertices = gridImporter.vertices;
 
         var dropdown = transform.GetComponent<Dropdown>();
