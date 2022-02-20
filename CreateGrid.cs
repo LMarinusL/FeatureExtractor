@@ -305,9 +305,21 @@ public class CreateGrid : MonoBehaviour
         mesh.colors = colors;
     }
 
+    void setRunoffScores(Grid grid)
+    {
+        int ind = 0;
+        int[] array = new int[vertices.Length];
+        while (ind < vertices.Length)
+        {
+            array[ind] = ind;
+            ind++;
+        }
+        int[] result = getRunoffPatterns(grid, array, 3000, 20f);
+    }
+
     public void setMeshRunoffColors(int[] starts, int num, float margin)
     {
-        int[] patterns = getRunoffPatterns(starts, num, margin);
+        int[] patterns = getRunoffPatterns(grid, starts, num, margin);
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
@@ -327,7 +339,7 @@ public class CreateGrid : MonoBehaviour
         }
     }
 
-    int[] getRunoffPatterns(int[] startingPoints, int numOfIterations, float margin)
+    int[] getRunoffPatterns(Grid grid, int[] startingPoints, int numOfIterations, float margin)
     {
         List<int> patterns = new List<int>();
         List<int> currentPattern = new List<int>();
@@ -545,22 +557,58 @@ public class CreateGrid : MonoBehaviour
         mesh1997 = meshGenerator.mesh;
         InstantiateGrid(mesh1997);
         grid1997 = grid;
+        setRunoffScores(grid1997);
         //2008
         meshGenerator.StartPipe(meshGenerator.vertexFile2008);
         mesh2008 = meshGenerator.mesh;
         InstantiateGrid(mesh2008);
         grid2008 = grid;
+        setRunoffScores(grid2008);
         //2012
         meshGenerator.StartPipe(meshGenerator.vertexFile2012);
         mesh2012 = meshGenerator.mesh;
         InstantiateGrid(mesh2012);
         grid2012 = grid;
+        setRunoffScores(grid2012);
+
         //2018
         meshGenerator.StartPipe(meshGenerator.vertexFile2018);
         mesh2018 = meshGenerator.mesh;
         InstantiateGrid(mesh2018);
         grid2018 = grid;
+        setRunoffScores(grid2018);
 
+
+
+
+
+        string path = "Assets/Output/outputGridFull.txt";
+        StreamWriter writer = new StreamWriter(path, false);
+        writer.WriteLine("year interval x y hprevious hcurrent hdifference relativeHeight slope relativeSlope aspect relativeAspect");
+        //1997-2008
+        foreach (Cell cell in grid1997.cells)
+        {
+            if (cell.y == 0) { continue; }
+            writer.WriteLine(" 2008 11 " + cell.curvature + " " + cell.z + " " + cell.y + " " +
+                cell.slope + " " + cell.aspect + " ");
+        }
+        //2008-2012
+        foreach (Cell cell in grid2008.cells)
+        {
+            if (cell.y == 0) { continue; }
+            writer.WriteLine(" 20012 4 " + cell.curvature + " " + cell.z + " " + cell.y + " " +
+                cell.slope + " " + cell.aspect + " ");
+        }
+        //2012-2018
+        foreach (Cell cell in grid2012.cells)
+        {
+            if (cell.y == 0) { continue; }
+            writer.WriteLine(" 2018 6 " + cell.curvature + " " + cell.z + " " + cell.y + " " +
+                cell.slope + " " + cell.aspect + " ");
+        }
+
+
+        writer.Close();
     }
 }
 
