@@ -19,8 +19,8 @@ public class MeshGenerator : MonoBehaviour
 
     [SerializeField] public TextMeshProUGUI loadingText;
 
-    public int zSizer; //original full 752 small 188
-    public int xSizer; // original full 369 small 93
+    public int zSizer; //original full 752 small 188 XL 1879
+    public int xSizer; // original full 369 small 93 XL 921
     int zSize;
     int xSize;
     public Mesh mesh;

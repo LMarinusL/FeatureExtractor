@@ -20,16 +20,11 @@ public class DropDownDataset : MonoBehaviour
         dropdown.options.Clear();
 
         List<string> items = new List<string>();
-        items.Add("Chooeter");
-        items.Add("sloe");
-        items.Add("aspect");
-        items.Add("relative slope");
-        items.Add("reive aspect");
-        items.Add("relative height");
-        items.Add("curve");
-        items.Add("run-off random");
-        items.Add("run-off all cells");
-        items.Add("run-off iterate");
+        items.Add("Choose Dataset");
+        items.Add("1997");
+        items.Add("2008");
+        items.Add("2012");
+        items.Add("2018");
 
 
         foreach (var item in items)
