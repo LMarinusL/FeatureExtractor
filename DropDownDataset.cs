@@ -50,33 +50,33 @@ public class DropDownDataset : MonoBehaviour
             case 0:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2018);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid();
+                gridImporter.InstantiateGrid(gridImporter.mesh);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2018");
                 break;
             case 1:
                 meshGenerator.StartPipe(meshGenerator.vertexFile1997);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid();
+                gridImporter.InstantiateGrid(gridImporter.mesh);
                 gridImporter.WriteString();
                 Debug.Log("Output written 1997");
                 break;
             case 2:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2008);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid();
+                gridImporter.InstantiateGrid(gridImporter.mesh);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2008"); break;
             case 3:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2012);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid();
+                gridImporter.InstantiateGrid(gridImporter.mesh);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2012"); break;
             case 4:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2018);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid();
+                gridImporter.InstantiateGrid(gridImporter.mesh);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2018"); break;
             default:

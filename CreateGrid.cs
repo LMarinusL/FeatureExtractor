@@ -23,13 +23,14 @@ public class CreateGrid : MonoBehaviour
     public int xSize;
     public int zSize;
     public GameObject dotgreen;
-    Mesh mesh;
+    public Mesh mesh;
     Color[] colors;
+    MeshGenerator meshGenerator;
 
   void Start()
     {
         getData();
-        InstantiateGrid();
+        InstantiateGrid(mesh);
         WriteString();
         Debug.Log("Output written");
     }
@@ -37,13 +38,16 @@ public class CreateGrid : MonoBehaviour
 
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            WriteAll();
+        }
     }
 
     public void getData()
     {
         GameObject terrain = GameObject.Find("TerrainLoader");
-        MeshGenerator meshGenerator = terrain.GetComponent<MeshGenerator>();
+        meshGenerator = terrain.GetComponent<MeshGenerator>();
         GameObject MAT = GameObject.Find("MATLoader");
         ShrinkingBallSeg MATalg = MAT.GetComponent<ShrinkingBallSeg>();
         //meshGenerator.StartPipe(meshGenerator.vertexFile2018);
@@ -58,11 +62,13 @@ public class CreateGrid : MonoBehaviour
         triangles = meshGenerator.triangles;
         MATlist = MATalg.list;
         MATcol = MATlist.NewMATList;
-    }
+    } 
 
-    public void InstantiateGrid()
+    public void  InstantiateGrid(Mesh mesh)
     {
-        grid = new Grid(vertices, normals, triangles);
+        grid = new Grid(meshGenerator.Vector3Tofloat3Array(mesh.vertices), 
+            meshGenerator.Vector3Tofloat3Array(mesh.normals),
+            mesh.triangles);
         foreach (Cell cell in grid.cells)
         {
             cell.curvature = computeESRICurvature(cell, 2, 4);
@@ -72,6 +78,7 @@ public class CreateGrid : MonoBehaviour
             cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
+        
     }
 
     public void WriteString()
@@ -520,6 +527,41 @@ public class CreateGrid : MonoBehaviour
         return cells;
     }
 
+
+    void WriteAll()
+    {
+        Mesh mesh1997;
+        Mesh mesh2008;
+        Mesh mesh2012;
+        Mesh mesh2018;
+        Grid grid1997;
+        Grid grid2008;
+        Grid grid2012;
+        Grid grid2018;
+
+
+        //1997
+        meshGenerator.StartPipe(meshGenerator.vertexFile1997);
+        mesh1997 = meshGenerator.mesh;
+        InstantiateGrid(mesh1997);
+        grid1997 = grid;
+        //2008
+        meshGenerator.StartPipe(meshGenerator.vertexFile2008);
+        mesh2008 = meshGenerator.mesh;
+        InstantiateGrid(mesh2008);
+        grid2008 = grid;
+        //2012
+        meshGenerator.StartPipe(meshGenerator.vertexFile2012);
+        mesh2012 = meshGenerator.mesh;
+        InstantiateGrid(mesh2012);
+        grid2012 = grid;
+        //2018
+        meshGenerator.StartPipe(meshGenerator.vertexFile2018);
+        mesh2018 = meshGenerator.mesh;
+        InstantiateGrid(mesh2018);
+        grid2018 = grid;
+
+    }
 }
 
 

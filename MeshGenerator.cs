@@ -166,7 +166,7 @@ public class MeshGenerator : MonoBehaviour
         return list;
     }
 
-    float3[] Vector3Tofloat3Array(Vector3[] points)
+    public float3[] Vector3Tofloat3Array(Vector3[] points)
     {
         float3[] list = new float3[points.Length];
         int i = 0;
