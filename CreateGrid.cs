@@ -78,7 +78,9 @@ public class CreateGrid : MonoBehaviour
             cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
-        
+        Instantiate(dotgreen, grid.cells[214228].position, transform.rotation);
+
+
     }
 
     public void WriteString()
@@ -606,7 +608,6 @@ public class CreateGrid : MonoBehaviour
             writer.WriteLine(" 2018 6 " + cell.curvature + " " + cell.z + " " + cell.y + " " +
                 cell.slope + " " + cell.aspect + " ");
         }
-
 
         writer.Close();
     }
