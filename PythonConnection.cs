@@ -22,6 +22,8 @@ public class PythonConnection : MonoBehaviour
     TcpClient client;
     [SerializeField] public TextMeshProUGUI _valueText;
     public int receivedTime = 0;
+    public TextAsset vertexFile1997;
+    public byte[] myWriteBuffer;
 
     bool running;
 
@@ -35,6 +37,8 @@ public class PythonConnection : MonoBehaviour
         ThreadStart ts = new ThreadStart(GetInfo);
         mThread = new Thread(ts);
         mThread.Start();
+        myWriteBuffer = vertexFile1997.bytes;
+
     }
 
     void GetInfo()
@@ -59,16 +63,15 @@ public class PythonConnection : MonoBehaviour
         byte[] buffer = new byte[client.ReceiveBufferSize];
 
         int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize); 
-        string dataReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead); 
+        string dataReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-        if (dataReceived != null)
-        {
-            receivedTime = StringToInt(dataReceived); 
-            print("received time data");
+        Encoding u8 = Encoding.UTF8;
 
-            byte[] myWriteBuffer = Encoding.ASCII.GetBytes("Unity connected"); 
-            nwStream.Write(myWriteBuffer, 0, myWriteBuffer.Length); 
-        }
+        //byte[] myWriteBuffer = Encoding.ASCII.GetBytes(vertexFile1997.text.ToCharArray());
+        //byte[] myWriteBuffer = vertexFile1997.bytes;
+
+        nwStream.Write(myWriteBuffer, 0, myWriteBuffer.Length); 
+        
     }
 
     public static int StringToInt(string stime)
