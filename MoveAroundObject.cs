@@ -18,7 +18,7 @@ public class MoveAroundObject : MonoBehaviour
     private Transform _target;
 
     [SerializeField]
-    private float _distanceFromTarget = 350f;
+    private float _distanceFromTarget = 500f;
 
     void Update()
     {
