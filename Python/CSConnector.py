@@ -89,8 +89,17 @@ plt.rcParams.update({'font.size': 15})
 result = pd.DataFrame(forest2.feature_importances_,  df[col_study].columns)
 result.columns = ['importance']
 result.sort_values(by='importance', ascending=False)
-plt.bar(range(len(forest2.feature_importances_)), forest2.feature_importances_)
-plt.show()
+
+features=df.columns[[0,1,2,3,4,6,7,8,9]]
+
+importances = forest2.feature_importances_
+indices = np.argsort(importances)
+
+plt.figure(1)
+plt.title('Feature Importances')
+plt.barh(range(len(indices)), importances[indices], color='b', align='center')
+plt.yticks(range(len(indices)), features[indices])
+plt.xlabel('Relative Importance')
 ##################
 ###################
 plt.rcParams.update({'font.size': 20})
