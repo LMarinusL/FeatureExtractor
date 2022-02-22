@@ -581,32 +581,26 @@ public class CreateGrid : MonoBehaviour
         setRunoffScores(grid2018);
 
 
-
-
-
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("year interval x y hprevious hcurrent hdifference relativeHeight slope relativeSlope aspect relativeAspect");
+        writer.WriteLine("year interval x y hprevious hdifference slope aspect curvature runoff");
         //1997-2008
         foreach (Cell cell in grid1997.cells)
         {
-            if (cell.y == 0) { continue; }
-            writer.WriteLine(" 2008 11 " + cell.curvature + " " + cell.z + " " + cell.y + " " +
-                cell.slope + " " + cell.aspect + " ");
+            if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
+            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2008.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
         }
         //2008-2012
         foreach (Cell cell in grid2008.cells)
         {
-            if (cell.y == 0) { continue; }
-            writer.WriteLine(" 20012 4 " + cell.curvature + " " + cell.z + " " + cell.y + " " +
-                cell.slope + " " + cell.aspect + " ");
+            if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
+            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2012.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
         }
         //2012-2018
         foreach (Cell cell in grid2012.cells)
         {
-            if (cell.y == 0) { continue; }
-            writer.WriteLine(" 2018 6 " + cell.curvature + " " + cell.z + " " + cell.y + " " +
-                cell.slope + " " + cell.aspect + " ");
+            if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2018.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
         }
 
         writer.Close();
