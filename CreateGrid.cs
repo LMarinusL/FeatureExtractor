@@ -78,7 +78,6 @@ public class CreateGrid : MonoBehaviour
             cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
-        Instantiate(dotgreen, grid.cells[214228].position, transform.rotation);
 
 
     }
@@ -544,16 +543,24 @@ public class CreateGrid : MonoBehaviour
 
     void WriteAll()
     {
+        Mesh mesh1983;
         Mesh mesh1997;
         Mesh mesh2008;
         Mesh mesh2012;
         Mesh mesh2018;
+        Grid grid1983;
         Grid grid1997;
         Grid grid2008;
         Grid grid2012;
         Grid grid2018;
 
 
+        //1983
+        meshGenerator.StartPipe(meshGenerator.vertexFile1983);
+        mesh1983 = meshGenerator.mesh;
+        InstantiateGrid(mesh1983);
+        grid1983 = grid;
+        setRunoffScores(grid1983);
         //1997
         meshGenerator.StartPipe(meshGenerator.vertexFile1997);
         mesh1997 = meshGenerator.mesh;
@@ -580,10 +587,30 @@ public class CreateGrid : MonoBehaviour
         grid2018 = grid;
         setRunoffScores(grid2018);
 
+        List<Cell> cellsLowDiff = new List<Cell>();
+        foreach (Cell cell in grid2008.cells) {
 
+            float diff = (grid2012.cells[cell.index].y - cell.y);
+            float diff2 = (grid1997.cells[cell.index].y - cell.y);
+            if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < 0.3 && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < 0.3)
+                {
+                cellsLowDiff.Add(cell);
+                Instantiate(dotgreen, cell.position, transform.rotation);
+            }
+        }
+        foreach (Cell cell in cellsLowDiff)
+        {
+            Debug.Log("diff1 " + (grid2012.cells[cell.index].y - grid2018.cells[cell.index].y));
+        }
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
         writer.WriteLine("year interval x y hprevious hdifference slope aspect curvature runoff");
+        //1983-1997
+        foreach (Cell cell in grid1983.cells)
+        {
+            if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
+            writer.WriteLine("1997 14 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid1997.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
+        }
         //1997-2008
         foreach (Cell cell in grid1997.cells)
         {

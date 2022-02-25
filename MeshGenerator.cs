@@ -12,6 +12,7 @@ using Unity.Mathematics;
 
 public class MeshGenerator : MonoBehaviour
 {
+    public TextAsset vertexFile1983;
     public TextAsset vertexFile1997;
     public TextAsset vertexFile2008;
     public TextAsset vertexFile2012;
