@@ -159,7 +159,9 @@ public class Cell : Component
     public float z;
     public float slope;
     public float aspect;
-    public float relativeHeight;
+    public float relativeHeight1;
+    public float relativeHeight2;
+    public float relativeHeight3;
     public float relativeSlope;
     public float relativeAspect;
     public float dRM1;
@@ -169,6 +171,10 @@ public class Cell : Component
     public float curvatureZ;
     public float curvature;
     public int runoffScore;
+    public float averageRunoff1;
+    public float averageRunoff2;
+    public float averageRunoff3;
+    public float distToSkeleton;
     public List<Triangle> attachedTriangles;
     public List<Face> attachedFaces;
     public ContourCell contourCell;
@@ -187,6 +193,10 @@ public class Cell : Component
         runoffScore = 0;
         attachedTriangles = new List<Triangle>();
         attachedFaces = new List<Face>();
+        averageRunoff1 = 0;
+        averageRunoff2 = 0;
+        averageRunoff3 = 0;
+
     }
 
     float computeSlope(float3 normal)

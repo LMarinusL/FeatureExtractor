@@ -31,9 +31,11 @@ public class DropDown : MonoBehaviour
         items.Add("relative aspect");
         items.Add("relative height");
         items.Add("curve");
-        items.Add("run-off random");
+        items.Add("run-off average");
         items.Add("run-off all cells");
         items.Add("run-off iterate");
+        items.Add("distance to skeleton");
+
 
 
         foreach (var item in items)
@@ -73,12 +75,7 @@ public class DropDown : MonoBehaviour
                 gridImporter.setMeshCurveColors();
                 break;
             case 7:
-                List<int> startAt = new List<int>();
-                for (int i = 0; i < 1000; i++)
-                {
-                    startAt.Add(UnityEngine.Random.Range(100, 250000));
-                }
-                gridImporter.setMeshRunoffColors(startAt.ToArray(), 3000, 20f);
+                gridImporter.setMeshAverageRunoffColors(gridImporter.grid);
                 break;
             case 8:
                 int ind = 0;
@@ -92,6 +89,9 @@ public class DropDown : MonoBehaviour
                 break;
             case 9:
                 gridImporter.StartCoroutine(gridImporter.iterate(1000));
+                break;
+            case 10:
+                gridImporter.setMeshdLN1Colors();
                 break;
             default:
                 // code block

@@ -116,7 +116,7 @@ public class MeshGenerator : MonoBehaviour
         {
             values = arrayOfLines[index].Split(' ');
             VectorNew = new float3(((float.Parse(values[1], CultureInfo.InvariantCulture)- zCorrection) / 10),
-                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 6),
+                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / 10),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- xCorrection) / 10));
             vertices[index] = VectorNew;
             index++;

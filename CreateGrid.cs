@@ -69,17 +69,40 @@ public class CreateGrid : MonoBehaviour
         grid = new Grid(meshGenerator.Vector3Tofloat3Array(mesh.vertices), 
             meshGenerator.Vector3Tofloat3Array(mesh.normals),
             mesh.triangles);
+        setRunoffScores(grid);
         foreach (Cell cell in grid.cells)
         {
-            cell.curvature = computeESRICurvature(cell, 2, 4);
-            cell.relativeHeight = relativeHeight(cell.index, grid, 1);
-            cell.relativeSlope = relativeSlope(cell.index, grid, 1);
-            cell.relativeAspect = relativeAspect(cell.index, grid, 1);
-            cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
+            if (cell.y == 0)
+            {
+                cell.curvature = 0;
+                cell.relativeHeight1 = 0;
+                cell.relativeHeight2 = 0;
+                cell.relativeHeight3 = 0;
+                cell.relativeSlope = 0;
+                cell.relativeAspect = 0;
+                cell.dRM1 = 0;
+                cell.averageRunoff1 = 0;
+                cell.averageRunoff2 = 0;
+                cell.averageRunoff3 = 0;
+
+            }
+            else
+            {
+                cell.curvature = computeESRICurvature(cell, 2, 4);
+                cell.relativeHeight1 = relativeHeight(cell.index, grid, 1);
+                cell.relativeHeight2 = relativeHeight(cell.index, grid, 2);
+                cell.relativeHeight3 = relativeHeight(cell.index, grid, 4);
+                cell.relativeSlope = relativeSlope(cell.index, grid, 1);
+                cell.relativeAspect = relativeAspect(cell.index, grid, 1);
+                cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
+                cell.averageRunoff1 = averageRunoff(grid, cell, 2);
+                cell.averageRunoff2 = averageRunoff(grid, cell, 4);
+                cell.averageRunoff3 = averageRunoff(grid, cell, 6);
+
+            }
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
-
-
+        getDistanceToLines(grid);
     }
 
     public void WriteString()
@@ -96,7 +119,7 @@ public class CreateGrid : MonoBehaviour
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection))
                 + " " + HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[400])
-                + " " + cell.relativeHeight + " " + cell.relativeSlope + " " + cell.relativeAspect
+                + " " + cell.relativeHeight1 + " " + cell.relativeSlope + " " + cell.relativeAspect
                 );
         }
         writer.Close();
@@ -167,6 +190,13 @@ public class CreateGrid : MonoBehaviour
                 heightSum = heightSum + grid.cells[i].y;
                 numOfCells++;
             }
+        }
+        int xLoc = getXFromIndex(index);
+        int zLoc = getZFromIndex(index);
+
+        if (xLoc < 0 + dist || xLoc > xSize - dist || zLoc < 0 + dist || zLoc > zSize - dist)
+        {
+            return 0;
         }
         if (numOfCells == 0) // if there are no cells around it that are not at height zero, prevent dividing by zero
         {
@@ -282,7 +312,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].relativeHeight / 5), 1f * (grid.cells[i].relativeHeight / 5), 1f * (1 - ((grid.cells[i].relativeHeight) / 5)), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].relativeHeight1 / 5), 1f * (grid.cells[i].relativeHeight1 / 5), 1f * (1 - ((grid.cells[i].relativeHeight1) / 5)), 1f);
         }
         mesh.colors = colors;
     }
@@ -296,12 +326,12 @@ public class CreateGrid : MonoBehaviour
         }
         mesh.colors = colors;
     }
-    void setMeshdLN1Colors()
+    public void setMeshdLN1Colors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].dLN1/10000), 1f * (grid.cells[i].dLN1/10000), 1f * (grid.cells[i].dLN1/10000), 1f);
+            colors[i] = new Color(1f * (20/grid.cells[i].distToSkeleton), 1f * (20/grid.cells[i].distToSkeleton), 1f * (20/grid.cells[i].distToSkeleton), 1f);
         }
         mesh.colors = colors;
     }
@@ -315,7 +345,7 @@ public class CreateGrid : MonoBehaviour
             array[ind] = ind;
             ind++;
         }
-        int[] result = getRunoffPatterns(grid, array, 3000, 20f);
+        int[] result = getRunoffPatterns(grid, array, 300, 20f);
     }
 
     public void setMeshRunoffColors(int[] starts, int num, float margin)
@@ -325,6 +355,16 @@ public class CreateGrid : MonoBehaviour
         for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(0f , 1f * (grid.cells[i].runoffScore / 10), 1f * (grid.cells[i].runoffScore / 10), 1f);
+        }
+        mesh.colors = colors;
+    }
+
+    public void setMeshAverageRunoffColors(Grid grid)
+    {
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            colors[i] = new Color(0f, 1f * (grid.cells[i].averageRunoff1 / 10), 1f * (grid.cells[i].averageRunoff1 / 10), 1f);
         }
         mesh.colors = colors;
     }
@@ -494,6 +534,32 @@ public class CreateGrid : MonoBehaviour
         }
     }
 
+    public float averageRunoff(Grid grid, Cell cell, int dist)
+    {
+        int runoffSum = 0;
+        int xLoc = getXFromIndex(cell.index);
+        int zLoc = getZFromIndex(cell.index);
+        float numOfCells = Mathf.Pow((1 + (2*dist)), 2);
+        if(xLoc < 0 + dist || xLoc > xSize - dist || zLoc < 0 + dist || zLoc > zSize - dist)
+        {
+            return 0;
+        }
+        for( int i = -dist; i < dist; i++)
+        {
+            for (int j = -dist; j < dist; j++)
+            {
+                try
+                {
+                    runoffSum += grid.cells[getIndexFromLoc(xLoc + i, zLoc + j)].runoffScore;
+                }
+                catch { 
+                    
+                    Debug.Log(" index error x" + (xLoc + i) + " z " + (zLoc + j)); }
+            }
+        }
+        return runoffSum / numOfCells;
+    }
+
 
     public List<Cell> getSurroundingCells(Cell own, Grid grid, int dist, int connectivity)
     {
@@ -538,6 +604,154 @@ public class CreateGrid : MonoBehaviour
             }
         }
         return cells;
+    }
+
+    public void getDistanceToLines(Grid grid)
+    {
+        List<Vector3> list = new List<Vector3>
+        {
+           new Vector3(2003, 0, 937),
+           new Vector3(1915, 0, 932),
+           new Vector3(1885, 0, 909),
+           new Vector3(1877, 0, 849),
+           new Vector3(1717, 0, 721),
+           new Vector3(1650, 0, 655),
+           new Vector3(1571, 0, 644),
+        };
+        List<Vector3> list2 = new List<Vector3>
+        {
+           new Vector3(1712, 0, 776),
+           new Vector3(1707, 0, 745),
+           new Vector3(1653, 0, 708),
+           new Vector3(1627, 0, 716),
+           new Vector3(1627, 0, 690),
+           new Vector3(1595, 0, 674),
+           new Vector3(1579, 0, 651),
+        };
+        List<Vector3> list3 = new List<Vector3>
+        {
+           new Vector3(1820, 0, 602),
+           new Vector3(1730, 0, 633),
+           new Vector3(1695, 0, 664),
+           new Vector3(1669, 0, 664),
+        };
+        List<Vector3> list4 = new List<Vector3>
+        {
+           new Vector3(1572, 0, 642),
+           new Vector3(1539, 0, 607),
+           new Vector3(1516, 0, 636),
+           new Vector3(1502, 0, 641),
+           new Vector3(1488, 0, 632),
+           new Vector3(1491, 0, 592),
+           new Vector3(1451, 0, 592),
+           new Vector3(1442, 0, 627),
+           new Vector3(1426, 0, 652),
+           new Vector3(1407, 0, 620),
+           new Vector3(1407, 0, 566),
+           new Vector3(1378, 0, 552),
+           new Vector3(1342, 0, 555),
+           new Vector3(1297, 0, 580),
+           new Vector3(1248, 0, 566),
+           new Vector3(1179, 0, 557),
+           new Vector3(1148, 0, 617),
+           new Vector3(1125, 0, 617),
+           new Vector3(1098, 0, 635),
+           new Vector3(1022, 0, 556),
+           new Vector3(995, 0, 562),
+           new Vector3(942, 0, 616),
+           new Vector3(845, 0, 581),
+           new Vector3(794, 0, 601),
+           new Vector3(788, 0, 570),
+           new Vector3(809, 0, 554),
+           new Vector3(784, 0, 550),
+           new Vector3(747, 0, 579),
+           new Vector3(653, 0, 597),
+           new Vector3(558, 0, 582),
+           new Vector3(528, 0, 552),
+           new Vector3(576, 0, 499),
+           new Vector3(576, 0, 466),
+           new Vector3(545, 0, 407),
+           new Vector3(558, 0, 383),
+           new Vector3(608, 0, 420),
+           new Vector3(620, 0, 409),
+           new Vector3(618, 0, 390),
+           new Vector3(633, 0, 337),
+           new Vector3(627, 0, 326),
+           new Vector3(582, 0, 345),
+           new Vector3(563, 0, 334),
+           new Vector3(571, 0, 319),
+           new Vector3(613, 0, 292),
+           new Vector3(635, 0, 271),
+           new Vector3(534, 0, 232),
+           new Vector3(550, 0, 275),
+           new Vector3(522, 0, 294),
+           new Vector3(422, 0, 279),
+        };
+        List<Vector3> list5 = new List<Vector3>
+        {
+           new Vector3(684, 0, 975),
+           new Vector3(723, 0, 896),
+           new Vector3(704, 0, 858),
+           new Vector3(656, 0, 824),
+           new Vector3(668, 0, 744),
+           new Vector3(721, 0, 674),
+           new Vector3(739, 0, 627),
+           new Vector3(762, 0, 603),
+           new Vector3(745, 0, 565),
+        };
+        List<Vector3> list6 = new List<Vector3>
+        {
+           new Vector3(906, 0, 319),
+           new Vector3(945, 0, 414),
+           new Vector3(1049, 0, 541),
+           new Vector3(1029, 0, 561),
+        };
+
+
+        List<List<Vector3>> allLists = new List<List<Vector3>>();
+        allLists.Add(list);
+        allLists.Add(list2);
+        allLists.Add(list3);
+        allLists.Add(list4);
+        allLists.Add(list5);
+        allLists.Add(list6);
+
+        foreach (Cell cell in grid.cells)
+        {
+            float smallestDist = 9999f;
+            float currentDist = 9999f;
+            if (cell.y != 0)
+            {
+                foreach (List<Vector3> sublist in allLists)
+                {
+
+                    for (int index = 0; index < sublist.Count - 1; index++)
+                    {
+                        currentDist = HandleUtility.DistancePointLine(new Vector3(cell.x, 0, cell.z), sublist[index], sublist[index + 1]);
+                        if (currentDist < smallestDist)
+                        {
+                            smallestDist = currentDist;
+                        }
+                    }
+                }
+                    cell.distToSkeleton = smallestDist;
+                }
+            else
+                {
+                    cell.distToSkeleton = 9999999999f;
+
+                }
+            
+        }
+
+    }
+
+    float distanceToLine(Vector3 point, Vector3 start, Vector3 end)
+    {
+        float distance = Mathf.Abs(
+            ((end.x - start.x) * (start.z - point.z)) - ((start.x - point.x) * (end.z - start.z))) /
+            Mathf.Pow((Mathf.Pow(end.x - start.x, 2) + Mathf.Pow(end.z - start.z, 2)), 0.5f);
+        return distance;
     }
 
 
@@ -591,43 +805,58 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid2008.cells) {
 
             float diff = (grid2012.cells[cell.index].y - cell.y);
-            float diff2 = (grid1997.cells[cell.index].y - cell.y);
-            if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < 0.3 && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < 0.3)
+            float diff2 = (cell.y - grid1997.cells[cell.index].y);
+            float diff3 = (grid1997.cells[cell.index].y - grid1983.cells[cell.index].y);
+
+            float maxDiff = 0.7f;
+            if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < maxDiff && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < maxDiff && Mathf.Pow(Mathf.Pow(diff3, 0.5f), 2) < maxDiff)
                 {
                 cellsLowDiff.Add(cell);
                 Instantiate(dotgreen, cell.position, transform.rotation);
             }
         }
+
+        int count = 0;
+        float sum = 0f;
+        float mean = 0f;
+        foreach (Cell cell in cellsLowDiff)
+        {
+            count++;
+            sum += (grid2012.cells[cell.index].y - grid2018.cells[cell.index].y);
+        }
+        mean = sum / count;
+
         foreach (Cell cell in cellsLowDiff)
         {
             Debug.Log("diff1 " + (grid2012.cells[cell.index].y - grid2018.cells[cell.index].y));
         }
+        Debug.Log(" Mean: " + mean);
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("year interval x y hprevious hdifference slope aspect curvature runoff");
-        //1983-1997
+        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvature dist averageRunoff1 averageRunoff2 averageRunoff3 discharge");
+       /* //1983-1997
         foreach (Cell cell in grid1983.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
             writer.WriteLine("1997 14 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid1997.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
-        }
+        } */
         //1997-2008
         foreach (Cell cell in grid1997.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2008.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
+            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2008.cells[cell.index].y - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " "  + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 73.9");
         }
         //2008-2012
         foreach (Cell cell in grid2008.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2012.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
+            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2012.cells[cell.index].y - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " +  cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 95.5" );
         }
         //2012-2018
         foreach (Cell cell in grid2012.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2018.cells[cell.index].y - cell.y) + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.runoffScore);
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2018.cells[cell.index].y - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2" );
         }
 
         writer.Close();
