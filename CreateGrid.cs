@@ -818,13 +818,13 @@ public class CreateGrid : MonoBehaviour
 
         int count = 0;
         float sum = 0f;
-        float mean = 0f;
+        float correction2018 = 0f;
         foreach (Cell cell in cellsLowDiff)
         {
             count++;
             sum += (grid2012.cells[cell.index].y - grid2018.cells[cell.index].y);
         }
-        mean = sum / count;
+        correction2018 = sum / count;
 
         foreach (Cell cell in cellsLowDiff)
         {
@@ -856,7 +856,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid2012.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2018.cells[cell.index].y - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2" );
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2" );
         }
 
         writer.Close();
