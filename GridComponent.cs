@@ -178,6 +178,7 @@ public class Cell : Component
     public List<Triangle> attachedTriangles;
     public List<Face> attachedFaces;
     public ContourCell contourCell;
+    public float skeletonAspect;
 
 
 

@@ -35,6 +35,8 @@ public class DropDown : MonoBehaviour
         items.Add("run-off all cells");
         items.Add("run-off iterate");
         items.Add("distance to skeleton");
+        items.Add("angle to skeleton");
+
 
 
 
@@ -92,6 +94,9 @@ public class DropDown : MonoBehaviour
                 break;
             case 10:
                 gridImporter.setMeshdLN1Colors();
+                break;
+            case 11:
+                gridImporter.setMeshSkeletonAspectColors();
                 break;
             default:
                 // code block

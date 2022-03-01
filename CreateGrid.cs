@@ -285,10 +285,31 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length]; 
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].aspect/180), 1f * (grid.cells[i].aspect / 180), 1f * ((180 - grid.cells[i].aspect)/180), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].aspect/90), 1f * (grid.cells[i].aspect / 90), 1f * ((grid.cells[i].aspect)/90), 1f);
         }
         mesh.colors = colors;
     }
+
+    public void setMeshSkeletonAspectColors()
+    {
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            float aspectToSkeleton = 0f;
+            float diff = grid.cells[i].aspect - grid.cells[i].skeletonAspect;
+            if (diff <= 180)
+            {
+                aspectToSkeleton = diff;
+            }
+            else
+            {
+                aspectToSkeleton = 360f - diff;
+            }
+            colors[i] = new Color(1f * ((aspectToSkeleton) / 180), 1f * ((aspectToSkeleton) / 180), 1f * ((aspectToSkeleton) / 180), 1f);
+        }
+        mesh.colors = colors;
+    }
+
     public void setMeshRelativeSlopeColors()
     {
         colors = new Color[vertices.Length];
@@ -720,6 +741,7 @@ public class CreateGrid : MonoBehaviour
         {
             float smallestDist = 9999f;
             float currentDist = 9999f;
+            float lineAngle = 0f;
             if (cell.y != 0)
             {
                 foreach (List<Vector3> sublist in allLists)
@@ -731,13 +753,16 @@ public class CreateGrid : MonoBehaviour
                         if (currentDist < smallestDist)
                         {
                             smallestDist = currentDist;
+                            lineAngle = computeAngle(sublist[index], sublist[index + 1]);
                         }
                     }
                 }
+                    cell.skeletonAspect = lineAngle;
                     cell.distToSkeleton = smallestDist;
                 }
             else
                 {
+                    cell.skeletonAspect = 0f;
                     cell.distToSkeleton = 9999999999f;
 
                 }
@@ -745,6 +770,22 @@ public class CreateGrid : MonoBehaviour
         }
 
     }
+
+    float computeAngle(Vector3 start, Vector3 end)
+    {
+        Vector3 vector = end - start;
+        float angle;
+        if (vector.x > 0)
+        {
+            angle = 90f - 57.3f * (Mathf.Atan(vector.z / vector.x));
+        }
+        else
+        {
+            angle = 270f - 57.3f * (Mathf.Atan(vector.z / vector.x));
+        }
+        return angle;
+    }
+
 
     float distanceToLine(Vector3 point, Vector3 start, Vector3 end)
     {
@@ -826,14 +867,10 @@ public class CreateGrid : MonoBehaviour
         }
         correction2018 = sum / count;
 
-        foreach (Cell cell in cellsLowDiff)
-        {
-            Debug.Log("diff1 " + (grid2012.cells[cell.index].y - grid2018.cells[cell.index].y));
-        }
-        Debug.Log(" Mean: " + mean);
+        Debug.Log(" Mean: " + correction2018);
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvature dist averageRunoff1 averageRunoff2 averageRunoff3 discharge");
+        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvature dist averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngle");
        /* //1983-1997
         foreach (Cell cell in grid1983.cells)
         {
@@ -844,19 +881,19 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid1997.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2008.cells[cell.index].y - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " "  + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 73.9");
+            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2008.cells[cell.index].y - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " "  + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 73.9 " + (cell.aspect - cell.skeletonAspect));
         }
         //2008-2012
         foreach (Cell cell in grid2008.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2012.cells[cell.index].y - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " +  cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 95.5" );
+            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2012.cells[cell.index].y - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " +  cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 95.5 " + (cell.aspect - cell.skeletonAspect));
         }
         //2012-2018
         foreach (Cell cell in grid2012.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2" );
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.distToSkeleton + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2 " + (cell.aspect - cell.skeletonAspect));
         }
 
         writer.Close();
