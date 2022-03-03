@@ -58,7 +58,7 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor
 
 ################
-col_study = ['year', 'interval', 'x', 'y',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge']
+col_study = ['year', 'interval', 'x', 'y',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle']
 param_study = 'hdifference'
 
 ###############
@@ -86,7 +86,7 @@ result = pd.DataFrame(forest2.feature_importances_,  df[col_study].columns)
 result.columns = ['importance']
 result.sort_values(by='importance', ascending=False)
 
-features=df.columns[[0,1,2,3,4,6,7,8,9,10, 11, 12, 13, 14, 15, 16]]
+features=df.columns[[0,1,2,3,4,6,7,8,9,10, 11, 12, 13, 14, 15, 16, 17]]
 
 importances = forest2.feature_importances_
 indices = np.argsort(importances)
@@ -184,7 +184,7 @@ plt.show()
 
 ######################
 
-col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge']
+col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle']
 param_study = 'hdifference'
 
 Xo2 = dfTrain[col_study2]
@@ -211,12 +211,11 @@ result.columns = ['importance']
 result.sort_values(by='importance', ascending=False)
 
 print(df.head())
-features=df.columns[[1,4,6,7,8,9, 10, 11, 12, 13, 14, 15, 16]]
+features=df.columns[[1,4,6,7,8,9, 10, 11, 12, 13, 14, 15, 16,17]]
 
 importances2 = forest3.feature_importances_
 indices = np.argsort(importances2)
 fig1 = plt.figure()
-plt.figure(1)
 plt.title('Feature Importances')
 plt.barh(range(len(indices)), importances2[indices], color='b', align='center')
 plt.yticks(range(len(indices)), features[indices])
