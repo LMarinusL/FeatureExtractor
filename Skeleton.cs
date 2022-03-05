@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Skeleton : Component
 {
-    public List<List<Vector3>> skeleton1997;
-    public List<List<Vector3>> skeleton2008;
-    public List<List<Vector3>> skeleton2012;
-    public List<List<Vector3>> skeleton2018;
+    public List<List<SkeletonJoint>> skeleton1997;
+    public List<List<SkeletonJoint>> skeleton2008;
+    public List<List<SkeletonJoint>> skeleton2012;
+    public List<List<SkeletonJoint>> skeleton2018;
 
     // 1997
     List<Vector3> chagres1997 = new List<Vector3>
@@ -386,21 +386,51 @@ public class Skeleton : Component
            new Vector3(418, 0, 277),
         };
 
+    public List<SkeletonJoint> VectorToJoints(List<Vector3> input)
+    {
+        float distance = 0f;
+        Vector3 previous = input[0];
+        List<SkeletonJoint> newList = new List<SkeletonJoint>();
+        foreach(Vector3 vertex in input)
+        {
+            distance += Vector3.Distance(previous, vertex);
+            newList.Add(new SkeletonJoint(vertex, distance));
+            previous = vertex;
+            Debug.Log("distance river: " + distance);
+        }
+        return newList;
+    }
 
     public Skeleton()
     {
-        skeleton1997 = new List<List<Vector3>>();
-        skeleton2008 = new List<List<Vector3>>();
-        skeleton2012 = new List<List<Vector3>>();
-        skeleton2018 = new List<List<Vector3>>();
+        skeleton1997 = new List<List<SkeletonJoint>>();
+        skeleton2008 = new List<List<SkeletonJoint>>();
+        skeleton2012 = new List<List<SkeletonJoint>>();
+        skeleton2018 = new List<List<SkeletonJoint>>();
 
-        skeleton1997.Add(chagres1997);
-        skeleton1997.Add(pequeni1997);
-        skeleton2008.Add(chagres2008);
-        skeleton2008.Add(pequeni2008); 
-        skeleton2012.Add(chagres2012);
-        skeleton2012.Add(pequeni2012);
-        skeleton2018.Add(chagres2018);
-        skeleton2018.Add(pequeni2018);
+        skeleton1997.Add(VectorToJoints(chagres1997));
+        skeleton1997.Add(VectorToJoints(pequeni1997));
+        skeleton2008.Add(VectorToJoints(chagres2008));
+        skeleton2008.Add(VectorToJoints(pequeni2008)); 
+        skeleton2012.Add(VectorToJoints(chagres2012));
+        skeleton2012.Add(VectorToJoints(pequeni2012));
+        skeleton2018.Add(VectorToJoints(chagres2018));
+        skeleton2018.Add(VectorToJoints(pequeni2018));
     }
+
+
+}
+
+
+public class SkeletonJoint : Component
+{
+    public Vector3 position;
+    public float distance;
+
+    public SkeletonJoint(Vector3 pos, float dis)
+    {
+        position = pos;
+        distance = dis;
+    }
+
 }

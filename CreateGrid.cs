@@ -618,7 +618,7 @@ public class CreateGrid : MonoBehaviour
         return cells;
     }
 
-    public void getDistanceToLines(Grid grid, List<List<Vector3>> list)
+    public void getDistanceToLines(Grid grid, List<List<SkeletonJoint>> list)
     {
         foreach (Cell cell in grid.cells)
         {
@@ -626,19 +626,21 @@ public class CreateGrid : MonoBehaviour
             float currentDist = 9999f;
             float lineAngle = 0f;
             float aspectToSkeleton = 0f;
+            float riverLength = 0f;
 
             if (cell.y != 0)
             {
 
-                foreach (List<Vector3> sublist in list)
+                foreach (List<SkeletonJoint> sublist in list)
                 {
                     for (int index = 0; index < sublist.Count - 1; index++)
                     {
-                        currentDist = HandleUtility.DistancePointLine(new Vector3(cell.x, 0, cell.z), sublist[index], sublist[index + 1]);
+                        currentDist = HandleUtility.DistancePointLine(new Vector3(cell.x, 0, cell.z), sublist[index].position, sublist[index + 1].position);
                         if (currentDist < smallestDist)
                         {
                             smallestDist = currentDist;
-                            lineAngle = computeAngle(sublist[index], sublist[index + 1]);
+                            lineAngle = computeAngle(sublist[index].position, sublist[index + 1].position);
+                            riverLength = sublist[index].distance;
                             float diff = cell.aspect - lineAngle;
                             if (diff <= 180)
                             {
@@ -651,7 +653,18 @@ public class CreateGrid : MonoBehaviour
                         }
                     }
                 }
-                    cell.skeletonAspect = Mathf.Abs(aspectToSkeleton);
+                cell.distToRiverMouth = riverLength; // ADD TO CELL ANMD WRITER
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                cell.skeletonAspect = Mathf.Abs(aspectToSkeleton);
                     cell.distToSkeleton = smallestDist;
                 }
             else
