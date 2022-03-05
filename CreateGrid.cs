@@ -26,6 +26,7 @@ public class CreateGrid : MonoBehaviour
     public Mesh mesh;
     Color[] colors;
     MeshGenerator meshGenerator;
+    public Skeleton skeletons;
 
   void Start()
     {
@@ -70,6 +71,7 @@ public class CreateGrid : MonoBehaviour
             meshGenerator.Vector3Tofloat3Array(mesh.normals),
             mesh.triangles);
         setRunoffScores(grid);
+        skeletons = new Skeleton();
         foreach (Cell cell in grid.cells)
         {
             if (cell.y == 0)
@@ -102,7 +104,6 @@ public class CreateGrid : MonoBehaviour
             }
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
-        getDistanceToLines(grid);
     }
 
     public void WriteString()
@@ -617,116 +618,8 @@ public class CreateGrid : MonoBehaviour
         return cells;
     }
 
-    public void getDistanceToLines(Grid grid)
+    public void getDistanceToLines(Grid grid, List<List<Vector3>> list)
     {
-        List<Vector3> list = new List<Vector3>
-        {
-           new Vector3(2003, 0, 937),
-           new Vector3(1915, 0, 932),
-           new Vector3(1885, 0, 909),
-           new Vector3(1877, 0, 849),
-           new Vector3(1717, 0, 721),
-           new Vector3(1650, 0, 655),
-           new Vector3(1571, 0, 644),
-        };
-        List<Vector3> list2 = new List<Vector3>
-        {
-           new Vector3(1712, 0, 776),
-           new Vector3(1707, 0, 745),
-           new Vector3(1653, 0, 708),
-           new Vector3(1627, 0, 716),
-           new Vector3(1627, 0, 690),
-           new Vector3(1595, 0, 674),
-           new Vector3(1579, 0, 651),
-        };
-        List<Vector3> list3 = new List<Vector3>
-        {
-           new Vector3(1820, 0, 602),
-           new Vector3(1730, 0, 633),
-           new Vector3(1695, 0, 664),
-           new Vector3(1669, 0, 664),
-        };
-        List<Vector3> list4 = new List<Vector3>
-        {
-           new Vector3(1572, 0, 642),
-           new Vector3(1539, 0, 607),
-           new Vector3(1516, 0, 636),
-           new Vector3(1502, 0, 641),
-           new Vector3(1488, 0, 632),
-           new Vector3(1491, 0, 592),
-           new Vector3(1451, 0, 592),
-           new Vector3(1442, 0, 627),
-           new Vector3(1426, 0, 652),
-           new Vector3(1407, 0, 620),
-           new Vector3(1407, 0, 566),
-           new Vector3(1378, 0, 552),
-           new Vector3(1342, 0, 555),
-           new Vector3(1297, 0, 580),
-           new Vector3(1248, 0, 566),
-           new Vector3(1179, 0, 557),
-           new Vector3(1148, 0, 617),
-           new Vector3(1125, 0, 617),
-           new Vector3(1098, 0, 635),
-           new Vector3(1022, 0, 556),
-           new Vector3(995, 0, 562),
-           new Vector3(942, 0, 616),
-           new Vector3(845, 0, 581),
-           new Vector3(794, 0, 601),
-           new Vector3(788, 0, 570),
-           new Vector3(809, 0, 554),
-           new Vector3(784, 0, 550),
-           new Vector3(747, 0, 579),
-           new Vector3(653, 0, 597),
-           new Vector3(558, 0, 582),
-           new Vector3(528, 0, 552),
-           new Vector3(576, 0, 499),
-           new Vector3(576, 0, 466),
-           new Vector3(545, 0, 407),
-           new Vector3(558, 0, 383),
-           new Vector3(608, 0, 420),
-           new Vector3(620, 0, 409),
-           new Vector3(618, 0, 390),
-           new Vector3(633, 0, 337),
-           new Vector3(627, 0, 326),
-           new Vector3(582, 0, 345),
-           new Vector3(563, 0, 334),
-           new Vector3(571, 0, 319),
-           new Vector3(613, 0, 292),
-           new Vector3(635, 0, 271),
-           new Vector3(534, 0, 232),
-           new Vector3(550, 0, 275),
-           new Vector3(522, 0, 294),
-           new Vector3(422, 0, 279),
-        };
-        List<Vector3> list5 = new List<Vector3>
-        {
-           new Vector3(684, 0, 975),
-           new Vector3(723, 0, 896),
-           new Vector3(704, 0, 858),
-           new Vector3(656, 0, 824),
-           new Vector3(668, 0, 744),
-           new Vector3(721, 0, 674),
-           new Vector3(739, 0, 627),
-           new Vector3(762, 0, 603),
-           new Vector3(745, 0, 565),
-        };
-        List<Vector3> list6 = new List<Vector3>
-        {
-           new Vector3(906, 0, 319),
-           new Vector3(945, 0, 414),
-           new Vector3(1049, 0, 541),
-           new Vector3(1029, 0, 561),
-        };
-
-
-        List<List<Vector3>> allLists = new List<List<Vector3>>();
-        allLists.Add(list);
-        allLists.Add(list2);
-        allLists.Add(list3);
-        allLists.Add(list4);
-        allLists.Add(list5);
-        allLists.Add(list6);
-
         foreach (Cell cell in grid.cells)
         {
             float smallestDist = 9999f;
@@ -736,9 +629,9 @@ public class CreateGrid : MonoBehaviour
 
             if (cell.y != 0)
             {
-                foreach (List<Vector3> sublist in allLists)
-                {
 
+                foreach (List<Vector3> sublist in list)
+                {
                     for (int index = 0; index < sublist.Count - 1; index++)
                     {
                         currentDist = HandleUtility.DistancePointLine(new Vector3(cell.x, 0, cell.z), sublist[index], sublist[index + 1]);
@@ -817,24 +710,32 @@ public class CreateGrid : MonoBehaviour
         InstantiateGrid(mesh1983);
         grid1983 = grid;
         setRunoffScores(grid1983);
+        getDistanceToLines(grid1983, skeletons.skeleton1997);
+
         //1997
         meshGenerator.StartPipe(meshGenerator.vertexFile1997);
         mesh1997 = meshGenerator.mesh;
         InstantiateGrid(mesh1997);
         grid1997 = grid;
         setRunoffScores(grid1997);
+        getDistanceToLines(grid1997, skeletons.skeleton1997);
+
         //2008
         meshGenerator.StartPipe(meshGenerator.vertexFile2008);
         mesh2008 = meshGenerator.mesh;
         InstantiateGrid(mesh2008);
         grid2008 = grid;
         setRunoffScores(grid2008);
+        getDistanceToLines(grid2008, skeletons.skeleton2008);
+
+
         //2012
         meshGenerator.StartPipe(meshGenerator.vertexFile2012);
         mesh2012 = meshGenerator.mesh;
         InstantiateGrid(mesh2012);
         grid2012 = grid;
         setRunoffScores(grid2012);
+        getDistanceToLines(grid2012, skeletons.skeleton2012);
 
         //2018
         meshGenerator.StartPipe(meshGenerator.vertexFile2018);
@@ -842,6 +743,8 @@ public class CreateGrid : MonoBehaviour
         InstantiateGrid(mesh2018);
         grid2018 = grid;
         setRunoffScores(grid2018);
+        getDistanceToLines(grid2018, skeletons.skeleton2018);
+
 
         List<Cell> cellsLowDiff = new List<Cell>();
         foreach (Cell cell in grid2008.cells) {
