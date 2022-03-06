@@ -24,6 +24,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 
+
 import numpy as np
 plt.rcParams.update({'font.size': 16})
 
@@ -108,10 +109,10 @@ Xt2 = dfTest[col_study2]
 yt = dfTest[param_study]
 X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo2, yo2, test_size=0.3, random_state=42)
 print('split')
-forestImportance = RandomForestRegressor()
+forestImportance = RandomForestRegressor(n_estimators=200)
 forestImportance.fit(X_traino2, y_traino2)
 
-forest3 = make_pipeline(StandardScaler(), RandomForestRegressor())
+forest3 = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators=200))
 
 forest3.fit(X_traino2, y_traino2)
 print('fitted')
@@ -135,6 +136,12 @@ GPR.fit(X_traino2, y_traino2)
 y_predGPR = GPR.predict(Xt2)
 print('predicted')
 
+print('MLPR-predicting: ')
+kernel = DotProduct() + WhiteKernel()
+MLPR = make_pipeline(StandardScaler(), MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive'))
+MLPR.fit(X_traino2, y_traino2)
+y_predMLPR = MLPR.predict(Xt2)
+print('predicted')
 
 ###################################
 # RF IMPORTANCES
@@ -285,4 +292,48 @@ ax[2].tick_params(labelsize=12)
 
 fig5.subplots_adjust(wspace=0.03, hspace=0)
 fig5.suptitle('GPR Annual sedimentation 2012-2018')
+plt.show()
+
+###################################
+# MLPR PLOT
+###################################
+
+plt.rcParams.update({'font.size': 20})
+fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
+                                    figsize=(20, 10))
+cm = plt.cm.get_cmap('RdYlBu')
+sc = ax[0].scatter(Xt['x'], Xt['y'],
+           linewidths=1, alpha=.7,
+            edgecolor='none',
+           s = 20,
+           c=(yt),
+            cmap=cm, vmin=-2, vmax=2)
+ax[0].set_title('Actual')
+ax[0].set_xlabel("x coordinate")
+ax[0].set_ylabel("y coordinate")
+ax[0].tick_params(labelsize=12)
+sc = ax[1].scatter(Xt['x'], Xt['y'],
+           linewidths=1, alpha=.7,
+            edgecolor='none',
+           s = 20,
+           c=(y_predMLPR),
+            cmap=cm, vmin=-2, vmax=2)
+cbar = fig5.colorbar(sc)
+cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
+cbar.ax.get_yaxis().labelpad = 20
+ax[1].set_title('Prediction')
+ax[1].set_xlabel("x coordinate")
+ax[1].tick_params(labelsize=12)
+sc = ax[2].scatter(Xt['x'], Xt['y'],
+           linewidths=1, alpha=.7,
+            edgecolor='none',
+           s = 20,
+           c=(y_predMLPR - yt),
+            cmap=cm,  vmin=-2, vmax=2)
+ax[2].set_title('Residual')
+ax[2].set_xlabel("x coordinate")
+ax[2].tick_params(labelsize=12)
+
+fig5.subplots_adjust(wspace=0.03, hspace=0)
+fig5.suptitle('MLPR Annual sedimentation 2012-2018')
 plt.show()
