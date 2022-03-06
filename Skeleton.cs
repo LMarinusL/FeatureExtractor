@@ -386,7 +386,7 @@ public class Skeleton : Component
            new Vector3(418, 0, 277),
         };
 
-    public List<SkeletonJoint> VectorToJoints(List<Vector3> input)
+    public List<SkeletonJoint> VectorToJoints(List<Vector3> input, float discharge)
     {
         float distance = 0f;
         Vector3 previous = input[0];
@@ -394,9 +394,8 @@ public class Skeleton : Component
         foreach(Vector3 vertex in input)
         {
             distance += Vector3.Distance(previous, vertex);
-            newList.Add(new SkeletonJoint(vertex, distance));
+            newList.Add(new SkeletonJoint(vertex, distance, discharge));
             previous = vertex;
-            Debug.Log("distance river: " + distance);
         }
         return newList;
     }
@@ -408,14 +407,14 @@ public class Skeleton : Component
         skeleton2012 = new List<List<SkeletonJoint>>();
         skeleton2018 = new List<List<SkeletonJoint>>();
 
-        skeleton1997.Add(VectorToJoints(chagres1997));
-        skeleton1997.Add(VectorToJoints(pequeni1997));
-        skeleton2008.Add(VectorToJoints(chagres2008));
-        skeleton2008.Add(VectorToJoints(pequeni2008)); 
-        skeleton2012.Add(VectorToJoints(chagres2012));
-        skeleton2012.Add(VectorToJoints(pequeni2012));
-        skeleton2018.Add(VectorToJoints(chagres2018));
-        skeleton2018.Add(VectorToJoints(pequeni2018));
+        skeleton1997.Add(VectorToJoints(chagres1997, 32.93f));
+        skeleton1997.Add(VectorToJoints(pequeni1997, 13.67f));
+        skeleton2008.Add(VectorToJoints(chagres2008, 39.24f));
+        skeleton2008.Add(VectorToJoints(pequeni2008, 15.72f)); 
+        skeleton2012.Add(VectorToJoints(chagres2012, 29.38f));
+        skeleton2012.Add(VectorToJoints(pequeni2012, 12.23f));
+        skeleton2018.Add(VectorToJoints(chagres2018, 26.82f));
+        skeleton2018.Add(VectorToJoints(pequeni2018, 12.18f));
     }
 
 
@@ -426,11 +425,13 @@ public class SkeletonJoint : Component
 {
     public Vector3 position;
     public float distance;
+    public float discharge;
 
-    public SkeletonJoint(Vector3 pos, float dis)
+    public SkeletonJoint(Vector3 pos, float dis, float disch)
     {
         position = pos;
         distance = dis;
+        discharge = disch;
     }
 
 }

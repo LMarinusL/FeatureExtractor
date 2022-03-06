@@ -179,6 +179,8 @@ public class Cell : Component
     public List<Face> attachedFaces;
     public ContourCell contourCell;
     public float skeletonAspect;
+    public float distToRiverMouth;
+    public float riverDischarge;
 
 
 
