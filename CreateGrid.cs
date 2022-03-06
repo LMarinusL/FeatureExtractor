@@ -271,7 +271,6 @@ public class CreateGrid : MonoBehaviour
     }
 
     // COLORS
-    // todo: get max values to set colors
     public void setMeshSlopeColors()
     {
         colors = new Color[vertices.Length];
@@ -769,7 +768,7 @@ public class CreateGrid : MonoBehaviour
             float diff2 = (cell.y - grid1997.cells[cell.index].y);
             float diff3 = (grid1997.cells[cell.index].y - grid1983.cells[cell.index].y);
 
-            float maxDiff = 0.7f;
+            float maxDiff = 1.5f;
             if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < maxDiff && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < maxDiff && Mathf.Pow(Mathf.Pow(diff3, 0.5f), 2) < maxDiff)
                 {
                 cellsLowDiff.Add(cell);
@@ -788,6 +787,8 @@ public class CreateGrid : MonoBehaviour
         correction2018 = sum / count;
 
         Debug.Log(" Mean: " + correction2018);
+        correction2018 = 2.2f;
+
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
         writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvature dist averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngle riverLength inflow");

@@ -29,7 +29,6 @@ public class MeshGenerator : MonoBehaviour
     public float3[] normals;
     public int[] triangles;
     public List<string> idList;
-    public float heightScale = 5.0f;
 
     public float xCorrection = 649582f;
     public float zCorrection = 1013618f;
@@ -178,19 +177,6 @@ public class MeshGenerator : MonoBehaviour
         }
         return list;
     }
-
-
-    /*
-    void setMeshColors()
-    {
-        Vector3[] normals = mesh.normals;
-        colors = new Color[vertices.ToArray().Length];
-        for (int i = 0; i < vertices.ToArray().Length; i++)
-        {
-           colors[i] = new Color(1f* normals[i].y, 0f, 1f*(1- normals[i].y), 1f);
-        }
-        mesh.colors = colors;
-    }*/
 
     public  void AdjustScale(float newScale) {    
         transform.localScale += new Vector3(0, newScale, 0);
