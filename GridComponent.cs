@@ -174,14 +174,17 @@ public class Cell : Component
     public float averageRunoff1;
     public float averageRunoff2;
     public float averageRunoff3;
-    public float distToSkeleton;
     public List<Triangle> attachedTriangles;
     public List<Face> attachedFaces;
     public ContourCell contourCell;
-    public float skeletonAspect;
-    public float distToRiverMouth;
-    public float riverDischarge;
-
+    public float skeletonAspectChagres;
+    public float distToRiverMouthChagres;
+    public float riverDischargeChagres;
+    public float distToSkeletonChagres;
+    public float skeletonAspectPequeni;
+    public float distToRiverMouthPequeni;
+    public float riverDischargePequeni;
+    public float distToSkeletonPequeni;
 
 
     public Cell(int i, float3 loc, float3 normal)

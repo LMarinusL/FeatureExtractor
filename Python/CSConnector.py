@@ -66,15 +66,16 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor
 
 ################
-col_study = ['year', 'interval', 'x', 'y',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
+#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvature 12-averageRunoff1 13-averageRunoff2 14-averageRunoff3 15-discharge 16-skeletonAngleChagres 17-riverLengthChagres 18-inflowChagres 19-distChagres 20-skeletonAnglePequeni 21-riverLengthPequeni 22-inflowPequeni 23-distPequeni
+col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvature', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
 param_study = 'hdifference'
 
 ###############
 
-dfTrain = sklearn.utils.resample(df[df.year < 2017], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 1530], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year > 2017], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 1530], n_samples=10000, random_state=None, stratify=None)
 print('resampled')
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
@@ -98,8 +99,9 @@ plt.show()
 ###################
 # TRAINING ALGORITHMS
 ######################
-
-col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
+# 0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvature 12-averageRunoff1 13-averageRunoff2 14-averageRunoff3 15-discharge 16-skeletonAngleChagres 17-riverLengthChagres 18-inflowChagres 19-distChagres 20-skeletonAnglePequeni 21-riverLengthPequeni 22-inflowPequeni 23-distPequeni
+col_study2 = ['interval', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvature', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
+#col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
 Xo2 = dfTrain[col_study2]
@@ -138,7 +140,7 @@ print('predicted')
 
 print('MLPR-predicting: ')
 kernel = DotProduct() + WhiteKernel()
-MLPR = make_pipeline(StandardScaler(), MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive'))
+MLPR = make_pipeline(StandardScaler(), MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd'))
 MLPR.fit(X_traino2, y_traino2)
 y_predMLPR = MLPR.predict(Xt2)
 print('predicted')
@@ -153,7 +155,8 @@ result.columns = ['importance']
 result.sort_values(by='importance', ascending=False)
 
 print(df.head())
-features=df.columns[[1,4,6,7,8,9, 10, 11, 12, 13, 14, 15, 16,17, 18, 19]]
+features=df.columns[[1,4,6,7,8,9,10, 11, 12,  13,14,16,17, 18, 19,20, 21,22,23]]
+#features=df.columns[[1,4,6,7,8,9, 10, 11, 12, 13, 14, 15, 16,17, 18, 19]]
 
 importances2 = forestImportance.feature_importances_
 indices = np.argsort(importances2)

@@ -52,7 +52,8 @@ public class DropDownDataset : MonoBehaviour
                 meshGenerator.StartPipe(meshGenerator.vertexFile2018);
                 gridImporter.getData();
                 gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018);
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018A, "Chagres");
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018B, "Pequeni");
                 gridImporter.WriteString();
                 Debug.Log("Output written 2018");
                 break;
@@ -60,7 +61,8 @@ public class DropDownDataset : MonoBehaviour
                 meshGenerator.StartPipe(meshGenerator.vertexFile1983);
                 gridImporter.getData();
                 gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997);
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997A, "Chagres"); 
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997B, "Pequeni");
                 gridImporter.WriteString();
                 Debug.Log("Output written 1983");
                 break;
@@ -68,7 +70,8 @@ public class DropDownDataset : MonoBehaviour
                 meshGenerator.StartPipe(meshGenerator.vertexFile1997);
                 gridImporter.getData();
                 gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997);
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997A, "Chagres");
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997B, "Pequeni");
                 gridImporter.WriteString();
                 Debug.Log("Output written 1997");
                 break;
@@ -76,21 +79,24 @@ public class DropDownDataset : MonoBehaviour
                 meshGenerator.StartPipe(meshGenerator.vertexFile2008);
                 gridImporter.getData();
                 gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2008);
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2008A, "Chagres");
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2008B, "Pequeni");
                 gridImporter.WriteString();
                 Debug.Log("Output written 2008"); break;
             case 4:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2012);
                 gridImporter.getData();
                 gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2012);
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2012A, "Chagres");
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2012B, "Pequeni");
                 gridImporter.WriteString();
                 Debug.Log("Output written 2012"); break;
             case 5:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2018);
                 gridImporter.getData();
                 gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018);
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018A, "Chagres");
+                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018B, "Pequeni");
                 gridImporter.WriteString();
                 Debug.Log("Output written 2018"); break;
             default:

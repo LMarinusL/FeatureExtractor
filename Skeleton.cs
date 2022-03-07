@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class Skeleton : Component
 {
-    public List<List<SkeletonJoint>> skeleton1997;
-    public List<List<SkeletonJoint>> skeleton2008;
-    public List<List<SkeletonJoint>> skeleton2012;
-    public List<List<SkeletonJoint>> skeleton2018;
+    public List<List<SkeletonJoint>> skeleton1997A;
+    public List<List<SkeletonJoint>> skeleton2008A;
+    public List<List<SkeletonJoint>> skeleton2012A;
+    public List<List<SkeletonJoint>> skeleton2018A;
+    public List<List<SkeletonJoint>> skeleton1997B;
+    public List<List<SkeletonJoint>> skeleton2008B;
+    public List<List<SkeletonJoint>> skeleton2012B;
+    public List<List<SkeletonJoint>> skeleton2018B;
 
     // 1997
     List<Vector3> chagres1997 = new List<Vector3>
@@ -402,19 +406,25 @@ public class Skeleton : Component
 
     public Skeleton()
     {
-        skeleton1997 = new List<List<SkeletonJoint>>();
-        skeleton2008 = new List<List<SkeletonJoint>>();
-        skeleton2012 = new List<List<SkeletonJoint>>();
-        skeleton2018 = new List<List<SkeletonJoint>>();
+        skeleton1997A = new List<List<SkeletonJoint>>();
+        skeleton2008A = new List<List<SkeletonJoint>>();
+        skeleton2012A = new List<List<SkeletonJoint>>();
+        skeleton2018A = new List<List<SkeletonJoint>>();
 
-        skeleton1997.Add(VectorToJoints(chagres1997, 32.93f));
-        skeleton1997.Add(VectorToJoints(pequeni1997, 13.67f));
-        skeleton2008.Add(VectorToJoints(chagres2008, 39.24f));
-        skeleton2008.Add(VectorToJoints(pequeni2008, 15.72f)); 
-        skeleton2012.Add(VectorToJoints(chagres2012, 29.38f));
-        skeleton2012.Add(VectorToJoints(pequeni2012, 12.23f));
-        skeleton2018.Add(VectorToJoints(chagres2018, 26.82f));
-        skeleton2018.Add(VectorToJoints(pequeni2018, 12.18f));
+        skeleton1997B = new List<List<SkeletonJoint>>();
+        skeleton2008B = new List<List<SkeletonJoint>>();
+        skeleton2012B = new List<List<SkeletonJoint>>();
+        skeleton2018B = new List<List<SkeletonJoint>>();
+
+
+        skeleton1997A.Add(VectorToJoints(chagres1997, 32.93f));
+        skeleton1997B.Add(VectorToJoints(pequeni1997, 13.67f));
+        skeleton2008A.Add(VectorToJoints(chagres2008, 39.24f));
+        skeleton2008B.Add(VectorToJoints(pequeni2008, 15.72f)); 
+        skeleton2012A.Add(VectorToJoints(chagres2012, 29.38f));
+        skeleton2012B.Add(VectorToJoints(pequeni2012, 12.23f));
+        skeleton2018A.Add(VectorToJoints(chagres2018, 26.82f));
+        skeleton2018B.Add(VectorToJoints(pequeni2018, 12.18f));
     }
 
 
