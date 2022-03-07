@@ -169,7 +169,9 @@ public class Cell : Component
     public float curvatureX;
     public float curvatureY;
     public float curvatureZ;
-    public float curvature;
+    public float curvatureS;
+    public float curvatureM;
+    public float curvatureL;
     public int runoffScore;
     public float averageRunoff1;
     public float averageRunoff2;

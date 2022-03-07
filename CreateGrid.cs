@@ -76,7 +76,9 @@ public class CreateGrid : MonoBehaviour
         {
             if (cell.y == 0)
             {
-                cell.curvature = 0;
+                cell.curvatureS = 0;
+                cell.curvatureM = 0;
+                cell.curvatureL = 0;
                 cell.relativeHeight1 = 0;
                 cell.relativeHeight2 = 0;
                 cell.relativeHeight3 = 0;
@@ -90,7 +92,9 @@ public class CreateGrid : MonoBehaviour
             }
             else
             {
-                cell.curvature = computeESRICurvature(cell, 2, 4);
+                cell.curvatureL = computeESRICurvature(cell, 4, 4);
+                cell.curvatureM = computeESRICurvature(cell, 2, 4);
+                cell.curvatureS = computeESRICurvature(cell, 1, 4);
                 cell.relativeHeight1 = relativeHeight(cell.index, grid, 1);
                 cell.relativeHeight2 = relativeHeight(cell.index, grid, 2);
                 cell.relativeHeight3 = relativeHeight(cell.index, grid, 4);
@@ -342,7 +346,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].curvature), 1f * (grid.cells[i].curvature ), 1f * (grid.cells[i].curvature), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].curvatureL), 1f * (grid.cells[i].curvatureL ), 1f * (grid.cells[i].curvatureL), 1f);
 
         }
         mesh.colors = colors;
@@ -357,6 +361,20 @@ public class CreateGrid : MonoBehaviour
         mesh.colors = colors;
     }
 
+   /* void setRunoffScores(Grid grid)
+    {
+        int ind = 0;
+        int[] array = new int[vertices.Length];
+        //while (ind < vertices.Length)
+        while (ind < vertices.Length)
+        {
+            array[ind] = ind;
+
+            ind++;
+        }
+        int[] result = getRunoffPatterns(grid, array, 800, 20f);
+    }*/
+
     void setRunoffScores(Grid grid)
     {
         int ind = 0;
@@ -366,7 +384,33 @@ public class CreateGrid : MonoBehaviour
             array[ind] = ind;
             ind++;
         }
-        int[] result = getRunoffPatterns(grid, array, 300, 20f);
+        int[] result1 = getRunoffPatterns(grid, array, 500, 20f);
+
+
+        int ind2 = 0;
+        int discharge = 5000;
+        int[] array2 = new int[discharge];
+        while (ind2 < discharge)
+        {
+            array2[ind2] = getIndexFromLoc(290, 200);
+            ind2++;
+        }
+        int[] result2 = getRunoffPatterns(grid, array2, 500, 20f);
+
+
+        int ind3 = 0;
+        int discharge2 = 2500;
+        int[] array3 = new int[discharge2*3];
+        while (ind3 < discharge2 * 3)
+        {
+            array3[ind3] = getIndexFromLoc(232, 625);
+            ind3++;
+            array3[ind3] = getIndexFromLoc(167, 483);
+            ind3++;
+            array3[ind3] = getIndexFromLoc(155, 460);
+            ind3++;
+        }
+        int[] result3 = getRunoffPatterns(grid, array3, 500, 20f);
     }
 
     public void setMeshRunoffColors(int[] starts, int num, float margin)
@@ -810,7 +854,7 @@ public class CreateGrid : MonoBehaviour
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvature averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni");
+        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni");
        /* //1983-1997
         foreach (Cell cell in grid1983.cells)
         {
@@ -821,19 +865,19 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid1997.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2008.cells[cell.index].y - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 73.9 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2008.cells[cell.index].y - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 73.9 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
         }
         //2008-2012
         foreach (Cell cell in grid2008.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2012.cells[cell.index].y - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 95.5 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + (grid2012.cells[cell.index].y - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 95.5 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
         }
         //2012-2018
         foreach (Cell cell in grid2012.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvature + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
         }
 
         writer.Close();

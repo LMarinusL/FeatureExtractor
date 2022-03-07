@@ -66,8 +66,8 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor
 
 ################
-#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvature 12-averageRunoff1 13-averageRunoff2 14-averageRunoff3 15-discharge 16-skeletonAngleChagres 17-riverLengthChagres 18-inflowChagres 19-distChagres 20-skeletonAnglePequeni 21-riverLengthPequeni 22-inflowPequeni 23-distPequeni
-col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvature', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
+#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni
+col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
 param_study = 'hdifference'
 
 ###############
@@ -99,8 +99,8 @@ plt.show()
 ###################
 # TRAINING ALGORITHMS
 ######################
-# 0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvature 12-averageRunoff1 13-averageRunoff2 14-averageRunoff3 15-discharge 16-skeletonAngleChagres 17-riverLengthChagres 18-inflowChagres 19-distChagres 20-skeletonAnglePequeni 21-riverLengthPequeni 22-inflowPequeni 23-distPequeni
-col_study2 = ['interval', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvature', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
+#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni
+col_study2 = ['interval', 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -155,8 +155,7 @@ result.columns = ['importance']
 result.sort_values(by='importance', ascending=False)
 
 print(df.head())
-features=df.columns[[1,4,6,7,8,9,10, 11, 12,  13,14,16,17, 18, 19,20, 21,22,23]]
-#features=df.columns[[1,4,6,7,8,9, 10, 11, 12, 13, 14, 15, 16,17, 18, 19]]
+features=df.columns[[1,4,8,9, 11, 12, 13, 14,16, 18, 19,20, 21,22,23, 24, 25]]
 
 importances2 = forestImportance.feature_importances_
 indices = np.argsort(importances2)
