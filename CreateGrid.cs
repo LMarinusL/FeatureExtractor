@@ -429,7 +429,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(0f, 1f * (grid.cells[i].averageRunoff1 / 10), 1f * (grid.cells[i].averageRunoff1 / 10), 1f);
+            colors[i] = new Color(0f, 1f * (grid.cells[i].averageRunoff1 / 20), 1f * (grid.cells[i].averageRunoff1 / 20), 1f);
         }
         mesh.colors = colors;
     }

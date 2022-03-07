@@ -166,6 +166,16 @@ plt.yticks(range(len(indices)), features[indices])
 plt.xlabel('Relative Importance')
 plt.show()
 ###################################
+# RF BOXPLOT
+###################################
+
+fig3 = plt.figure()
+plt.title('2012-2018 Sedimentation')
+plt.boxplot([y_pred, yt, (y_pred - yt)], showfliers=False)
+plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
+plt.ylabel('[m]')
+plt.show()
+###################################
 # RF PLOT
 ###################################
 plt.rcParams.update({'font.size': 20})
