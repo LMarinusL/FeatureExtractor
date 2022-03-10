@@ -28,6 +28,9 @@ from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 import numpy as np
 plt.rcParams.update({'font.size': 16})
 
+#https://epsg.io/transform#s_srs=4326&t_srs=32617&x=-79.6170883&y=9.1944523
+#https://openaltimetry.org/data/icesat2/
+
 #print(pd.__version__)  
 
 # env: python 3.8.5 - py
@@ -100,7 +103,7 @@ plt.show()
 # TRAINING ALGORITHMS
 ######################
 #0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni
-col_study2 = ['interval', 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
+col_study2 = [ 'interval', 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 

@@ -824,6 +824,10 @@ public class CreateGrid : MonoBehaviour
         getDistanceToLines(grid2018, skeletons.skeleton2018B, "Pequeni");
 
 
+        float correction2018 = 0f;
+        float correction2012 = 0f;
+        float correction2008 = 0f;
+        /*
         List<Cell> cellsLowDiff = new List<Cell>();
         foreach (Cell cell in grid2008.cells) {
 
@@ -832,25 +836,40 @@ public class CreateGrid : MonoBehaviour
             float diff3 = (grid1997.cells[cell.index].y - grid1983.cells[cell.index].y);
 
             float maxDiff = 1.5f;
-            if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < maxDiff && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < maxDiff && Mathf.Pow(Mathf.Pow(diff3, 0.5f), 2) < maxDiff)
-                {
+            //if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < maxDiff && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < maxDiff && Mathf.Pow(Mathf.Pow(diff3, 0.5f), 2) < maxDiff)
+            if (cell.x < 500 && cell.z > 520 && cell.y != 0 && Mathf.Abs(cell.slope) < 0.2)
+            {
                 cellsLowDiff.Add(cell);
                 Instantiate(dotgreen, cell.position, transform.rotation);
             }
         }
 
         int count = 0;
-        float sum = 0f;
-        float correction2018 = 0f;
+        float sum2018 = 0f;
+        float sum2012 = 0f;
+        float sum2008 = 0f;
+
+        float correction2012 = 0f;
+        float correction2008 = 0f;
+
         foreach (Cell cell in cellsLowDiff)
         {
             count++;
-            sum += (grid2012.cells[cell.index].y - grid2018.cells[cell.index].y);
+            sum2018 += (grid2012.cells[cell.index].y - grid2018.cells[cell.index].y);
+            sum2012 += (grid2008.cells[cell.index].y - grid2012.cells[cell.index].y);
+            sum2008 += (grid1997.cells[cell.index].y - grid2008.cells[cell.index].y);
         }
-        correction2018 = sum / count;
+        correction2018 = sum2018 / count;
+        correction2012 = sum2012 / count;
+        correction2008 = sum2008 / count;
 
-        Debug.Log(" Mean: " + correction2018);
-        correction2018 = 2.2f;
+
+        Debug.Log(" Mean 18: " + correction2018);
+        Debug.Log(" Mean 12: " + correction2012);
+        Debug.Log(" Mean 08: " + correction2008);
+        */
+
+        correction2018 = 1.8f;
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
