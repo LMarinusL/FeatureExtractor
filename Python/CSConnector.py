@@ -181,7 +181,8 @@ plt.show()
 # SET WITH LESS FEATURES
 ##################################
 
-col_study3 = features[indices[0:5]]
+col_study3 = features[indices[8:16]]
+print(col_study3)
 param_study = 'hdifference'
 
 Xo3 = dfTrain[col_study3]
@@ -263,20 +264,20 @@ plt.show()
 # RF PLOT
 ###################################
 plt.rcParams.update({'font.size': 20})
-fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
+fig5, ax = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True,
                                     figsize=(20, 10))
 cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0].scatter(Xt['x'], Xt['y'],
+sc = ax[0,0].scatter(Xt['x'], Xt['y'],
            linewidths=1, alpha=.7,
             edgecolor='none',
            s = 20,
            c=(yt),
             cmap=cm, vmin=-2, vmax=2)
-ax[0].set_title('Actual')
-ax[0].set_xlabel("x coordinate")
-ax[0].set_ylabel("y coordinate")
-ax[0].tick_params(labelsize=12)
-sc = ax[1].scatter(Xt['x'], Xt['y'],
+ax[0,0].set_title('Actual')
+ax[0,0].set_xlabel("x coordinate")
+ax[0,0].set_ylabel("y coordinate")
+ax[0,0].tick_params(labelsize=12)
+sc = ax[0,1].scatter(Xt['x'], Xt['y'],
            linewidths=1, alpha=.7,
             edgecolor='none',
            s = 20,
@@ -285,62 +286,53 @@ sc = ax[1].scatter(Xt['x'], Xt['y'],
 cbar = fig5.colorbar(sc)
 cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
 cbar.ax.get_yaxis().labelpad = 20
-ax[1].set_title('Prediction')
-ax[1].set_xlabel("x coordinate")
-ax[1].tick_params(labelsize=12)
-sc = ax[2].scatter(Xt['x'], Xt['y'],
+ax[0,1].set_title('Prediction')
+ax[0,1].set_xlabel("x coordinate")
+ax[0,1].tick_params(labelsize=12)
+sc = ax[0,2].scatter(Xt['x'], Xt['y'],
            linewidths=1, alpha=.7,
             edgecolor='none',
            s = 20,
            c=(y_pred - yt),
             cmap=cm,  vmin=-2, vmax=2)
-ax[2].set_title('Residual')
-ax[2].set_xlabel("x coordinate")
-ax[2].tick_params(labelsize=12)
+ax[0,2].set_title('Residual')
+ax[0,2].set_xlabel("x coordinate")
+ax[0,2].tick_params(labelsize=12)
 
-fig5.subplots_adjust(wspace=0.03, hspace=0)
-fig5.suptitle('RF Annual sedimentation 2012-2018')
-plt.show()
-
-# less features
-fig5_s, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                    figsize=(20, 10))
-#cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0].scatter(Xt['x'], Xt['y'],
+sc = ax[1,0].scatter(Xt['x'], Xt['y'],
            linewidths=1, alpha=.7,
             edgecolor='none',
            s = 20,
            c=(yt),
             cmap=cm, vmin=-2, vmax=2)
-ax[0].set_title('Actual')
-ax[0].set_xlabel("x coordinate")
-ax[0].set_ylabel("y coordinate")
-ax[0].tick_params(labelsize=12)
-sc = ax[1].scatter(Xt['x'], Xt['y'],
+ax[1,0].set_title('Actual')
+ax[1,0].set_xlabel("x coordinate")
+ax[1,0].set_ylabel("y coordinate")
+ax[1,0].tick_params(labelsize=12)
+sc = ax[1,1].scatter(Xt['x'], Xt['y'],
            linewidths=1, alpha=.7,
             edgecolor='none',
            s = 20,
            c=(y_predXS),
             cmap=cm, vmin=-2, vmax=2)
-cbar = fig5.colorbar(sc)
-cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
 cbar.ax.get_yaxis().labelpad = 20
-ax[1].set_title('Prediction')
-ax[1].set_xlabel("x coordinate")
-ax[1].tick_params(labelsize=12)
-sc = ax[2].scatter(Xt['x'], Xt['y'],
+ax[1,1].set_title('Prediction with only high importance params')
+ax[1,1].set_xlabel("x coordinate")
+ax[1,1].tick_params(labelsize=12)
+sc = ax[1,2].scatter(Xt['x'], Xt['y'],
            linewidths=1, alpha=.7,
             edgecolor='none',
            s = 20,
            c=(y_predXS - yt),
             cmap=cm,  vmin=-2, vmax=2)
-ax[2].set_title('Residual')
-ax[2].set_xlabel("x coordinate")
-ax[2].tick_params(labelsize=12)
+ax[1,2].set_title('Residual')
+ax[1,2].set_xlabel("x coordinate")
+ax[1,2].tick_params(labelsize=12)
 
 fig5.subplots_adjust(wspace=0.03, hspace=0)
 fig5.suptitle('RF Annual sedimentation 2012-2018')
 plt.show()
+
 
 ###################################
 # SVR PLOT
