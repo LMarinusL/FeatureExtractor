@@ -23,6 +23,9 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+
 
 
 import numpy as np
@@ -75,10 +78,10 @@ param_study = 'hdifference'
 
 ###############
 
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 1530], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 1530], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 print('resampled')
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
@@ -88,9 +91,9 @@ yt = dfTest[param_study]
 # BOXPLOT OF DATA
 #######################
 
-df18 = sklearn.utils.resample(df[df.year == 2018], n_samples=10000, random_state=None, stratify=None)
-df12 = sklearn.utils.resample(df[df.year == 2012], n_samples=10000, random_state=None, stratify=None)
-df08 = sklearn.utils.resample(df[df.year == 2008], n_samples=10000, random_state=None, stratify=None)
+df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 
 print(df18.head())
 fig4, ax4 = plt.subplots()
@@ -114,10 +117,10 @@ Xt2 = dfTest[col_study2]
 yt = dfTest[param_study]
 X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo2, yo2, test_size=0.3, random_state=42)
 print('split')
-forestImportance = RandomForestRegressor(n_estimators=200)
+forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 forestImportance.fit(X_traino2, y_traino2)
 
-forest3 = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators=200))
+forest3 = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False))
 
 forest3.fit(X_traino2, y_traino2)
 print('fitted')
@@ -127,6 +130,9 @@ y_test_pred = forest3.predict(X_testo2)
 y_pred = forest3.predict(Xt2)
 print('predicted')
 
+
+
+"""
 print('SVR-predicting: ')
 regr = make_pipeline(StandardScaler(), SVR(C=1.0, epsilon=0.2))
 regr.fit(X_traino2, y_traino2)
@@ -147,6 +153,27 @@ MLPR = make_pipeline(StandardScaler(), MLPRegressor(alpha=1e-05, random_state=1,
 MLPR.fit(X_traino2, y_traino2)
 y_predMLPR = MLPR.predict(Xt2)
 print('predicted')
+"""
+
+Xo3 = dfTrain[col_study2]
+yo3 = dfTrain[param_study]
+print('resampled')
+Xt3 = dfTest[col_study2]
+yt3 = dfTest[param_study]
+X_traino3, X_testo3, y_traino3, y_testo3 = train_test_split(Xo3, yo3, test_size=0.3, random_state=42)
+X_filtered = SelectKBest( k=8).fit_transform(df[col_study2], df[param_study])
+print(X_filtered.columns)
+"""
+forest4 = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators=200))
+
+forest4.fit(X_filtered, y_traino3)
+print('fitted')
+print('rf-predicting: ')
+y_train_pred = forest4.predict(X_traino2)
+y_test_pred = forest4.predict(X_testo2)
+y_pred = forest4.predict(Xt2)
+print('predicted')
+"""
 
 ###################################
 # RF IMPORTANCES
@@ -168,6 +195,49 @@ plt.barh(range(len(indices)), importances2[indices], color='b', align='center')
 plt.yticks(range(len(indices)), features[indices])
 plt.xlabel('Relative Importance')
 plt.show()
+
+##################################
+# CV
+########################################
+
+from sklearn.model_selection import RandomizedSearchCV
+
+n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
+max_features = ['auto', 'sqrt']
+max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+max_depth.append(None)
+min_samples_split = [2, 5, 10]
+min_samples_leaf = [1, 2, 4]
+bootstrap = [True, False]
+random_grid = {'n_estimators': n_estimators,
+               'max_features': max_features,
+               'max_depth': max_depth,
+               'min_samples_split': min_samples_split,
+               'min_samples_leaf': min_samples_leaf,
+               'bootstrap': bootstrap}
+rf = RandomForestRegressor()
+
+#rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+#rf_random.fit(X_traino2, y_traino2)
+#print(rf_random.best_params_)
+def evaluate(model, test_features, test_labels):
+    predictions = model.predict(test_features)
+    errors = abs(predictions  - test_labels)
+    mape = 100 * np.mean(errors / (test_labels+ test_features['hprevious']))
+    accuracy = 100 - mape
+    print('Model Performance')
+    print('Average Error: {:0.4f} meters.'.format(np.mean(errors)))
+    print('Accuracy = {:0.2f}%.'.format(accuracy))
+    
+    return accuracy
+base_model = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators = 10, random_state = 42))
+base_model.fit(X_traino2, y_traino2)
+Xt3 = dfTest[col_study2]
+yt3 = dfTest[param_study]
+base_accuracy = evaluate(base_model, Xt3, yt3)
+optimized_accuracy = evaluate(forest3, Xt3, yt3)
+print('Improvement of {:0.2f}%.'.format( 100 * (optimized_accuracy - base_accuracy) / base_accuracy))
+
 ###################################
 # RF BOXPLOT
 ###################################
@@ -224,7 +294,7 @@ plt.show()
 ###################################
 # SVR PLOT
 ###################################
-
+"""
 plt.rcParams.update({'font.size': 20})
 fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                     figsize=(20, 10))
@@ -352,3 +422,4 @@ ax[2].tick_params(labelsize=12)
 fig5.subplots_adjust(wspace=0.03, hspace=0)
 fig5.suptitle('MLPR Annual sedimentation 2012-2018')
 plt.show()
+"""
