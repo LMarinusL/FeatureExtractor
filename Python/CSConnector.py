@@ -155,25 +155,6 @@ y_predMLPR = MLPR.predict(Xt2)
 print('predicted')
 """
 
-Xo3 = dfTrain[col_study2]
-yo3 = dfTrain[param_study]
-print('resampled')
-Xt3 = dfTest[col_study2]
-yt3 = dfTest[param_study]
-X_traino3, X_testo3, y_traino3, y_testo3 = train_test_split(Xo3, yo3, test_size=0.3, random_state=42)
-X_filtered = SelectKBest( k=8).fit_transform(df[col_study2], df[param_study])
-print(X_filtered.columns)
-"""
-forest4 = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators=200))
-
-forest4.fit(X_filtered, y_traino3)
-print('fitted')
-print('rf-predicting: ')
-y_train_pred = forest4.predict(X_traino2)
-y_test_pred = forest4.predict(X_testo2)
-y_pred = forest4.predict(Xt2)
-print('predicted')
-"""
 
 ###################################
 # RF IMPORTANCES
@@ -195,6 +176,27 @@ plt.barh(range(len(indices)), importances2[indices], color='b', align='center')
 plt.yticks(range(len(indices)), features[indices])
 plt.xlabel('Relative Importance')
 plt.show()
+
+###############################
+# SET WITH LESS FEATURES
+##################################
+
+col_study3 = features[indices[0:5]]
+param_study = 'hdifference'
+
+Xo3 = dfTrain[col_study3]
+yo3 = dfTrain[param_study]
+print('resampled')
+Xt3 = dfTest[col_study3]
+X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo3, yo3, test_size=0.3, random_state=42)
+forest5 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
+forest5.fit(X_traino2, y_traino2)
+print('fitted')
+print('rf-predicting: ')
+y_train_pred = forest5.predict(X_traino2)
+y_test_pred = forest5.predict(X_testo2)
+y_predXS = forest5.predict(Xt3)
+print('predicted')
 
 ##################################
 # CV
@@ -220,6 +222,7 @@ rf = RandomForestRegressor()
 #rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
 #rf_random.fit(X_traino2, y_traino2)
 #print(rf_random.best_params_)
+"""
 def evaluate(model, test_features, test_labels):
     predictions = model.predict(test_features)
     errors = abs(predictions  - test_labels)
@@ -232,19 +235,27 @@ def evaluate(model, test_features, test_labels):
     return accuracy
 base_model = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators = 10, random_state = 42))
 base_model.fit(X_traino2, y_traino2)
-Xt3 = dfTest[col_study2]
-yt3 = dfTest[param_study]
-base_accuracy = evaluate(base_model, Xt3, yt3)
-optimized_accuracy = evaluate(forest3, Xt3, yt3)
+Xt6 = dfTest[col_study2]
+yt6 = dfTest[param_study]
+base_accuracy = evaluate(base_model, Xt6, yt6)
+optimized_accuracy = evaluate(forest3, Xt6, yt6)
 print('Improvement of {:0.2f}%.'.format( 100 * (optimized_accuracy - base_accuracy) / base_accuracy))
-
+"""
 ###################################
 # RF BOXPLOT
 ###################################
 
 fig3 = plt.figure()
-plt.title('2012-2018 Sedimentation')
+plt.title('2012-2018 Sedimentation RF')
 plt.boxplot([y_pred, yt, (y_pred - yt)], showfliers=False)
+plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
+plt.ylabel('[m]')
+plt.show()
+
+
+fig3_s = plt.figure()
+plt.title('2012-2018 Sedimentation RF less features')
+plt.boxplot([y_predXS, yt, (y_predXS - yt)], showfliers=False)
 plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
 plt.ylabel('[m]')
 plt.show()
@@ -282,6 +293,46 @@ sc = ax[2].scatter(Xt['x'], Xt['y'],
             edgecolor='none',
            s = 20,
            c=(y_pred - yt),
+            cmap=cm,  vmin=-2, vmax=2)
+ax[2].set_title('Residual')
+ax[2].set_xlabel("x coordinate")
+ax[2].tick_params(labelsize=12)
+
+fig5.subplots_adjust(wspace=0.03, hspace=0)
+fig5.suptitle('RF Annual sedimentation 2012-2018')
+plt.show()
+
+# less features
+fig5_s, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
+                                    figsize=(20, 10))
+#cm = plt.cm.get_cmap('RdYlBu')
+sc = ax[0].scatter(Xt['x'], Xt['y'],
+           linewidths=1, alpha=.7,
+            edgecolor='none',
+           s = 20,
+           c=(yt),
+            cmap=cm, vmin=-2, vmax=2)
+ax[0].set_title('Actual')
+ax[0].set_xlabel("x coordinate")
+ax[0].set_ylabel("y coordinate")
+ax[0].tick_params(labelsize=12)
+sc = ax[1].scatter(Xt['x'], Xt['y'],
+           linewidths=1, alpha=.7,
+            edgecolor='none',
+           s = 20,
+           c=(y_predXS),
+            cmap=cm, vmin=-2, vmax=2)
+cbar = fig5.colorbar(sc)
+cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
+cbar.ax.get_yaxis().labelpad = 20
+ax[1].set_title('Prediction')
+ax[1].set_xlabel("x coordinate")
+ax[1].tick_params(labelsize=12)
+sc = ax[2].scatter(Xt['x'], Xt['y'],
+           linewidths=1, alpha=.7,
+            edgecolor='none',
+           s = 20,
+           c=(y_predXS - yt),
             cmap=cm,  vmin=-2, vmax=2)
 ax[2].set_title('Residual')
 ax[2].set_xlabel("x coordinate")
