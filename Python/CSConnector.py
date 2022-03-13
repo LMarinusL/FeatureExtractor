@@ -82,7 +82,6 @@ dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 1530][df.hdifference 
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
 dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
-print('resampled')
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
@@ -112,46 +111,43 @@ param_study = 'hdifference'
 
 Xo2 = dfTrain[col_study2]
 yo2 = dfTrain[param_study]
-print('resampled')
 Xt2 = dfTest[col_study2]
 yt = dfTest[param_study]
 X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo2, yo2, test_size=0.3, random_state=42)
-print('split')
-forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-forestImportance.fit(X_traino2, y_traino2)
 
+"""
 forest3 = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False))
 
 forest3.fit(X_traino2, y_traino2)
-print('fitted')
 print('rf-predicting: ')
 y_train_pred = forest3.predict(X_traino2)
 y_test_pred = forest3.predict(X_testo2)
 y_pred = forest3.predict(Xt2)
-print('predicted')
+"""
+def predict(alg, Xtrain, ytrain, Xpredict):
+    algorithm = make_pipeline(StandardScaler(), alg)
+    algorithm.fit(Xtrain, ytrain)
+    prediction = algorithm.predict(Xpredict)
+    return prediction
 
-
+forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
+y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
 
 """
 print('SVR-predicting: ')
-regr = make_pipeline(StandardScaler(), SVR(C=1.0, epsilon=0.2))
-regr.fit(X_traino2, y_traino2)
-y_predSVR = regr.predict(Xt2)
-print('predicted')
+regr = SVR(C=1.0, epsilon=0.2)
+y_predSVR = predict(regr, X_traino2, y_traino2, Xt2)
+
 
 print('Gaussian-predicting: ')
 kernel = DotProduct() + WhiteKernel()
-GPR = make_pipeline(StandardScaler(), GaussianProcessRegressor(kernel=kernel,
-        random_state=0))
-GPR.fit(X_traino2, y_traino2)
-y_predGPR = GPR.predict(Xt2)
-print('predicted')
+GPR = GaussianProcessRegressor(kernel=kernel, random_state=0)
+y_predGPR = predict(GPR, X_traino2, y_traino2, Xt2)
+
 
 print('MLPR-predicting: ')
-kernel = DotProduct() + WhiteKernel()
-MLPR = make_pipeline(StandardScaler(), MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd'))
-MLPR.fit(X_traino2, y_traino2)
-y_predMLPR = MLPR.predict(Xt2)
+MLPR = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
+y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt2)
 print('predicted')
 """
 
@@ -159,45 +155,45 @@ print('predicted')
 ###################################
 # RF IMPORTANCES
 ###############################
-plt.rcParams.update({'font.size': 15})
-
-result = pd.DataFrame(forestImportance.feature_importances_,  df[col_study2].columns)
-result.columns = ['importance']
-result.sort_values(by='importance', ascending=False)
-
-print(df.head())
+forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 features=df.columns[[1,4,8,9, 11, 12, 13, 14,16, 18, 19,20, 21,22,23, 24, 25]]
 
-importances2 = forestImportance.feature_importances_
-indices = np.argsort(importances2)
-fig1 = plt.figure()
-plt.title('Feature Importances')
-plt.barh(range(len(indices)), importances2[indices], color='b', align='center')
-plt.yticks(range(len(indices)), features[indices])
-plt.xlabel('Relative Importance')
-plt.show()
+def plotImportances(alg, feat, Xtrain, ytrain):
+    alg.fit(Xtrain, ytrain)
+    plt.rcParams.update({'font.size': 15})
+    result = pd.DataFrame(forestImportance.feature_importances_,  df[col_study2].columns)
+    result.columns = ['importance']
+    result.sort_values(by='importance', ascending=False)
+
+    print(df.head())
+
+    importances2 = forestImportance.feature_importances_
+    indices = np.argsort(importances2)
+    fig1 = plt.figure()
+    plt.title('Feature Importances')
+    plt.barh(range(len(indices)), importances2[indices], color='b', align='center')
+    plt.yticks(range(len(indices)), feat[indices])
+    plt.xlabel('Relative Importance')
+    plt.show()
+    return indices
+
+indices = plotImportances(forestImportance, features, X_traino2, y_traino2, )
+
 
 ###############################
 # SET WITH LESS FEATURES
 ##################################
 
-col_study3 = features[indices[8:16]]
+col_study3 = features[indices[5:-1]]
 print(col_study3)
-param_study = 'hdifference'
-
 Xo3 = dfTrain[col_study3]
 yo3 = dfTrain[param_study]
-print('resampled')
 Xt3 = dfTest[col_study3]
 X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo3, yo3, test_size=0.3, random_state=42)
 forest5 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-forest5.fit(X_traino2, y_traino2)
-print('fitted')
-print('rf-predicting: ')
-y_train_pred = forest5.predict(X_traino2)
-y_test_pred = forest5.predict(X_testo2)
-y_predXS = forest5.predict(Xt3)
-print('predicted')
+print('rf-predicting less features: ')
+y_predXS = predict(forest5, X_traino2, y_traino2, Xt3)
+
 
 ##################################
 # CV
@@ -242,10 +238,24 @@ base_accuracy = evaluate(base_model, Xt6, yt6)
 optimized_accuracy = evaluate(forest3, Xt6, yt6)
 print('Improvement of {:0.2f}%.'.format( 100 * (optimized_accuracy - base_accuracy) / base_accuracy))
 """
+
+
 ###################################
 # RF BOXPLOT
 ###################################
+def boxplot(actual, prediction, title):
+    figbox = plt.figure()
+    plt.title(title)
+    plt.boxplot([prediction, actual, (prediction - actual)], showfliers=False)
+    plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
+    plt.ylabel('[m]')
+    plt.show()
+    return figbox
 
+boxplot(yt, y_pred, '2012-2018 Sedimentation RF')
+boxplot(yt, y_predXS, '2012-2018 Sedimentation RF less features')
+
+"""
 fig3 = plt.figure()
 plt.title('2012-2018 Sedimentation RF')
 plt.boxplot([y_pred, yt, (y_pred - yt)], showfliers=False)
@@ -253,216 +263,151 @@ plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
 plt.ylabel('[m]')
 plt.show()
 
-
 fig3_s = plt.figure()
 plt.title('2012-2018 Sedimentation RF less features')
 plt.boxplot([y_predXS, yt, (y_predXS - yt)], showfliers=False)
 plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
 plt.ylabel('[m]')
 plt.show()
+"""
+
+
+print(" all params MAE: ", mean_absolute_error(yt, y_pred))
+print(" only important params MAE: ", mean_absolute_error(yt, y_predXS))
+
 ###################################
 # RF PLOT
 ###################################
-plt.rcParams.update({'font.size': 20})
-fig5, ax = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True,
-                                    figsize=(20, 10))
-cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0,0].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(yt),
-            cmap=cm, vmin=-2, vmax=2)
-ax[0,0].set_title('Actual')
-ax[0,0].set_xlabel("x coordinate")
-ax[0,0].set_ylabel("y coordinate")
-ax[0,0].tick_params(labelsize=12)
-sc = ax[0,1].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_pred),
-            cmap=cm, vmin=-2, vmax=2)
-cbar = fig5.colorbar(sc)
-cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
-cbar.ax.get_yaxis().labelpad = 20
-ax[0,1].set_title('Prediction')
-ax[0,1].set_xlabel("x coordinate")
-ax[0,1].tick_params(labelsize=12)
-sc = ax[0,2].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_pred - yt),
-            cmap=cm,  vmin=-2, vmax=2)
-ax[0,2].set_title('Residual')
-ax[0,2].set_xlabel("x coordinate")
-ax[0,2].tick_params(labelsize=12)
 
-sc = ax[1,0].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(yt),
-            cmap=cm, vmin=-2, vmax=2)
-ax[1,0].set_title('Actual')
-ax[1,0].set_xlabel("x coordinate")
-ax[1,0].set_ylabel("y coordinate")
-ax[1,0].tick_params(labelsize=12)
-sc = ax[1,1].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predXS),
-            cmap=cm, vmin=-2, vmax=2)
-cbar.ax.get_yaxis().labelpad = 20
-ax[1,1].set_title('Prediction with only high importance params')
-ax[1,1].set_xlabel("x coordinate")
-ax[1,1].tick_params(labelsize=12)
-sc = ax[1,2].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predXS - yt),
-            cmap=cm,  vmin=-2, vmax=2)
-ax[1,2].set_title('Residual')
-ax[1,2].set_xlabel("x coordinate")
-ax[1,2].tick_params(labelsize=12)
+def plotMaps2Sets(actual, pred1, pred2):
+    plt.rcParams.update({'font.size': 20})
+    fig5, ax = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc = ax[0,0].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(actual),
+                cmap=cm, vmin=-2, vmax=2)
+    ax[0,0].set_title('Actual')
+    ax[0,0].set_xlabel("x coordinate")
+    ax[0,0].set_ylabel("y coordinate")
+    ax[0,0].tick_params(labelsize=12)
+    sc = ax[0,1].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(pred1),
+                cmap=cm, vmin=-2, vmax=2)
+    cbar = fig5.colorbar(sc)
+    cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
+    cbar.ax.get_yaxis().labelpad = 40
+    ax[0,1].set_title('Prediction')
+    ax[0,1].set_xlabel("x coordinate")
+    ax[0,1].tick_params(labelsize=12)
+    sc = ax[0,2].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(pred1 - actual),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[0,2].set_title('Residual')
+    ax[0,2].set_xlabel("x coordinate")
+    ax[0,2].tick_params(labelsize=12)
 
-fig5.subplots_adjust(wspace=0.03, hspace=0)
-fig5.suptitle('RF Annual sedimentation 2012-2018')
-plt.show()
+    sc = ax[1,0].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(actual),
+                cmap=cm, vmin=-2, vmax=2)
+    ax[1,0].set_title('Actual')
+    ax[1,0].set_xlabel("x coordinate")
+    ax[1,0].set_ylabel("y coordinate")
+    ax[1,0].tick_params(labelsize=12)
+    sc = ax[1,1].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(pred2),
+                cmap=cm, vmin=-2, vmax=2)
+    cbar.ax.get_yaxis().labelpad = 20
+    ax[1,1].set_title('Prediction with only high importance params')
+    ax[1,1].set_xlabel("x coordinate")
+    ax[1,1].tick_params(labelsize=12)
+    sc = ax[1,2].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(pred2 - actual),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[1,2].set_title('Residual')
+    ax[1,2].set_xlabel("x coordinate")
+    ax[1,2].tick_params(labelsize=12)
 
+    fig5.subplots_adjust(wspace=0.03, hspace=0)
+    fig5.suptitle('RF Annual sedimentation 2012-2018')
+    plt.show()
+    return
+plotMaps2Sets(yt, y_pred, y_predXS)
 
 ###################################
 # SVR PLOT
 ###################################
-"""
-plt.rcParams.update({'font.size': 20})
-fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                    figsize=(20, 10))
-cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(yt),
-            cmap=cm, vmin=-2, vmax=2)
-ax[0].set_title('Actual')
-ax[0].set_xlabel("x coordinate")
-ax[0].set_ylabel("y coordinate")
-ax[0].tick_params(labelsize=12)
-sc = ax[1].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predSVR),
-            cmap=cm, vmin=-2, vmax=2)
-cbar = fig5.colorbar(sc)
-cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
-cbar.ax.get_yaxis().labelpad = 20
-ax[1].set_title('Prediction')
-ax[1].set_xlabel("x coordinate")
-ax[1].tick_params(labelsize=12)
-sc = ax[2].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predSVR - yt),
-            cmap=cm,  vmin=-2, vmax=2)
-ax[2].set_title('Residual')
-ax[2].set_xlabel("x coordinate")
-ax[2].tick_params(labelsize=12)
+def plotMaps1Set(actual, pred, title):
+    plt.rcParams.update({'font.size': 20})
+    fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc = ax[0].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(actual),
+                cmap=cm, vmin=-2, vmax=2)
+    ax[0].set_title('Actual')
+    ax[0].set_xlabel("x coordinate")
+    ax[0].set_ylabel("y coordinate")
+    ax[0].tick_params(labelsize=12)
+    sc = ax[1].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(pred),
+                cmap=cm, vmin=-2, vmax=2)
+    cbar = fig5.colorbar(sc)
+    cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
+    cbar.ax.get_yaxis().labelpad = 20
+    ax[1].set_title('Prediction')
+    ax[1].set_xlabel("x coordinate")
+    ax[1].tick_params(labelsize=12)
+    sc = ax[2].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(pred - actual),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[2].set_title('Residual')
+    ax[2].set_xlabel("x coordinate")
+    ax[2].tick_params(labelsize=12)
 
-fig5.subplots_adjust(wspace=0.03, hspace=0)
-fig5.suptitle('SVR Annual sedimentation 2012-2018')
-plt.show()
+    fig5.subplots_adjust(wspace=0.03, hspace=0)
+    fig5.suptitle(title)
+    plt.show()
+    return
+#plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
 
 ###################################
 # GPR PLOT
 ###################################
 
-plt.rcParams.update({'font.size': 20})
-fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                    figsize=(20, 10))
-cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(yt),
-            cmap=cm, vmin=-2, vmax=2)
-ax[0].set_title('Actual')
-ax[0].set_xlabel("x coordinate")
-ax[0].set_ylabel("y coordinate")
-ax[0].tick_params(labelsize=12)
-sc = ax[1].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predGPR),
-            cmap=cm, vmin=-2, vmax=2)
-cbar = fig5.colorbar(sc)
-cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
-cbar.ax.get_yaxis().labelpad = 20
-ax[1].set_title('Prediction')
-ax[1].set_xlabel("x coordinate")
-ax[1].tick_params(labelsize=12)
-sc = ax[2].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predGPR - yt),
-            cmap=cm,  vmin=-2, vmax=2)
-ax[2].set_title('Residual')
-ax[2].set_xlabel("x coordinate")
-ax[2].tick_params(labelsize=12)
+#plotMaps1Set(yt, y_predGPR, 'GPR Annual sedimentation 2012-2018')
 
-fig5.subplots_adjust(wspace=0.03, hspace=0)
-fig5.suptitle('GPR Annual sedimentation 2012-2018')
-plt.show()
 
 ###################################
 # MLPR PLOT
 ###################################
 
-plt.rcParams.update({'font.size': 20})
-fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                    figsize=(20, 10))
-cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(yt),
-            cmap=cm, vmin=-2, vmax=2)
-ax[0].set_title('Actual')
-ax[0].set_xlabel("x coordinate")
-ax[0].set_ylabel("y coordinate")
-ax[0].tick_params(labelsize=12)
-sc = ax[1].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predMLPR),
-            cmap=cm, vmin=-2, vmax=2)
-cbar = fig5.colorbar(sc)
-cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
-cbar.ax.get_yaxis().labelpad = 20
-ax[1].set_title('Prediction')
-ax[1].set_xlabel("x coordinate")
-ax[1].tick_params(labelsize=12)
-sc = ax[2].scatter(Xt['x'], Xt['y'],
-           linewidths=1, alpha=.7,
-            edgecolor='none',
-           s = 20,
-           c=(y_predMLPR - yt),
-            cmap=cm,  vmin=-2, vmax=2)
-ax[2].set_title('Residual')
-ax[2].set_xlabel("x coordinate")
-ax[2].tick_params(labelsize=12)
+#plotMaps1Set(yt, y_predMLPR, 'MLPR Annual sedimentation 2012-2018')
 
-fig5.subplots_adjust(wspace=0.03, hspace=0)
-fig5.suptitle('MLPR Annual sedimentation 2012-2018')
-plt.show()
-"""
