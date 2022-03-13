@@ -147,7 +147,7 @@ plt.show()
 # TRAINING ALGORITHMS
 ######################
 #0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni
-col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'distPequeni']
+col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'distPequeni']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -196,7 +196,7 @@ print('predicted')
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[4,8,9, 11, 12, 13, 14,16, 18, 19, 21,22,23, 25]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,16,17, 18, 19, 21,22,23, 25]]
 
 def plotImportances(alg, feat, Xtrain, ytrain):
     alg.fit(Xtrain, ytrain)
