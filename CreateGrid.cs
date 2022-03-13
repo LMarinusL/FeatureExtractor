@@ -829,7 +829,7 @@ public class CreateGrid : MonoBehaviour
         float correction2018 = 0f;
         float correction2012 = 0f;
         float correction2008 = 0f;
-        
+        /*
         List<Cell> cellsLowDiff = new List<Cell>();
         foreach (Cell cell in grid2008.cells) {
 
@@ -839,7 +839,7 @@ public class CreateGrid : MonoBehaviour
 
             float maxDiff = 1.5f;
             //if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < maxDiff && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < maxDiff && Mathf.Pow(Mathf.Pow(diff3, 0.5f), 2) < maxDiff)
-            if (cell.x < 1088 && cell.z > 535 && cell.x > 1044 && cell.z < 568 && cell.y != 0 && Mathf.Abs(cell.slope) < 0.2)
+            if (cell.x < 449 && cell.z > 261 && cell.x > 405 && cell.z < 303 && cell.y != 0 && Mathf.Abs(cell.slope) < 0.2)
             {
                 cellsLowDiff.Add(cell);
                 Instantiate(dotgreen, cell.position, transform.rotation);
@@ -867,11 +867,11 @@ public class CreateGrid : MonoBehaviour
         Debug.Log(" Mean 18: " + correction2018);
         Debug.Log(" Mean 12: " + correction2012);
         Debug.Log(" Mean 08: " + correction2008);
-        
+        */
 
         correction2018 = 1.5f;
         correction2012 = -0.7f;
-        correction2008 = -0.5f;
+        correction2008 = 0f;
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
@@ -886,19 +886,19 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid1997.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2008.cells[cell.index].y + correction2008) - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 73.9 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2008.cells[cell.index].y + correction2008) - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " +(73.9* 11 )+" " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
         }
         //2008-2012
         foreach (Cell cell in grid2008.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2012.cells[cell.index].y + correction2012) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 95.5 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2012.cells[cell.index].y + correction2012) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (95.5*4) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
         }
         //2012-2018
         foreach (Cell cell in grid2012.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " 58.2 " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (58.2*6 )+ " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
         }
 
         writer.Close();

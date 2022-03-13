@@ -101,11 +101,53 @@ ax4.boxplot([df08['hdifference'],df12['hdifference'],df18['hdifference']], showf
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
 plt.show()
 
+plt.rcParams.update({'font.size': 20})
+fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
+                                    figsize=(20, 10))
+cm = plt.cm.get_cmap('RdYlBu')
+sc = ax[0].scatter(df08['x'], df08['y'],
+        linewidths=1, alpha=.7,
+            edgecolor='none',
+        s = 20,
+        c=(df08['hdifference']),
+            cmap=cm, vmin=-2, vmax=2)
+ax[0].set_title('08')
+ax[0].set_xlabel("x coordinate")
+ax[0].set_ylabel("y coordinate")
+ax[0].tick_params(labelsize=12)
+sc = ax[1].scatter(df12['x'], df12['y'],
+        linewidths=1, alpha=.7,
+            edgecolor='none',
+        s = 20,
+        c=(df12['hdifference']),
+            cmap=cm, vmin=-2, vmax=2)
+cbar = fig5.colorbar(sc)
+cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
+cbar.ax.get_yaxis().labelpad = 20
+ax[1].set_title('12')
+ax[1].set_xlabel("x coordinate")
+ax[1].tick_params(labelsize=12)
+sc = ax[2].scatter(df18['x'], df18['y'],
+        linewidths=1, alpha=.7,
+            edgecolor='none',
+        s = 20,
+        c=(df18['hdifference']),
+            cmap=cm,  vmin=-2, vmax=2)
+ax[2].set_title('18')
+ax[2].set_xlabel("x coordinate")
+ax[2].tick_params(labelsize=12)
+
+fig5.subplots_adjust(wspace=0.03, hspace=0)
+fig5.suptitle('08, 12, 18 levels' )
+plt.show()
+
+
+
 ###################
 # TRAINING ALGORITHMS
 ######################
 #0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni
-col_study2 = [ 'interval', 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
+col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'distPequeni']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -132,7 +174,6 @@ def predict(alg, Xtrain, ytrain, Xpredict):
 
 forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
-
 """
 print('SVR-predicting: ')
 regr = SVR(C=1.0, epsilon=0.2)
@@ -151,12 +192,11 @@ y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt2)
 print('predicted')
 """
 
-
 ###################################
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[1,4,8,9, 11, 12, 13, 14,16, 18, 19,20, 21,22,23, 24, 25]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,16, 18, 19, 21,22,23, 25]]
 
 def plotImportances(alg, feat, Xtrain, ytrain):
     alg.fit(Xtrain, ytrain)
@@ -396,6 +436,7 @@ def plotMaps1Set(actual, pred, title):
     fig5.suptitle(title)
     plt.show()
     return
+
 #plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
 
 ###################################
