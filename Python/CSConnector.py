@@ -25,6 +25,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
+from matplotlib import colors
 
 
 
@@ -94,13 +95,16 @@ df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -1], n_sample
 df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 
+"""
 print(df18.head())
 fig4, ax4 = plt.subplots()
 ax4.set_title('Annual sedimentation')
 ax4.boxplot([df08['hdifference'],df12['hdifference'],df18['hdifference']], showfliers=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
 plt.show()
+"""
 
+"""
 plt.rcParams.update({'font.size': 20})
 fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                     figsize=(20, 10))
@@ -140,7 +144,7 @@ ax[2].tick_params(labelsize=12)
 fig5.subplots_adjust(wspace=0.03, hspace=0)
 fig5.suptitle('08, 12, 18 levels' )
 plt.show()
-
+"""
 
 
 ###################
@@ -436,7 +440,6 @@ def plotMaps1Set(actual, pred, title):
     fig5.suptitle(title)
     plt.show()
     return
-
 #plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
 
 ###################################
@@ -452,3 +455,51 @@ def plotMaps1Set(actual, pred, title):
 
 #plotMaps1Set(yt, y_predMLPR, 'MLPR Annual sedimentation 2012-2018')
 
+################
+# HISTOGRAM
+####################
+def plotErrorHist(actual, pred):
+
+    plt.rcParams.update({'font.size': 4})
+
+    fig, ax = plt.subplots(nrows=2, ncols=2, sharey=False, tight_layout=True)
+    hist1 = ax[0,0].hist2d(actual, 
+           (pred - actual),
+           bins = [80,80], 
+           cmap = "RdYlGn_r",
+           norm = colors.LogNorm(),
+           density = True)     
+    ax[0,0].set_title('error on actual')
+    ax[0,0].set_xlabel("actual")
+    ax[0,0].set_ylabel("error")
+    #ax[0].set_xlim((-1,4))
+
+    hist2 = ax[0,1].hist2d(pred, 
+           (pred - actual),
+           bins = [80,80], 
+           cmap = "RdYlGn_r",
+           norm = colors.LogNorm(),
+           density = True)
+    ax[0,1].set_title('error on prediction')
+    fig.colorbar(hist2[3],ax=ax[0,1])    
+    ax[0,1].set_xlabel("prediction")
+    ax[0,1].set_ylabel("error")
+
+    number = 0
+    hist1Temp =  hist1[1][1:10]
+    for line in hist1Temp:
+        histTemp =  hist1[2][1:]
+        ax[1,0].plot(histTemp, hist1[0][number], label=hist1Temp[number])
+        number = number + 1
+    ax[1,1].legend(loc="upper right")
+    number = 0
+    hist2Temp =  hist2[1][1:10]
+    for line in hist2Temp:
+        histTemp =  hist2[2][1:]
+        ax[1,1].plot(histTemp, hist2[0][number], label=hist2Temp[number])
+        number = number + 1
+    ax[1,1].legend(loc="upper right", prop={'size': 6})
+    plt.show()
+    return
+
+plotErrorHist(yt, y_pred)
