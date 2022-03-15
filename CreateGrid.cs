@@ -760,6 +760,16 @@ public class CreateGrid : MonoBehaviour
         return distance;
     }
 
+    float profileCurvature(Cell cell)
+    {
+        return 0f;
+    }
+
+    float planformCurvature(Cell cell)
+    {
+        return 0f;
+    }
+
 
     void WriteAll()
     {
