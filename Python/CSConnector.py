@@ -79,10 +79,10 @@ param_study = 'hdifference'
 
 ###############
 
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 790][df.x > 645][df.y > 640][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 790][df.x > 645][df.y > 640][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
