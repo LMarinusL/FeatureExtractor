@@ -79,10 +79,10 @@ param_study = 'hdifference'
 
 ###############
 
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 790][df.x > 645][df.y > 640][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 790][df.x > 645][df.y > 640][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
@@ -150,8 +150,8 @@ plt.show()
 ###################
 # TRAINING ALGORITHMS
 ######################
-#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni
-col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'distPequeni']
+#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
+col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'distPequeni', 'profileCurvature', 'planformCurvature']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -200,11 +200,11 @@ print('predicted')
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[4,8,9, 11, 12, 13, 14,16,17, 18, 19, 21,22,23, 25]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21,22,23, 25, 26, 27]]
 
 def plotImportances(alg, feat, Xtrain, ytrain):
     alg.fit(Xtrain, ytrain)
-    plt.rcParams.update({'font.size': 15})
+    plt.rcParams.update({'font.size': 8})
     result = pd.DataFrame(forestImportance.feature_importances_,  df[col_study2].columns)
     result.columns = ['importance']
     result.sort_values(by='importance', ascending=False)
@@ -237,8 +237,23 @@ X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo3, yo3, test_size=
 forest5 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 print('rf-predicting less features: ')
 y_predXS = predict(forest5, X_traino2, y_traino2, Xt3)
+"""
+print('SVR-predicting: ')
+regr = SVR(C=1.0, epsilon=0.2)
+y_predSVR = predict(regr, X_traino2, y_traino2, Xt3)
 
 
+print('Gaussian-predicting: ')
+kernel = DotProduct() + WhiteKernel()
+GPR = GaussianProcessRegressor(kernel=kernel, random_state=0)
+y_predGPR = predict(GPR, X_traino2, y_traino2, Xt3)
+
+
+print('MLPR-predicting: ')
+MLPR = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
+y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt3)
+print('predicted')
+"""
 ##################################
 # CV
 ########################################
@@ -324,14 +339,14 @@ print(" only important params MAE: ", mean_absolute_error(yt, y_predXS))
 ###################################
 
 def plotMaps2Sets(actual, pred1, pred2):
-    plt.rcParams.update({'font.size': 20})
+    plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlBu')
     sc = ax[0,0].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
+            s = 10,
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0,0].set_title('Actual')
@@ -341,7 +356,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     sc = ax[0,1].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
+            s = 10,
             c=(pred1),
                 cmap=cm, vmin=-2, vmax=2)
     cbar = fig5.colorbar(sc)
@@ -353,7 +368,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     sc = ax[0,2].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
+            s = 10,
             c=(pred1 - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[0,2].set_title('Residual')
@@ -363,7 +378,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     sc = ax[1,0].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
+            s = 10,
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[1,0].set_title('Actual')
@@ -373,7 +388,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     sc = ax[1,1].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
+            s = 10,
             c=(pred2),
                 cmap=cm, vmin=-2, vmax=2)
     cbar.ax.get_yaxis().labelpad = 20
@@ -383,7 +398,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     sc = ax[1,2].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
+            s = 10,
             c=(pred2 - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[1,2].set_title('Residual')
@@ -400,7 +415,7 @@ plotMaps2Sets(yt, y_pred, y_predXS)
 # SVR PLOT
 ###################################
 def plotMaps1Set(actual, pred, title):
-    plt.rcParams.update({'font.size': 20})
+    plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlBu')
@@ -440,6 +455,7 @@ def plotMaps1Set(actual, pred, title):
     fig5.suptitle(title)
     plt.show()
     return
+
 #plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
 
 ###################################
@@ -460,7 +476,7 @@ def plotMaps1Set(actual, pred, title):
 ####################
 def plotErrorHist(actual, pred):
 
-    plt.rcParams.update({'font.size': 4})
+    plt.rcParams.update({'font.size': 8})
 
     fig, ax = plt.subplots(nrows=2, ncols=2, sharey=False, tight_layout=True)
     hist1 = ax[0,0].hist2d(actual, 
@@ -491,7 +507,7 @@ def plotErrorHist(actual, pred):
         histTemp =  hist1[2][1:]
         ax[1,0].plot(histTemp, hist1[0][number], label=hist1Temp[number])
         number = number + 1
-    ax[1,1].legend(loc="upper right")
+    ax[1,0].set_xlim([-2, 2])
     number = 0
     hist2Temp =  hist2[1][1:10]
     for line in hist2Temp:
@@ -499,6 +515,7 @@ def plotErrorHist(actual, pred):
         ax[1,1].plot(histTemp, hist2[0][number], label=hist2Temp[number])
         number = number + 1
     ax[1,1].legend(loc="upper right", prop={'size': 6})
+    ax[1,1].set_xlim([-2, 2])
     plt.show()
     return
 

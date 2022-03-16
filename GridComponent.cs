@@ -169,6 +169,8 @@ public class Cell : Component
     public float curvatureX;
     public float curvatureY;
     public float curvatureZ;
+    public float profileCurvature;
+    public float planformCurvature;
     public float curvatureS;
     public float curvatureM;
     public float curvatureL;

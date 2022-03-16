@@ -95,15 +95,17 @@ public class CreateGrid : MonoBehaviour
                 cell.curvatureL = computeESRICurvature(cell, 4, 4);
                 cell.curvatureM = computeESRICurvature(cell, 2, 4);
                 cell.curvatureS = computeESRICurvature(cell, 1, 4);
+                cell.profileCurvature = profileCurvature(cell, 5);
+                cell.planformCurvature = planformCurvature(cell, 5);
                 cell.relativeHeight1 = relativeHeight(cell.index, grid, 1);
                 cell.relativeHeight2 = relativeHeight(cell.index, grid, 2);
                 cell.relativeHeight3 = relativeHeight(cell.index, grid, 4);
                 cell.relativeSlope = relativeSlope(cell.index, grid, 1);
                 cell.relativeAspect = relativeAspect(cell.index, grid, 1);
                 cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
-                cell.averageRunoff1 = averageRunoff(grid, cell, 2);
-                cell.averageRunoff2 = averageRunoff(grid, cell, 4);
-                cell.averageRunoff3 = averageRunoff(grid, cell, 6);
+                cell.averageRunoff1 = averageRunoff(grid, cell, 5);
+                cell.averageRunoff2 = averageRunoff(grid, cell, 10);
+                cell.averageRunoff3 = averageRunoff(grid, cell, 15);
 
             }
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
@@ -347,6 +349,26 @@ public class CreateGrid : MonoBehaviour
         for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = new Color(1f * (grid.cells[i].curvatureL), 1f * (grid.cells[i].curvatureL ), 1f * (grid.cells[i].curvatureL), 1f);
+
+        }
+        mesh.colors = colors;
+    }
+    public void setMeshProfileCurveColors()
+    {
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            colors[i] = new Color(5f * (grid.cells[i].profileCurvature), 5f * (grid.cells[i].profileCurvature), 5f * (grid.cells[i].profileCurvature), 1f);
+
+        }
+        mesh.colors = colors;
+    }
+    public void setMeshPlanformCurveColors()
+    {
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            colors[i] = new Color(5f * (grid.cells[i].planformCurvature), 5f * (grid.cells[i].planformCurvature), 5f * (grid.cells[i].planformCurvature), 1f);
 
         }
         mesh.colors = colors;
@@ -617,7 +639,7 @@ public class CreateGrid : MonoBehaviour
                 {
                     Cell additionalCell = grid.cells[getIndexFromLoc(xLoc + i, zLoc + j)];
                     if (additionalCell.index != cell.index) {
-                        runoffSum += (additionalCell.runoffScore / (Vector3.Distance(additionalCell.position, cell.position)));
+                        runoffSum += additionalCell.runoffScore;
                     }
                 }
                 catch { 
@@ -760,14 +782,86 @@ public class CreateGrid : MonoBehaviour
         return distance;
     }
 
-    float profileCurvature(Cell cell)
+    float profileCurvature(Cell cell, int dist)
     {
-        return 0f;
+        if (cell.y == 0 || cell.attachedTriangles.Count != 6)
+        {
+            return 0f;
+        }
+        else
+        {
+            List<Cell> cells = getSurroundingCells(cell, grid, dist, 8);
+            // select lowest & highest cells 
+            // compute curvature between lowest and highest and return
+            float lowVal = 9999999f;
+            Cell high = null;
+            Cell low = null;
+            int lowInd = 0;
+            int index = 0;
+            if (cells.Count != 8) { return 0; }
+            foreach (Cell c in cells)
+            {
+                if (c.y == 0) { return 0; }
+                if (c.y <= lowVal)
+                {
+                    lowInd = index;
+                    lowVal = c.y;
+                    low = c;
+                }
+                index++;
+            }
+            int highInd = lowInd + 4;
+            if(highInd > 7) { highInd = highInd - 8; }
+            high = cells[highInd];
+            float Step1 = Vector3.Distance(cell.position, low.position);
+            float Step2 = Vector3.Distance(cell.position, high.position);
+            float Curve = (((low.y + high.y) / 2) - cell.y) / (Step1 + Step2);
+            return Curve;
+        }
     }
 
-    float planformCurvature(Cell cell)
+    float planformCurvature(Cell cell, int dist)
     {
-        return 0f;
+        if (cell.y == 0 || cell.attachedTriangles.Count != 6)
+        {
+            return 0f;
+        }
+        else
+        {
+            List<Cell> cells = getSurroundingCells(cell, grid, dist, 8);
+            // select lowest & highest cells 
+            // compute curvature between lowest and highest and return
+            float lowVal = 9999999f;
+            Cell left = null;
+            Cell right = null;
+            Cell low = null;
+            int lowInd = 0;
+            int index = 0;
+            if (cells.Count != 8) { return 0; }
+            foreach (Cell c in cells)
+            {
+                if(c.y == 0) { return 0; }
+                if (c.y <= lowVal)
+                {
+                    lowInd = index;
+                    lowVal = c.y;
+                    low = c;
+                }
+                index++;
+            }
+            int leftInd = lowInd + 2;
+            if (leftInd > 7) { leftInd = leftInd - 8; }
+            left = cells[leftInd];
+            int rightInd = lowInd - 2;
+            if (rightInd <0 ) { rightInd = rightInd + 8; }
+            right = cells[rightInd];
+
+
+            float Step1 = Vector3.Distance(cell.position, right.position);
+            float Step2 = Vector3.Distance(cell.position, left.position);
+            float Curve = (((left.y + right.y) / 2) - cell.y) / (Step1 + Step2);
+            return Curve;
+        }
     }
 
 
@@ -879,13 +973,13 @@ public class CreateGrid : MonoBehaviour
         Debug.Log(" Mean 08: " + correction2008);
         */
 
-        correction2018 = 1.5f;
+        correction2018 = 1.7f;
         correction2012 = -0.7f;
         correction2008 = 0f;
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni");
+        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni profileCurvature planformCurvature");
        /* //1983-1997
         foreach (Cell cell in grid1983.cells)
         {
@@ -896,19 +990,19 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid1997.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2008.cells[cell.index].y + correction2008) - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " +(73.9* 11 )+" " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2008.cells[cell.index].y + correction2008) - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " +(73.9* 11 )+" " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.profileCurvature + " " + cell.planformCurvature);
         }
         //2008-2012
         foreach (Cell cell in grid2008.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2012.cells[cell.index].y + correction2012) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (95.5*4) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2012.cells[cell.index].y + correction2012) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (95.5*4) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.profileCurvature + " " + cell.planformCurvature);
         }
         //2012-2018
         foreach (Cell cell in grid2012.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (58.2*6 )+ " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres);
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (58.2*6 )+ " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.profileCurvature + " " + cell.planformCurvature);
         }
 
         writer.Close();

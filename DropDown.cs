@@ -36,6 +36,8 @@ public class DropDown : MonoBehaviour
         items.Add("run-off iterate");
         items.Add("distance to skeleton");
         items.Add("angle to skeleton");
+        items.Add("profile curvature");
+        items.Add("planform curvature");
         items.Add("skeleton length");
 
 
@@ -101,6 +103,12 @@ public class DropDown : MonoBehaviour
                 gridImporter.setMeshSkeletonAspectColors();
                 break;
             case 12:
+                gridImporter.setMeshProfileCurveColors();
+                break;
+            case 13:
+                gridImporter.setMeshPlanformCurveColors();
+                break;
+            case 14:
                 gridImporter.setMeshSkeletonLengthColors();
                 break;
             default:
