@@ -73,16 +73,16 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor
 
 ################
-#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni
-col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
+#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
+col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'profileCurvature', 'planformCurvature']
 param_study = 'hdifference'
 
 ###############
 
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.y < -(7/2)*df.x + 3550][df.y > -1.25*df.x + 1575][df.x < 800][df.y < 900][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year > 2017][df.x < 1530][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year > 2017][df.y < -(7/2)*df.x + 3550][df.y > -1.25*df.x + 1575][df.x < 800][df.y < 900][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
@@ -151,7 +151,7 @@ plt.show()
 # TRAINING ALGORITHMS
 ######################
 #0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
-col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'distPequeni', 'profileCurvature', 'planformCurvature']
+col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -178,6 +178,7 @@ def predict(alg, Xtrain, ytrain, Xpredict):
 
 forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
+
 """
 print('SVR-predicting: ')
 regr = SVR(C=1.0, epsilon=0.2)
@@ -200,7 +201,7 @@ print('predicted')
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21,22,23, 25, 26, 27]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21]]
 
 def plotImportances(alg, feat, Xtrain, ytrain):
     alg.fit(Xtrain, ytrain)
@@ -228,7 +229,7 @@ indices = plotImportances(forestImportance, features, X_traino2, y_traino2, )
 # SET WITH LESS FEATURES
 ##################################
 
-col_study3 = features[indices[5:-1]]
+col_study3 = features[indices[7:-1]]
 print(col_study3)
 Xo3 = dfTrain[col_study3]
 yo3 = dfTrain[param_study]

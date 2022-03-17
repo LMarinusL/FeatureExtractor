@@ -973,9 +973,9 @@ public class CreateGrid : MonoBehaviour
         Debug.Log(" Mean 08: " + correction2008);
         */
 
-        correction2018 = 1.7f;
-        correction2012 = -0.7f;
-        correction2008 = 0f;
+        correction2018 = 1.7f; // 0.4
+        correction2012 = -0.7f;   // 0
+        correction2008 = 0f;    // 0f
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
