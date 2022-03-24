@@ -74,15 +74,15 @@ from sklearn.ensemble import RandomForestRegressor
 
 ################
 #0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
-col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'profileCurvature', 'planformCurvature']
+col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random']
 param_study = 'hdifference'
 
 ###############
-
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.y < -(7/2)*df.x + 3550][df.y > -1.25*df.x + 1575][df.x < 800][df.y < 900][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+#[df.y < -(7/2)*df.x + 3550][df.y > -1.25*df.x + 1575][df.x < 800][df.y < 900]
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year > 2017][df.y < -(7/2)*df.x + 3550][df.y > -1.25*df.x + 1575][df.x < 800][df.y < 900][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year > 2017][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
@@ -91,20 +91,18 @@ yt = dfTest[param_study]
 # BOXPLOT OF DATA
 #######################
 
-df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
-df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
-df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+df18 = sklearn.utils.resample(df[df.year == 2018], n_samples=10000, random_state=None, stratify=None)
+df12 = sklearn.utils.resample(df[df.year == 2012], n_samples=10000, random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008], n_samples=10000, random_state=None, stratify=None)
 
-"""
+
 print(df18.head())
 fig4, ax4 = plt.subplots()
 ax4.set_title('Annual sedimentation')
 ax4.boxplot([df08['hdifference'],df12['hdifference'],df18['hdifference']], showfliers=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
 plt.show()
-"""
 
-"""
 plt.rcParams.update({'font.size': 20})
 fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                     figsize=(20, 10))
@@ -144,14 +142,13 @@ ax[2].tick_params(labelsize=12)
 fig5.subplots_adjust(wspace=0.03, hspace=0)
 fig5.suptitle('08, 12, 18 levels' )
 plt.show()
-"""
 
 
 ###################
 # TRAINING ALGORITHMS
 ######################
-#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
-col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres']
+#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-random
+col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -201,7 +198,7 @@ print('predicted')
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21, 26]]
 
 def plotImportances(alg, feat, Xtrain, ytrain):
     alg.fit(Xtrain, ytrain)
@@ -527,3 +524,23 @@ plotErrorHist(yt, y_pred)
 ############################
 # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
 # https://scikit-learn.org/stable/auto_examples/cluster/plot_agglomerative_dendrogram.html#sphx-glr-auto-examples-cluster-plot-agglomerative-dendrogram-py
+
+
+####################
+# Writer
+####################
+x_array = Xt['x'].to_numpy()
+y_array = Xt['y'].to_numpy()
+
+lines = ['Readme', 'How to write text files in Python']
+outputFile =  open('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/Python_Output.txt', 'w')
+for i in range(y_pred.size):
+    outputFile.write(str(x_array[i]))
+    outputFile.write( " ")
+    outputFile.write(str(y_array[i]))
+    outputFile.write(" ")
+    outputFile.write(str(y_pred[i]))
+    outputFile.write('\n')
+outputFile.close()
+
+

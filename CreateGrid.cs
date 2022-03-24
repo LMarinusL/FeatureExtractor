@@ -95,8 +95,8 @@ public class CreateGrid : MonoBehaviour
                 cell.curvatureL = computeESRICurvature(cell, 4, 4);
                 cell.curvatureM = computeESRICurvature(cell, 2, 4);
                 cell.curvatureS = computeESRICurvature(cell, 1, 4);
-                cell.profileCurvature = profileCurvature(cell, 5);
-                cell.planformCurvature = planformCurvature(cell, 5);
+                //cell.profileCurvature = profileCurvature(cell, 5);
+                //cell.planformCurvature = planformCurvature(cell, 5);
                 cell.relativeHeight1 = relativeHeight(cell.index, grid, 1);
                 cell.relativeHeight2 = relativeHeight(cell.index, grid, 2);
                 cell.relativeHeight3 = relativeHeight(cell.index, grid, 4);
@@ -930,10 +930,12 @@ public class CreateGrid : MonoBehaviour
         getDistanceToLines(grid2018, skeletons.skeleton2018B, "Pequeni");
 
 
+
+        // compute volume
         float correction2018 = 0f;
         float correction2012 = 0f;
         float correction2008 = 0f;
-        /*
+        
         List<Cell> cellsLowDiff = new List<Cell>();
         foreach (Cell cell in grid2008.cells) {
 
@@ -942,8 +944,7 @@ public class CreateGrid : MonoBehaviour
             float diff3 = (grid1997.cells[cell.index].y - grid1983.cells[cell.index].y);
 
             float maxDiff = 1.5f;
-            //if (Mathf.Pow(Mathf.Pow(diff,0.5f),2) < maxDiff && cell.y != 0 && Mathf.Pow(Mathf.Pow(diff2, 0.5f), 2) < maxDiff && Mathf.Pow(Mathf.Pow(diff3, 0.5f), 2) < maxDiff)
-            if (cell.x < 449 && cell.z > 261 && cell.x > 405 && cell.z < 303 && cell.y != 0 && Mathf.Abs(cell.slope) < 0.2)
+            if (cell.z < -(7 / 2) * cell.x + 2550 && cell.z > -1.25 * cell.x + 1575 && cell.x < 800 && cell.z > 700)
             {
                 cellsLowDiff.Add(cell);
                 Instantiate(dotgreen, cell.position, transform.rotation);
@@ -955,7 +956,6 @@ public class CreateGrid : MonoBehaviour
         float sum2012 = 0f;
         float sum2008 = 0f;
 
-
         foreach (Cell cell in cellsLowDiff)
         {
             count++;
@@ -963,23 +963,20 @@ public class CreateGrid : MonoBehaviour
             sum2012 += (grid2012.cells[cell.index].y - grid1997.cells[cell.index].y);
             sum2008 += (grid2008.cells[cell.index].y - grid1997.cells[cell.index].y);
         }
-        correction2018 = sum2018 / count;
-        correction2012 = sum2012 / count;
-        correction2008 = sum2008 / count;
+
+        Debug.Log(" total volume chagre 18: " + sum2018);
+        Debug.Log(" total volume chagre 12: " + sum2012);
+        Debug.Log(" total volume chagre 08: " + sum2008);
+        
+        correction2018 = 1.1f; // 0.4
+        correction2012 = -1f;  // 0
+        correction2008 = -0.2f;    // 0f
 
 
-        Debug.Log(" Mean 18: " + correction2018);
-        Debug.Log(" Mean 12: " + correction2012);
-        Debug.Log(" Mean 08: " + correction2008);
-        */
-
-        correction2018 = 1.7f; // 0.4
-        correction2012 = -0.7f;   // 0
-        correction2008 = 0f;    // 0f
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni profileCurvature planformCurvature");
+        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random");
        /* //1983-1997
         foreach (Cell cell in grid1983.cells)
         {
@@ -990,24 +987,58 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid1997.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2008.cells[cell.index].y + correction2008) - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " +(73.9* 11 )+" " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.profileCurvature + " " + cell.planformCurvature);
+            writer.WriteLine("2008 11 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2008.cells[cell.index].y + correction2008) - cell.y) + " "+ cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " "   + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " +(73.9* 11 )+" " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
         }
         //2008-2012
         foreach (Cell cell in grid2008.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2012.cells[cell.index].y + correction2012) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (95.5*4) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.profileCurvature + " " + cell.planformCurvature);
+            writer.WriteLine("2012 4 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2012.cells[cell.index].y + correction2012) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (95.5*4) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
         }
         //2012-2018
         foreach (Cell cell in grid2012.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (58.2*6 )+ " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.profileCurvature + " " + cell.planformCurvature);
+            writer.WriteLine("2018 6 " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (58.2*6 )+ " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
         }
 
         writer.Close();
     }
+
+
+    void appendPrediction(TextAsset file, int year, int interval, int discharge)
+    {
+        Mesh meshNew;
+        Grid gridNew;
+
+        //2018
+        meshGenerator.StartPipe(file);
+        meshNew = meshGenerator.mesh;
+        InstantiateGrid(meshNew);
+        gridNew = grid;
+        setRunoffScores(gridNew);
+        getDistanceToLines(gridNew, skeletons.skeleton2018A, "Chagres");
+        getDistanceToLines(gridNew, skeletons.skeleton2018B, "Pequeni");
+
+        string path = "Assets/Output/outputGridFull.txt";
+        StreamWriter writer = new StreamWriter(path, true);
+
+        foreach (Cell cell in gridNew.cells)
+        {
+            if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
+        }
+
+        writer.Close();
+    }
+
+
+
+
+
 }
+
+
 
 
 
