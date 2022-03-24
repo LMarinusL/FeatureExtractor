@@ -17,6 +17,8 @@ public class MeshGenerator : MonoBehaviour
     public TextAsset vertexFile2008;
     public TextAsset vertexFile2012;
     public TextAsset vertexFile2018;
+    public TextAsset vertexFilePred;
+
 
     [SerializeField] public TextMeshProUGUI loadingText;
 

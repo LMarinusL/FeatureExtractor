@@ -614,6 +614,7 @@ public class CreateGrid : MonoBehaviour
             
             float xStep = cell.attachedFaces[2].startVertex.x - cell.attachedFaces[2].endVertex.x;
             float zStep = cell.attachedFaces[0].startVertex.z - cell.attachedFaces[0].endVertex.z;
+            Debug.Log(cell.y);
             float D = (((Z4.y + Z6.y) / 2) - cell.y) / (zStep * 2);
             float E = (((Z2.y + Z8.y) / 2) - cell.y) / (xStep * 2);
             float curvature = -2 * (D + E);
@@ -865,8 +866,9 @@ public class CreateGrid : MonoBehaviour
     }
 
 
-    void WriteAll()
+    void WriteAllold()
     {
+
         Mesh mesh1983;
         Mesh mesh1997;
         Mesh mesh2008;
@@ -1006,11 +1008,10 @@ public class CreateGrid : MonoBehaviour
     }
 
 
-    void appendPrediction(TextAsset file, int year, int interval, int discharge)
+    Grid appendPrediction(TextAsset file, int year, int interval, float discharge, Grid gridNext, float correction)
     {
         Mesh meshNew;
         Grid gridNew;
-
         //2018
         meshGenerator.StartPipe(file);
         meshNew = meshGenerator.mesh;
@@ -1026,12 +1027,65 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in gridNew.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + cell.y + " " + ((grid2018.cells[cell.index].y + correction2018) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + cell.y + " " + ((gridNext.cells[cell.index].y + correction) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
         }
-
         writer.Close();
+        return gridNew;
     }
 
+
+    void WriteAll()
+    {
+        Grid grid1997;
+        Grid grid2008; 
+        Grid grid2012;
+        Grid grid2018;
+        Grid gridPred;
+
+        string path = "Assets/Output/outputGridFull.txt";
+        StreamWriter writer = new StreamWriter(path, false);
+        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random");
+        writer.Close();
+
+        //1997
+        meshGenerator.StartPipe(meshGenerator.vertexFile2018);
+        Mesh mesh2018 = meshGenerator.mesh;
+        InstantiateGrid(mesh2018);
+        grid2018 = grid;
+        setRunoffScores(grid2018);
+        getDistanceToLines(grid2018, skeletons.skeleton1997A, "Chagres");
+        getDistanceToLines(grid2018, skeletons.skeleton1997B, "Pequeni");
+
+        grid2012 = appendPrediction(meshGenerator.vertexFile2012, 2018, 6, 58.2f, grid2018, 1.1f);
+        grid2008 = appendPrediction(meshGenerator.vertexFile2008, 2012, 4, 95.5f, grid2012, -1f);
+        grid1997 = appendPrediction(meshGenerator.vertexFile1997, 2008, 11, 73.9f, grid2008, -0.2f);
+        //gridPred = appendPrediction(meshGenerator.vertexFilePred, 2022, 4, 50f, grid2018, 0f);
+
+        List<Cell> cellsLowDiff = new List<Cell>();
+        foreach (Cell cell in grid2008.cells)
+        {
+            float maxDiff = 1.5f;
+            if (cell.z < -(7 / 2) * cell.x + 3250 && cell.z > -1.25 * cell.x + 1575)
+            {
+                cellsLowDiff.Add(cell);
+                Instantiate(dotgreen, cell.position, transform.rotation);
+            }
+        }
+        int count = 0;
+        float sum2018 = 0f;
+        float sum2012 = 0f;
+        float sum2008 = 0f;
+        foreach (Cell cell in cellsLowDiff)
+        {
+            count++;
+            sum2018 += (grid2018.cells[cell.index].y - grid1997.cells[cell.index].y);
+            sum2012 += (grid2012.cells[cell.index].y - grid1997.cells[cell.index].y);
+            sum2008 += (grid2008.cells[cell.index].y - grid1997.cells[cell.index].y);
+        }
+        Debug.Log(" total volume chagre 18: " + sum2018);
+        Debug.Log(" total volume chagre 12: " + sum2012);
+        Debug.Log(" total volume chagre 08: " + sum2008);
+    }
 
 
 

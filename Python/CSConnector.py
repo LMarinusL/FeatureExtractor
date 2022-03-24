@@ -82,7 +82,7 @@ param_study = 'hdifference'
 dfTrain = sklearn.utils.resample(df[df.year < 2017][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year > 2017][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
@@ -519,11 +519,6 @@ def plotErrorHist(actual, pred):
 
 plotErrorHist(yt, y_pred)
 
-##########################
-# TODO
-############################
-# https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
-# https://scikit-learn.org/stable/auto_examples/cluster/plot_agglomerative_dendrogram.html#sphx-glr-auto-examples-cluster-plot-agglomerative-dendrogram-py
 
 
 ####################
@@ -543,4 +538,44 @@ for i in range(y_pred.size):
     outputFile.write('\n')
 outputFile.close()
 
+#############################################################
+# Hierarchy diagram
+######################################
+# https://scikit-learn.org/stable/auto_examples/cluster/plot_agglomerative_dendrogram.html#sphx-glr-auto-examples-cluster-plot-agglomerative-dendrogram-py
 
+from scipy.cluster.hierarchy import dendrogram
+from sklearn.datasets import load_iris
+from sklearn.cluster import AgglomerativeClustering
+
+
+def plot_dendrogram(model, **kwargs):
+    # Create linkage matrix and then plot the dendrogram
+
+    # create the counts of samples under each node
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx < n_samples:
+                current_count += 1  # leaf node
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack(
+        [model.children_, model.distances_, counts]
+    ).astype(float)
+
+    # Plot the corresponding dendrogram
+    dendrogram(linkage_matrix, **kwargs)
+
+# setting distance_threshold=0 ensures we compute the full tree.
+model = AgglomerativeClustering(distance_threshold=0, n_clusters=None)
+
+model = model.fit(X_traino2, y_traino2)
+plt.title("Hierarchical Clustering Dendrogram")
+# plot the top three levels of the dendrogram
+plot_dendrogram(model, truncate_mode="level", p=3)
+plt.xlabel("Number of points in node (or index of point if no parenthesis).")
+plt.show()
