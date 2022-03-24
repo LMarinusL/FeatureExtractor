@@ -77,12 +77,12 @@ from sklearn.ensemble import RandomForestRegressor
 col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random']
 param_study = 'hdifference'
 
-###############
-#[df.y < -(7/2)*df.x + 3550][df.y > -1.25*df.x + 1575][df.x < 800][df.y < 900]
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+#[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920]
+
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.hdifference > -1][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -1], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -1][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
@@ -566,9 +566,11 @@ def plot_dendrogram(model, **kwargs):
     linkage_matrix = np.column_stack(
         [model.children_, model.distances_, counts]
     ).astype(float)
+    print(linkage_matrix.shape)
+    print(col_study3.shape)
 
     # Plot the corresponding dendrogram
-    dendrogram(linkage_matrix, **kwargs)
+    dendrogram(linkage_matrix, **kwargs, labels=col_study3)
 
 # setting distance_threshold=0 ensures we compute the full tree.
 model = AgglomerativeClustering(distance_threshold=0, n_clusters=None)

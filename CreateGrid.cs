@@ -1008,7 +1008,7 @@ public class CreateGrid : MonoBehaviour
     }
 
 
-    Grid appendPrediction(TextAsset file, int year, int interval, float discharge, Grid gridNext, float correction)
+    Grid appendPrediction(TextAsset file, int year, int interval, float discharge, Grid gridNext, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB)
     {
         Mesh meshNew;
         Grid gridNew;
@@ -1018,8 +1018,8 @@ public class CreateGrid : MonoBehaviour
         InstantiateGrid(meshNew);
         gridNew = grid;
         setRunoffScores(gridNew);
-        getDistanceToLines(gridNew, skeletons.skeleton2018A, "Chagres");
-        getDistanceToLines(gridNew, skeletons.skeleton2018B, "Pequeni");
+        getDistanceToLines(gridNew, skeletonA, "Chagres");
+        getDistanceToLines(gridNew, skeletonB, "Pequeni");
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, true);
@@ -1027,7 +1027,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in gridNew.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + cell.y + " " + ((gridNext.cells[cell.index].y + correction) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + cell.y + " " + ((gridNext.cells[cell.index].y + correction) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000));
         }
         writer.Close();
         return gridNew;
@@ -1056,16 +1056,16 @@ public class CreateGrid : MonoBehaviour
         getDistanceToLines(grid2018, skeletons.skeleton1997A, "Chagres");
         getDistanceToLines(grid2018, skeletons.skeleton1997B, "Pequeni");
 
-        grid2012 = appendPrediction(meshGenerator.vertexFile2012, 2018, 6, 58.2f, grid2018, 1.1f);
-        grid2008 = appendPrediction(meshGenerator.vertexFile2008, 2012, 4, 95.5f, grid2012, -1f);
-        grid1997 = appendPrediction(meshGenerator.vertexFile1997, 2008, 11, 73.9f, grid2008, -0.2f);
+        grid2012 = appendPrediction(meshGenerator.vertexFile2012, 2018, 6, 58.2f, grid2018, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B);
+        grid2008 = appendPrediction(meshGenerator.vertexFile2008, 2012, 4, 95.5f, grid2012, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B);
+        grid1997 = appendPrediction(meshGenerator.vertexFile1997, 2008, 11, 73.9f, grid2008, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B);
         //gridPred = appendPrediction(meshGenerator.vertexFilePred, 2022, 4, 50f, grid2018, 0f);
 
         List<Cell> cellsLowDiff = new List<Cell>();
         foreach (Cell cell in grid2008.cells)
         {
             float maxDiff = 1.5f;
-            if (cell.z < -(7 / 2) * cell.x + 3250 && cell.z > -1.25 * cell.x + 1575)
+            if (cell.z < -(9.5 / 2) * cell.x + 4545 && cell.z > -1.25 * cell.x + 1575 && cell.z > 630 && cell.z < 920 && cell.y != 0)
             {
                 cellsLowDiff.Add(cell);
                 Instantiate(dotgreen, cell.position, transform.rotation);
