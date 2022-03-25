@@ -91,9 +91,9 @@ yt = dfTest[param_study]
 # BOXPLOT OF DATA
 #######################
 
-df18 = sklearn.utils.resample(df[df.year == 2018], n_samples=10000, random_state=None, stratify=None)
-df12 = sklearn.utils.resample(df[df.year == 2012], n_samples=10000, random_state=None, stratify=None)
-df08 = sklearn.utils.resample(df[df.year == 2008], n_samples=10000, random_state=None, stratify=None)
+df18 = sklearn.utils.resample(df[df.year == 2018][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+df12 = sklearn.utils.resample(df[df.year == 2012][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 
 
 print(df18.head())
@@ -518,6 +518,10 @@ def plotErrorHist(actual, pred):
     return
 
 plotErrorHist(yt, y_pred)
+print(y_pred[89])
+np.random.shuffle(y_pred)
+print(y_pred[89])
+plotErrorHist(yt, y_pred)
 
 
 
@@ -547,7 +551,7 @@ from scipy.cluster.hierarchy import dendrogram
 from sklearn.datasets import load_iris
 from sklearn.cluster import AgglomerativeClustering
 
-
+"""
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
 
@@ -570,7 +574,7 @@ def plot_dendrogram(model, **kwargs):
     print(col_study3.shape)
 
     # Plot the corresponding dendrogram
-    dendrogram(linkage_matrix, **kwargs, labels=col_study3)
+    dendrogram(linkage_matrix, **kwargs)
 
 # setting distance_threshold=0 ensures we compute the full tree.
 model = AgglomerativeClustering(distance_threshold=0, n_clusters=None)
@@ -581,3 +585,30 @@ plt.title("Hierarchical Clustering Dendrogram")
 plot_dendrogram(model, truncate_mode="level", p=3)
 plt.xlabel("Number of points in node (or index of point if no parenthesis).")
 plt.show()
+"""
+
+#################
+
+import matplotlib.pyplot as plt
+from sklearn.tree import plot_tree
+
+fig = plt.figure(figsize=(15, 10))
+plot_tree(forest5, 
+          feature_names=col_study3,
+          filled=True, impurity=True, 
+          rounded=True)
+plt.show()
+##################
+"""
+import graphviz
+from sklearn.tree import export_graphviz
+
+dot_data = export_graphviz(rf.estimators_[99], 
+                           feature_names=wine.feature_names,
+                           class_names=wine.target_names, 
+                           filled=True, impurity=True, 
+                           rounded=True)
+
+graph = graphviz.Source(dot_data, format='png')
+graph
+"""
