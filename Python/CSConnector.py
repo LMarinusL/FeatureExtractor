@@ -76,7 +76,7 @@ from sklearn.ensemble import RandomForestRegressor
 
 ################
 #0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
-col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random']
+col_study = ['year','interval','x','y', 'hprevious',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random', 'depth']
 param_study = 'hdifference'
 
 #[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920]
@@ -149,8 +149,8 @@ plt.draw()
 ###################
 # TRAINING ALGORITHMS
 ######################
-#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-random
-col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random']
+#0-year 1-interval 2-x 3-y 4-hprevious 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-random 27-depth
+col_study2 = [ 'hprevious', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'depth']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -191,7 +191,7 @@ print('predicted')
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21, 26]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21, 26, 27]]
 
 def plotImportances(alg, feat, Xtrain, ytrain):
     alg.fit(Xtrain, ytrain)
@@ -541,7 +541,6 @@ outputFile.close()
 # https://scikit-learn.org/stable/auto_examples/cluster/plot_agglomerative_dendrogram.html#sphx-glr-auto-examples-cluster-plot-agglomerative-dendrogram-py
 
 from scipy.cluster.hierarchy import dendrogram
-from sklearn.datasets import load_iris
 from sklearn.cluster import AgglomerativeClustering
 
 def plot_dendrogram(model, **kwargs):
@@ -565,7 +564,7 @@ def plot_dendrogram(model, **kwargs):
 
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, **kwargs, orientation='left', show_leaf_counts=True, labels=model.labels_)
-
+"""
 # setting distance_threshold=0 ensures we compute the full tree.
 model = AgglomerativeClustering(distance_threshold=0, n_clusters=None)
 
@@ -573,10 +572,11 @@ model = model.fit(X_traino2, y_traino2)
 fig, ax = plt.subplots(nrows=1, ncols=1, tight_layout=True)
 ax.set_title("Hierarchical Clustering Dendrogram")
 # plot the top three levels of the dendrogram
+
 plot_dendrogram(model, truncate_mode="level", p=3)
 ax.set_xlabel("Number of points in node (or index of point if no parenthesis).")
 plt.draw()
-
+"""
 
 ##################
 # GRAPH TREE 
@@ -588,7 +588,7 @@ dot_data = export_graphviz(forest3.estimators_[0],
                            filled=True, impurity=True, 
                            rounded=True)
 
-#graph = graphviz.Source(dot_data, format='png')
+graph = graphviz.Source(dot_data, format='png')
 
 
 #################################
