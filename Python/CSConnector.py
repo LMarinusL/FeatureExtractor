@@ -173,7 +173,7 @@ def predict(alg, Xtrain, ytrain, Xpredict):
     prediction = algorithm.predict(Xpredict)
     return prediction
 
-forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
+forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
 y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
 
 """
@@ -588,7 +588,7 @@ plt.show()
 """
 
 #################
-
+"""
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
 
@@ -598,17 +598,17 @@ plot_tree(forest5,
           filled=True, impurity=True, 
           rounded=True)
 plt.show()
-##################
 """
+##################
 import graphviz
 from sklearn.tree import export_graphviz
 
-dot_data = export_graphviz(rf.estimators_[99], 
-                           feature_names=wine.feature_names,
-                           class_names=wine.target_names, 
+dot_data = export_graphviz(forest3.estimators_[3], 
+                        out_file='C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/tree.dot',
+                        feature_names=col_study2,
+                        max_depth=5,
                            filled=True, impurity=True, 
                            rounded=True)
 
 graph = graphviz.Source(dot_data, format='png')
-graph
-"""
+#################################
