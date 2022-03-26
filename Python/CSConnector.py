@@ -26,6 +26,8 @@ from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 from matplotlib import colors
+import graphviz
+from sklearn.tree import export_graphviz
 
 
 
@@ -101,7 +103,7 @@ fig4, ax4 = plt.subplots()
 ax4.set_title('Annual sedimentation')
 ax4.boxplot([df08['hdifference'],df12['hdifference'],df18['hdifference']], showfliers=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
-plt.show()
+plt.draw()
 
 plt.rcParams.update({'font.size': 20})
 fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
@@ -141,7 +143,7 @@ ax[2].tick_params(labelsize=12)
 
 fig5.subplots_adjust(wspace=0.03, hspace=0)
 fig5.suptitle('08, 12, 18 levels' )
-plt.show()
+plt.draw()
 
 
 ###################
@@ -158,15 +160,6 @@ Xt2 = dfTest[col_study2]
 yt = dfTest[param_study]
 X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo2, yo2, test_size=0.3, random_state=42)
 
-"""
-forest3 = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False))
-
-forest3.fit(X_traino2, y_traino2)
-print('rf-predicting: ')
-y_train_pred = forest3.predict(X_traino2)
-y_test_pred = forest3.predict(X_testo2)
-y_pred = forest3.predict(Xt2)
-"""
 def predict(alg, Xtrain, ytrain, Xpredict):
     algorithm = make_pipeline(StandardScaler(), alg)
     algorithm.fit(Xtrain, ytrain)
@@ -216,7 +209,7 @@ def plotImportances(alg, feat, Xtrain, ytrain):
     plt.barh(range(len(indices)), importances2[indices], color='b', align='center')
     plt.yticks(range(len(indices)), feat[indices])
     plt.xlabel('Relative Importance')
-    plt.show()
+    plt.draw()
     return indices
 
 indices = plotImportances(forestImportance, features, X_traino2, y_traino2, )
@@ -306,7 +299,7 @@ def boxplot(actual, prediction, title):
     plt.boxplot([prediction, actual, (prediction - actual)], showfliers=False)
     plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
     plt.ylabel('[m]')
-    plt.show()
+    plt.draw()
     return figbox
 
 boxplot(yt, y_pred, '2012-2018 Sedimentation RF')
@@ -318,14 +311,14 @@ plt.title('2012-2018 Sedimentation RF')
 plt.boxplot([y_pred, yt, (y_pred - yt)], showfliers=False)
 plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
 plt.ylabel('[m]')
-plt.show()
+plt.draw()
 
 fig3_s = plt.figure()
 plt.title('2012-2018 Sedimentation RF less features')
 plt.boxplot([y_predXS, yt, (y_predXS - yt)], showfliers=False)
 plt.xticks([1, 2, 3], ['Prediction', 'Actual', 'Residuals'])
 plt.ylabel('[m]')
-plt.show()
+plt.draw()
 """
 
 
@@ -405,7 +398,7 @@ def plotMaps2Sets(actual, pred1, pred2):
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
     fig5.suptitle('RF Annual sedimentation 2012-2018')
-    plt.show()
+    plt.draw()
     return
 plotMaps2Sets(yt, y_pred, y_predXS)
 
@@ -451,7 +444,7 @@ def plotMaps1Set(actual, pred, title):
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
     fig5.suptitle(title)
-    plt.show()
+    plt.draw()
     return
 
 #plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
@@ -514,7 +507,7 @@ def plotErrorHist(actual, pred):
         number = number + 1
     ax[1,1].legend(loc="upper right", prop={'size': 6})
     ax[1,1].set_xlim([-2, 2])
-    plt.show()
+    plt.draw()
     return
 
 plotErrorHist(yt, y_pred)
@@ -551,7 +544,6 @@ from scipy.cluster.hierarchy import dendrogram
 from sklearn.datasets import load_iris
 from sklearn.cluster import AgglomerativeClustering
 
-"""
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
 
@@ -570,45 +562,35 @@ def plot_dendrogram(model, **kwargs):
     linkage_matrix = np.column_stack(
         [model.children_, model.distances_, counts]
     ).astype(float)
-    print(linkage_matrix.shape)
-    print(col_study3.shape)
 
     # Plot the corresponding dendrogram
-    dendrogram(linkage_matrix, **kwargs)
+    dendrogram(linkage_matrix, **kwargs, orientation='left', show_leaf_counts=True, labels=model.labels_)
 
 # setting distance_threshold=0 ensures we compute the full tree.
 model = AgglomerativeClustering(distance_threshold=0, n_clusters=None)
 
 model = model.fit(X_traino2, y_traino2)
-plt.title("Hierarchical Clustering Dendrogram")
+fig, ax = plt.subplots(nrows=1, ncols=1, tight_layout=True)
+ax.set_title("Hierarchical Clustering Dendrogram")
 # plot the top three levels of the dendrogram
 plot_dendrogram(model, truncate_mode="level", p=3)
-plt.xlabel("Number of points in node (or index of point if no parenthesis).")
-plt.show()
-"""
+ax.set_xlabel("Number of points in node (or index of point if no parenthesis).")
+plt.draw()
 
-#################
-"""
-import matplotlib.pyplot as plt
-from sklearn.tree import plot_tree
 
-fig = plt.figure(figsize=(15, 10))
-plot_tree(forest5, 
-          feature_names=col_study3,
-          filled=True, impurity=True, 
-          rounded=True)
-plt.show()
-"""
 ##################
-import graphviz
-from sklearn.tree import export_graphviz
+# GRAPH TREE 
 
-dot_data = export_graphviz(forest3.estimators_[3], 
+dot_data = export_graphviz(forest3.estimators_[0], 
                         out_file='C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/tree.dot',
                         feature_names=col_study2,
                         max_depth=5,
                            filled=True, impurity=True, 
                            rounded=True)
 
-graph = graphviz.Source(dot_data, format='png')
+#graph = graphviz.Source(dot_data, format='png')
+
+
 #################################
+
+plt.show()
