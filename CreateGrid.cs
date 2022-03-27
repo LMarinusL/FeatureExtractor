@@ -958,7 +958,7 @@ public class CreateGrid : MonoBehaviour
 
     void AppendPrediction(Grid previous, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB)
     {
-
+        
         Grid gridPred;
 
         gridPred = append(meshGenerator.vertexFilePred, 2022, 4, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction");
