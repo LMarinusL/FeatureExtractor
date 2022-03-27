@@ -589,7 +589,7 @@ public class CreateGrid : MonoBehaviour
             Cell Z6 = null;
             Cell Z8 = null;
             List<Cell> cells = getSurroundingCells(cell, grid, dist, connectivity);
-            if (cells.Count == connectivity)
+            if (cells.Count == 8)
             {
                 foreach (Cell surroundingCell in cells)
                 {
@@ -597,11 +597,11 @@ public class CreateGrid : MonoBehaviour
                     {
                         Z8 = surroundingCell;
                     }
-                    if (surroundingCell.x == cell.x && surroundingCell.z > cell.z)
+                    if (surroundingCell.x == cell.x && surroundingCell.z >= cell.z)
                     {
                         Z2 = surroundingCell;
                     }
-                    if (surroundingCell.x > cell.x && surroundingCell.z == cell.z)
+                    if (surroundingCell.x >= cell.x && surroundingCell.z == cell.z)
                     {
                         Z6 = surroundingCell;
                     }
@@ -615,9 +615,9 @@ public class CreateGrid : MonoBehaviour
             { 
             return 0f; 
             }
-            
             float xStep = cell.attachedFaces[2].startVertex.x - cell.attachedFaces[2].endVertex.x;
             float zStep = cell.attachedFaces[0].startVertex.z - cell.attachedFaces[0].endVertex.z;
+
             float D = (((Z4.y + Z6.y) / 2) - cell.y) / (zStep * 2);
             float E = (((Z2.y + Z8.y) / 2) - cell.y) / (xStep * 2);
             float curvature = -2 * (D + E);
@@ -869,13 +869,16 @@ public class CreateGrid : MonoBehaviour
     }
 
 
-    Grid append(TextAsset file, int year, int interval, float discharge, Grid gridNext, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int scale)
+    Grid append(TextAsset file, int year, int interval, float discharge, Grid gridNext, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int scale, string type)
     {
         Mesh meshNew;
         Grid gridNew;
         //2018
-        meshGenerator.StartPipe(file, scale);
+        if (type == "prediction") { meshGenerator.StartPredictionPipe(file, scale); }
+        else { meshGenerator.StartPipe(file, scale); }
+
         meshNew = meshGenerator.mesh;
+     
         InstantiateGrid(meshNew);
         gridNew = grid;
         setRunoffScores(gridNew);
@@ -884,19 +887,22 @@ public class CreateGrid : MonoBehaviour
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, true);
-
+        Debug.Log(gridNew.cells.Length);
         foreach (Cell cell in gridNew.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
+
             writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y + correction) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); ;
         }
         writer.Close();
         return gridNew;
+                
     }
 
 
     void WriteAll()
     {
+        
         Grid grid1997;
         Grid grid2008; 
         Grid grid2012;
@@ -917,9 +923,10 @@ public class CreateGrid : MonoBehaviour
         getDistanceToLines(grid2018, skeletons.skeleton1997A, "Chagres");
         getDistanceToLines(grid2018, skeletons.skeleton1997B, "Pequeni");
 
-        grid2012 = append(meshGenerator.vertexFile2012, 2018, 6, 58.2f, grid2018, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10);
-        grid2008 = append(meshGenerator.vertexFile2008, 2012, 4, 95.5f, grid2012, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10);
-        grid1997 = append(meshGenerator.vertexFile1997, 2008, 11, 73.9f, grid2008, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10);
+        grid2012 = append(meshGenerator.vertexFile2012, 2018, 6, 58.2f, grid2018, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data" );
+        grid2008 = append(meshGenerator.vertexFile2008, 2012, 4, 95.5f, grid2012, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data");
+        grid1997 = append(meshGenerator.vertexFile1997, 2008, 11, 73.9f, grid2008, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data");
+        InstantiateGrid(mesh2018);
         latestGrid = grid2018;
 
         List<Cell> cellsList = new List<Cell>();
@@ -946,6 +953,7 @@ public class CreateGrid : MonoBehaviour
         Debug.Log(" total volume chagre 18: " + sum2018);
         Debug.Log(" total volume chagre 12: " + sum2012);
         Debug.Log(" total volume chagre 08: " + sum2008);
+        
     }
 
     void AppendPrediction(Grid previous, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB)
@@ -953,8 +961,10 @@ public class CreateGrid : MonoBehaviour
 
         Grid gridPred;
 
-        gridPred = append(meshGenerator.vertexFilePred, 2022, 4, 50f, previous, 0f, skeletonA, skeletonB, 1);
-        latestGrid = gridPred;
+        gridPred = append(meshGenerator.vertexFilePred, 2022, 4, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction");
+        
+        latestGrid = gridPred; 
+       
 
         List<Cell> cellsList = new List<Cell>();
         foreach (Cell cell in gridPred.cells)
@@ -973,7 +983,7 @@ public class CreateGrid : MonoBehaviour
             sumPred += (gridPred.cells[cell.index].y - previous.cells[cell.index].y);
         }
         Debug.Log(" total volume chagre pred: " + sumPred);
-
+        
     }
 
 

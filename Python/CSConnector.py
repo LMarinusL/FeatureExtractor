@@ -525,7 +525,7 @@ plotErrorHist(yt, y_pred)
 
 
 
-pred = forest5.predict(df[col_study3])
+pred = forest5.predict(df[df.year == 2018][col_study3])
 index_array = df['index'].to_numpy()
 x_array = df['x'].to_numpy()
 y_array = df['y'].to_numpy()

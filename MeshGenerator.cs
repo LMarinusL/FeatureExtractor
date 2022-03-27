@@ -57,6 +57,17 @@ public class MeshGenerator : MonoBehaviour
         UpdateMesh();
     }
 
+    public void StartPredictionPipe(TextAsset vertexfile, int scale)
+    {
+        mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        GetComponent<MeshFilter>().mesh = mesh;
+        MeshRenderer meshr = this.GetComponent<MeshRenderer>();
+        meshr.material = material;
+        ReadPredictionFile(vertexfile, scale);
+        UpdateMesh();
+    }
+
     void Update()
     {
         
@@ -155,6 +166,34 @@ public class MeshGenerator : MonoBehaviour
             else { colors[i] = color3; }
         }
 
+    }
+
+    void ReadPredictionFile(TextAsset vertexfile, int scale)
+    {
+        float3[] verticesCopy = new float3[xSizer * zSizer];
+        int i = 0;
+        foreach(float3 vertCopy in vertices)
+        {
+            verticesCopy[i] = new float3(vertCopy.x, vertCopy.y, vertCopy.z);
+            i++;
+        }
+        string PointsString = vertexfile.ToString();
+        string[] arrayOfLines = PointsString.Split('\n');
+        int index = 0;
+        string[] values;
+        float3 VectorNew;
+        while (index < arrayOfLines.Length - 1)
+        {
+            values = arrayOfLines[index].Split(' ');
+            int vectorIndex = int.Parse(values[0], CultureInfo.InvariantCulture);
+            VectorNew = new float3(((float.Parse(values[1], CultureInfo.InvariantCulture)) / scale),
+                               ((float.Parse(values[3], CultureInfo.InvariantCulture)) / scale),
+                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / scale));
+            vertices[vectorIndex] = VectorNew;
+            index++;
+        }
+       
+        
     }
 
     public Vector3[] float3ToVector3Array(float3[] points) {
