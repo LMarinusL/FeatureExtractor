@@ -69,7 +69,7 @@ public class DropDown : MonoBehaviour
                 gridImporter.setMeshAspectColors();
                 break;
             case 3:
-                gridImporter.setMeshRelativeSlopeColors();
+                gridImporter.setMeshAverageSlopeColors();
                 break;
             case 4:
                 gridImporter.setMeshRelativeAspectColors();

@@ -23,7 +23,7 @@ public class Grid : Component
             cells[i] = new Cell(i, originalPC[i], originalNormals[i]);
         }
         setTriangles(triangleMesh);
-        setTwins();
+        //setTwins();
     }
 
     public void setTriangles(int[] trianglesInput)
@@ -35,7 +35,7 @@ public class Grid : Component
             triangles[j] = new Triangle(j, tri, cells, this);
             j++;
         }
-    }
+    }/*
     public void setTwins()
     {
         for (int i = 0; i < cells.Length; i++)
@@ -61,6 +61,7 @@ public class Grid : Component
             }
         }
     }
+    */
 
 }
 
@@ -162,7 +163,7 @@ public class Cell : Component
     public float relativeHeight1;
     public float relativeHeight2;
     public float relativeHeight3;
-    public float relativeSlope;
+    public float averageSlope;
     public float relativeAspect;
     public float dRM1;
     public float dLN1;

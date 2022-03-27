@@ -87,7 +87,7 @@ public class CreateGrid : MonoBehaviour
                 cell.relativeHeight1 = 0;
                 cell.relativeHeight2 = 0;
                 cell.relativeHeight3 = 0;
-                cell.relativeSlope = 0;
+                cell.averageSlope = 0;
                 cell.relativeAspect = 0;
                 cell.dRM1 = 0;
                 cell.averageRunoff1 = 0;
@@ -105,7 +105,7 @@ public class CreateGrid : MonoBehaviour
                 cell.relativeHeight1 = relativeHeight(cell.index, grid, 1);
                 cell.relativeHeight2 = relativeHeight(cell.index, grid, 2);
                 cell.relativeHeight3 = relativeHeight(cell.index, grid, 4);
-                cell.relativeSlope = relativeSlope(cell.index, grid, 1);
+                cell.averageSlope = averageSlope(cell.index, grid, 2);
                 cell.relativeAspect = relativeAspect(cell.index, grid, 1);
                 cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
                 cell.averageRunoff1 = averageRunoff(grid, cell, 5);
@@ -121,7 +121,7 @@ public class CreateGrid : MonoBehaviour
     {
         string path = "Assets/Output/outputGrid.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("x y h slope aspect RM1 RM2 RM3 relativeHeight relativeSlope relativeAspect");
+        writer.WriteLine("x y h slope aspect RM1 RM2 RM3 relativeHeight averageSlope relativeAspect");
         foreach (Cell cell in grid.cells)
         {
             if(cell.y == 0) { continue; }
@@ -131,7 +131,7 @@ public class CreateGrid : MonoBehaviour
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection))
                 + " " + HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[400])
-                + " " + cell.relativeHeight1 + " " + cell.relativeSlope + " " + cell.relativeAspect
+                + " " + cell.relativeHeight1 + " " + cell.averageSlope + " " + cell.relativeAspect
                 );
         }
         writer.Close();
@@ -219,7 +219,7 @@ public class CreateGrid : MonoBehaviour
         return averageHeight - heightOwn;
     }
 
-    public float relativeSlope(int index, Grid grid, int dist)
+    public float averageSlope(int index, Grid grid, int dist)
     {
         List<int> indices = getIndicesOfSurroundingCells(index, grid, dist);
         float averageSlope = 0f;
@@ -238,8 +238,7 @@ public class CreateGrid : MonoBehaviour
             return 0f;
         }
         averageSlope = slopeSum / numOfCells;
-        float slopeOwn = grid.cells[index].slope;
-        return averageSlope - slopeOwn;
+        return averageSlope;
     }
 
     public float relativeAspect(int index, Grid grid, int dist)
@@ -321,12 +320,12 @@ public class CreateGrid : MonoBehaviour
         mesh.colors = colors;
     }
 
-    public void setMeshRelativeSlopeColors()
+    public void setMeshAverageSlopeColors()
     {
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f),  Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].relativeSlope*3), 2f), 0.5f), 1f);
+            colors[i] = new Color(Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope*3), 2f), 0.5f),  Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope * 3), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope * 3), 2f), 0.5f), 1f);
         }
         mesh.colors = colors;
     }
@@ -889,7 +888,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in gridNew.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + cell.y + " " + ((gridNext.cells[cell.index].y + correction) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + (cell.y - 74.6f));
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y + correction) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); ;
         }
         writer.Close();
         return gridNew;
@@ -906,7 +905,7 @@ public class CreateGrid : MonoBehaviour
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("year interval x y hprevious hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random depth");
+        writer.WriteLine("year interval x y depth hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random averageSlope index hprevious");
         writer.Close();
 
         //1997
