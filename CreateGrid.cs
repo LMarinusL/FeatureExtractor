@@ -28,6 +28,7 @@ public class CreateGrid : MonoBehaviour
     MeshGenerator meshGenerator;
     public Skeleton skeletons;
     public Grid latestGrid;
+    public int latestYear;
 
   void Start()
     {
@@ -46,7 +47,7 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            AppendPrediction(latestGrid, skeletons.skeleton2018A, skeletons.skeleton2018B);
+            AppendPrediction(latestGrid, skeletons.skeleton2018A, skeletons.skeleton2018B, 4);
         }
     }
 
@@ -97,9 +98,9 @@ public class CreateGrid : MonoBehaviour
             }
             else
             {
-                cell.curvatureL = computeESRICurvature(cell, 4, 4);
-                cell.curvatureM = computeESRICurvature(cell, 2, 4);
-                cell.curvatureS = computeESRICurvature(cell, 1, 4);
+                cell.curvatureL = computeESRICurvature(cell, 4, 8);
+                cell.curvatureM = computeESRICurvature(cell, 2, 8);
+                cell.curvatureS = computeESRICurvature(cell, 1, 8);
                 //cell.profileCurvature = profileCurvature(cell, 5);
                 //cell.planformCurvature = planformCurvature(cell, 5);
                 cell.relativeHeight1 = relativeHeight(cell.index, grid, 1);
@@ -589,7 +590,7 @@ public class CreateGrid : MonoBehaviour
             Cell Z6 = null;
             Cell Z8 = null;
             List<Cell> cells = getSurroundingCells(cell, grid, dist, connectivity);
-            if (cells.Count == 8)
+            if (cells.Count == connectivity)
             {
                 foreach (Cell surroundingCell in cells)
                 {
@@ -928,6 +929,7 @@ public class CreateGrid : MonoBehaviour
         grid1997 = append(meshGenerator.vertexFile1997, 2008, 11, 73.9f, grid2008, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data");
         InstantiateGrid(mesh2018);
         latestGrid = grid2018;
+        latestYear = 2018;
 
         List<Cell> cellsList = new List<Cell>();
         foreach (Cell cell in grid2008.cells)
@@ -956,15 +958,15 @@ public class CreateGrid : MonoBehaviour
         
     }
 
-    void AppendPrediction(Grid previous, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB)
+    void AppendPrediction(Grid previous, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int interval)
     {
         
         Grid gridPred;
-
-        gridPred = append(meshGenerator.vertexFilePred, 2022, 4, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction");
+        int predYear = latestYear + interval;
+        gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction");
         
-        latestGrid = gridPred; 
-       
+        latestGrid = gridPred;
+        latestYear = predYear;
 
         List<Cell> cellsList = new List<Cell>();
         foreach (Cell cell in gridPred.cells)
