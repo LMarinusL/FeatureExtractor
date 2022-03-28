@@ -81,21 +81,21 @@ param_study = 'hdifference'
 
 #[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920]
 
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.hdifference > -1][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2017][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -1][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
 
-###################
+#######################
 # BOXPLOT OF DATA
 #######################
 
-df18 = sklearn.utils.resample(df[df.year == 2018][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-df12 = sklearn.utils.resample(df[df.year == 2012][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-df08 = sklearn.utils.resample(df[df.year == 2008][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 
 
 print(df18.head())

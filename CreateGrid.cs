@@ -893,7 +893,7 @@ public class CreateGrid : MonoBehaviour
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
 
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y + correction) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); ;
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (gridNext.cells[cell.index].y - 74.6f) + " " + (cell.y + correction - (gridNext.cells[cell.index].y ) ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); 
         }
         writer.Close();
         return gridNew;
@@ -916,23 +916,22 @@ public class CreateGrid : MonoBehaviour
         writer.Close();
 
         //1997
-        meshGenerator.StartPipe(meshGenerator.vertexFile2018, 10);
-        Mesh mesh2018 = meshGenerator.mesh;
-        InstantiateGrid(mesh2018);
-        grid2018 = grid;
-        setRunoffScores(grid2018);
-        getDistanceToLines(grid2018, skeletons.skeleton1997A, "Chagres");
-        getDistanceToLines(grid2018, skeletons.skeleton1997B, "Pequeni");
+        meshGenerator.StartPipe(meshGenerator.vertexFile1997, 10);
+        Mesh mesh1997 = meshGenerator.mesh;
+        InstantiateGrid(mesh1997);
+        grid1997 = grid;
+        setRunoffScores(grid1997);
+        getDistanceToLines(grid1997, skeletons.skeleton1997A, "Chagres");
+        getDistanceToLines(grid1997, skeletons.skeleton1997B, "Pequeni");
 
-        grid2012 = append(meshGenerator.vertexFile2012, 2018, 6, 58.2f, grid2018, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data" );
-        grid2008 = append(meshGenerator.vertexFile2008, 2012, 4, 95.5f, grid2012, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data");
-        grid1997 = append(meshGenerator.vertexFile1997, 2008, 11, 73.9f, grid2008, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data");
-        InstantiateGrid(mesh2018);
-        latestGrid = grid2018;
+        grid2008 = append(meshGenerator.vertexFile2008, 2008, 11, 73.9f, grid1997, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" );
+        grid2012 = append(meshGenerator.vertexFile2012, 2012, 4, 95.5f, grid2008, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data");
+        grid2018 = append(meshGenerator.vertexFile2018, 2018, 6, 58.2f, grid2012, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data");
+
         latestYear = 2018;
 
         List<Cell> cellsList = new List<Cell>();
-        foreach (Cell cell in grid2008.cells)
+        foreach (Cell cell in grid2018.cells)
         {
             float maxDiff = 1.5f;
             if (cell.z < -(9.5 / 2) * cell.x + 4545 && cell.z > -1.25 * cell.x + 1575 && cell.z > 630 && cell.z < 920 && cell.y != 0)
