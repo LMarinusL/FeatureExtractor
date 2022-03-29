@@ -46,14 +46,14 @@ public class MeshGenerator : MonoBehaviour
     char[] charsToTrim = { '*', ' ', '\n', '\r' };
 
 
-    public void StartPipe(TextAsset vertexfile, int scale)
+    public void StartPipe(TextAsset vertexfile, int scale, bool addNoise)
     {
         mesh = new Mesh();
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         GetComponent<MeshFilter>().mesh = mesh;
         MeshRenderer meshr = this.GetComponent<MeshRenderer>();
         meshr.material = material;
-        ReadFile(vertexfile, scale);
+        ReadFile(vertexfile, scale, addNoise);
         UpdateMesh();
     }
 
@@ -116,7 +116,7 @@ public class MeshGenerator : MonoBehaviour
         }
     }
 
-    void ReadFile(TextAsset vertexfile, int scale)
+    void ReadFile(TextAsset vertexfile, int scale, bool addNoise)
     {
         string PointsString = vertexfile.ToString();
         string[] arrayOfLines = PointsString.Split('\n');
@@ -126,9 +126,16 @@ public class MeshGenerator : MonoBehaviour
         float3 VectorNew;
         while (index < arrayOfLines.Length -1)
         {
+            
+            // Add random noise
+            int random = UnityEngine.Random.Range(1, 50);
+            float zNoise = 0f;
+            if (random == 20 && addNoise == true) { zNoise = 15f; }
+            // 
+            
             values = arrayOfLines[index].Split(' ');
             VectorNew = new float3(((float.Parse(values[1], CultureInfo.InvariantCulture)- zCorrection) / scale),
-                               ((float.Parse(values[2], CultureInfo.InvariantCulture)) / scale),
+                               (((float.Parse(values[2] , CultureInfo.InvariantCulture))+zNoise) / scale),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- xCorrection) / scale));
             vertices[index] = VectorNew;
             index++;

@@ -141,9 +141,11 @@ ax[2].set_title('18')
 ax[2].set_xlabel("x coordinate")
 ax[2].tick_params(labelsize=12)
 
-fig5.subplots_adjust(wspace=0.03, hspace=0)
+fig5.subplots_adjust(wspace=0.03, hspace=0.05)
 fig5.suptitle('08, 12, 18 levels' )
 plt.draw()
+
+
 
 
 ###################
@@ -400,7 +402,9 @@ def plotMaps2Sets(actual, pred1, pred2):
     fig5.suptitle('RF Annual sedimentation 2012-2018')
     plt.draw()
     return
+
 plotMaps2Sets(yt, y_pred, y_predXS)
+
 
 ###################################
 # SVR PLOT
@@ -447,7 +451,55 @@ def plotMaps1Set(actual, pred, title):
     plt.draw()
     return
 
+def plotMaps1Binned(actual, pred, title):
+    x_array = Xt['x'].to_numpy()
+    y_array = Xt['y'].to_numpy()
+    actual_array = actual.to_numpy()
+    ranges = [-5, -1.5, -0.5, 0.5, 1.5, 2.5, 20]
+
+    plt.rcParams.update({'font.size': 8})
+    fig5, axs = plt.subplots(nrows=1, ncols=2, figsize=(20, 10))
+
+    for i in range(pred.size):
+        if ranges[0] < pred[i] < ranges[1]:
+            sc = axs[0].scatter(x_array[i], y_array[i], c='red')
+        if ranges[1] < pred[i] < ranges[2]:
+            sc = axs[0].scatter(x_array[i], y_array[i], c='orange')
+        if ranges[2] < pred[i] < ranges[3]:
+            sc = axs[0].scatter(x_array[i], y_array[i], c='yellow')
+        if ranges[3] < pred[i] < ranges[4]:
+            sc = axs[0].scatter(x_array[i], y_array[i], c='green')
+        if ranges[4] < pred[i] < ranges[5]:
+            sc = axs[0].scatter(x_array[i], y_array[i], c='blue')
+        if ranges[5] < pred[i] < ranges[6]:
+            sc = axs[0].scatter(x_array[i], y_array[i], c='black')    
+    print(type(actual_array))
+    print(type(pred))
+    for i in range(actual_array.size):
+        if ranges[0] < actual_array[i] < ranges[1]:
+            sc = axs[1].scatter(x_array[i], y_array[i], c='red')
+        if ranges[1] < actual_array[i] < ranges[2]:
+            sc = axs[1].scatter(x_array[i], y_array[i], c='orange')
+        if ranges[2] < actual_array[i] < ranges[3]:
+            sc = axs[1].scatter(x_array[i], y_array[i], c='yellow')
+        if ranges[3] < actual_array[i] < ranges[4]:
+            sc = axs[1].scatter(x_array[i], y_array[i], c='green')
+        if ranges[4] < actual_array[i] < ranges[5]:
+            sc = axs[1].scatter(x_array[i], y_array[i], c='blue')
+        if ranges[5] < actual_array[i] < ranges[6]:
+            sc = axs[1].scatter(x_array[i], y_array[i], c='black')    
+
+    axs[0].set_title('Prediction')
+    axs[1].set_title('Actual')
+
+    fig5.subplots_adjust(wspace=0.03, hspace=0)
+    fig5.suptitle(title)
+    plt.draw()
+    return
+
 #plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
+plotMaps1Binned(yt, y_pred, 'title')
+
 
 ###################################
 # GPR PLOT
