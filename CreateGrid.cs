@@ -916,7 +916,7 @@ public class CreateGrid : MonoBehaviour
         writer.Close();
 
         //1997
-        meshGenerator.StartPipe(meshGenerator.vertexFile1997, 10, true);
+        meshGenerator.StartPipe(meshGenerator.vertexFile1997, 10, false);
         Mesh mesh1997 = meshGenerator.mesh;
         InstantiateGrid(mesh1997);
         grid1997 = grid;
@@ -924,8 +924,8 @@ public class CreateGrid : MonoBehaviour
         getDistanceToLines(grid1997, skeletons.skeleton1997A, "Chagres");
         getDistanceToLines(grid1997, skeletons.skeleton1997B, "Pequeni");
 
-        grid2008 = append(meshGenerator.vertexFile2008, 2008, 11, 73.9f, grid1997, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" , true);
-        grid2012 = append(meshGenerator.vertexFile2012, 2012, 4, 95.5f, grid2008, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", true);
+        grid2008 = append(meshGenerator.vertexFile2008, 2008, 11, 73.9f, grid1997, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" , false);
+        grid2012 = append(meshGenerator.vertexFile2012, 2012, 4, 95.5f, grid2008, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", false);
         grid2018 = append(meshGenerator.vertexFile2018, 2018, 6, 58.2f, grid2012, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
 
         latestYear = 2018;

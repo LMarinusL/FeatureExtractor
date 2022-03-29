@@ -498,7 +498,7 @@ def plotMaps1Binned(actual, pred, title):
     return
 
 #plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
-plotMaps1Binned(yt, y_pred, 'title')
+#plotMaps1Binned(yt, y_pred, 'title')
 
 
 ###################################
