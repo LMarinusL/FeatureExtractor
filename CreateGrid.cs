@@ -35,6 +35,8 @@ public class CreateGrid : MonoBehaviour
         getData();
         InstantiateGrid(mesh);
         WriteString();
+        latestGrid = grid;
+        latestYear = 2018;
         Debug.Log("Output written");
     }
   
@@ -47,6 +49,7 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
+            skeletons = new Skeleton();
             AppendPrediction(latestGrid, skeletons.skeleton2018A, skeletons.skeleton2018B, 4);
         }
     }
@@ -594,15 +597,16 @@ public class CreateGrid : MonoBehaviour
             {
                 foreach (Cell surroundingCell in cells)
                 {
+                    if(surroundingCell.y == 0) { return 0f; }
                     if (surroundingCell.x == cell.x && surroundingCell.z < cell.z)
                     {
                         Z8 = surroundingCell;
                     }
-                    if (surroundingCell.x == cell.x && surroundingCell.z >= cell.z)
+                    if (surroundingCell.x == cell.x && surroundingCell.z > cell.z)
                     {
                         Z2 = surroundingCell;
                     }
-                    if (surroundingCell.x >= cell.x && surroundingCell.z == cell.z)
+                    if (surroundingCell.x > cell.x && surroundingCell.z == cell.z)
                     {
                         Z6 = surroundingCell;
                     }
@@ -618,7 +622,7 @@ public class CreateGrid : MonoBehaviour
             }
             float xStep = cell.attachedFaces[2].startVertex.x - cell.attachedFaces[2].endVertex.x;
             float zStep = cell.attachedFaces[0].startVertex.z - cell.attachedFaces[0].endVertex.z;
-
+            if (!Z2 || !Z4 || !Z6 || !Z8) { return 0f; }
             float D = (((Z4.y + Z6.y) / 2) - cell.y) / (zStep * 2);
             float E = (((Z2.y + Z8.y) / 2) - cell.y) / (xStep * 2);
             float curvature = -2 * (D + E);
@@ -888,11 +892,10 @@ public class CreateGrid : MonoBehaviour
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, true);
-        Debug.Log(gridNew.cells.Length);
+        Debug.Log(gridNext.cells.Length);
         foreach (Cell cell in gridNew.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-
             writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (gridNext.cells[cell.index].y - 74.6f) + " " + (cell.y + correction - (gridNext.cells[cell.index].y ) ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); 
         }
         writer.Close();
@@ -928,6 +931,7 @@ public class CreateGrid : MonoBehaviour
         grid2012 = append(meshGenerator.vertexFile2012, 2012, 4, 95.5f, grid2008, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", false);
         grid2018 = append(meshGenerator.vertexFile2018, 2018, 6, 58.2f, grid2012, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
 
+        latestGrid = grid2018;
         latestYear = 2018;
 
         List<Cell> cellsList = new List<Cell>();
@@ -937,7 +941,6 @@ public class CreateGrid : MonoBehaviour
             if (cell.z < -(9.5 / 2) * cell.x + 4545 && cell.z > -1.25 * cell.x + 1575 && cell.z > 630 && cell.z < 920 && cell.y != 0)
             {
                 cellsList.Add(cell);
-                Instantiate(dotgreen, cell.position, transform.rotation);
             }
         }
         int count = 0;
@@ -959,7 +962,7 @@ public class CreateGrid : MonoBehaviour
 
     void AppendPrediction(Grid previous, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int interval)
     {
-        
+        Debug.Log(previous.cells.Length);
         Grid gridPred;
         int predYear = latestYear + interval;
         gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction", false);

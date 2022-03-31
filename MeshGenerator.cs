@@ -18,6 +18,7 @@ public class MeshGenerator : MonoBehaviour
     public TextAsset vertexFile2012;
     public TextAsset vertexFile2018;
     public TextAsset vertexFilePred;
+    public GameObject dotgreen;
 
 
     [SerializeField] public TextMeshProUGUI loadingText;
@@ -83,17 +84,18 @@ public class MeshGenerator : MonoBehaviour
     {
         float randomNum1 = UnityEngine.Random.Range(0.3f, 2.4f);
         float randomNum2 = UnityEngine.Random.Range(0.3f, 2.4f);
-        vertices = new float3[xSize * zSize];
-        for (int i = 0, z = 0; z <= zSize; z++)
+        vertices = new float3[xSizer * zSizer];
+        for (int i = 0, z = 0; z < zSize; z++)
         {
-            for (int x = 0; x <= xSize; x++)
+            for (int x = 0; x < xSize; x++)
             {
                 float y = (Mathf.PerlinNoise(x * .015f * randomNum2, z * .02f * randomNum1) * 45f) + (Mathf.PerlinNoise(x * .04f * randomNum1, z * .025f * randomNum2) * 40f) ;
                 vertices[i] = new float3(5*x + 1300, 5*y - 200, 5*z + 200);
                 i++;
             }
         }
-
+        zSize = zSizer - 1;
+        xSize = xSizer - 1;
         triangles = new int[xSize * zSize * 6];
         int vert = 0;
         int tris = 0;
@@ -113,6 +115,15 @@ public class MeshGenerator : MonoBehaviour
 
             };
             vert++;
+        }
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            if (vertices[i].y < 210)
+            {
+                colors[i] = color2;
+            }
+            else { colors[i] = color3; }
         }
     }
 
@@ -197,6 +208,7 @@ public class MeshGenerator : MonoBehaviour
                                ((float.Parse(values[3], CultureInfo.InvariantCulture)) / scale),
                                ((float.Parse(values[2], CultureInfo.InvariantCulture)) / scale));
             vertices[vectorIndex] = VectorNew;
+            Instantiate(dotgreen, new Vector3(VectorNew.x, VectorNew.y, VectorNew.z), transform.rotation);
             index++;
         }
        
