@@ -876,15 +876,15 @@ public class CreateGrid : MonoBehaviour
 
     Grid append(TextAsset file, int year, int interval, float discharge, Grid gridPrev, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int scale, string type, bool addNoise)
     {
-        Mesh meshNew;
-        Grid gridNew;
+        Mesh meshNext;
+        Grid gridNext;
         //2018
         if (type == "prediction") { meshGenerator.StartPredictionPipe(file, scale); }
         else { meshGenerator.StartPipe(file, scale, addNoise); }
 
-        meshNew = meshGenerator.mesh;
+        meshNext = meshGenerator.mesh;
 
-        gridNew = InstantiateGrid(meshNew);
+        gridNext = InstantiateGrid(meshNext);
         setRunoffScores(gridNew);
         getDistanceToLines(gridNew, skeletonA, "Chagres");
         getDistanceToLines(gridNew, skeletonB, "Pequeni");
@@ -925,10 +925,10 @@ public class CreateGrid : MonoBehaviour
         getDistanceToLines(grid1997, skeletons.skeleton1997A, "Chagres");
         getDistanceToLines(grid1997, skeletons.skeleton1997B, "Pequeni");
 
-        grid2008 = append(meshGenerator.vertexFile2008, 2008, 11, 73.9f, grid1997, 0f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" , false);
-        grid2012 = append(meshGenerator.vertexFile2012, 2012, 4, 95.5f, grid2008, 0f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", false);
-        grid2018 = append(meshGenerator.vertexFile2018, 2018, 6, 58.2f, grid2012, 0f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
-
+        grid2008 = append(meshGenerator.vertexFile2008, 1997, 11, 73.9f, grid1997, 0f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" , false);
+        grid2012 = append(meshGenerator.vertexFile2012, 2008, 4, 95.5f, grid2008, 0f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", false);
+        grid2018 = append(meshGenerator.vertexFile2018, 2012, 6, 58.2f, grid2012, 0f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
+        append(meshGenerator.vertexFile2018, 2018, 6, 58.2f, grid2018, 0f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
         latestGrid = grid2018;
         latestYear = 2018;
 

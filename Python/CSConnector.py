@@ -576,12 +576,14 @@ plotErrorHist(yt, y_pred)
 
 
 
+yearToUse = 2018
+pred = forest5.predict(df[df.year == yearToUse][col_study3][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920])
+index_array = df['index'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+x_array = df['x'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+y_array = df['y'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+d_array = df['hprevious'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+d_diff = df['hdifference'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
 
-pred = forest5.predict(df[df.year == 2022][col_study3])
-index_array = df['index'].to_numpy()
-x_array = df['x'].to_numpy()
-y_array = df['y'].to_numpy()
-d_array = df['hprevious'].to_numpy()
 outputFile =  open('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/Python_Output.txt', 'w')
 for i in range(pred.size):
     outputFile.write(str(index_array[i]))
@@ -590,7 +592,7 @@ for i in range(pred.size):
     outputFile.write( " ")
     outputFile.write(str(y_array[i]))
     outputFile.write(" ")
-    outputFile.write(str(pred[i] + d_array[i]))
+    outputFile.write(str(pred[i] + d_array[i] + d_diff[i]))
     outputFile.write('\n')
 outputFile.close()
 
@@ -663,7 +665,6 @@ def plotOnYears(property, min, max):
     #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 
 
-    print(df18.head())
 
     plt.rcParams.update({'font.size': 20})
     fig5, ax = plt.subplots(nrows=2, ncols=4, sharex=True, sharey=True,
@@ -700,32 +701,33 @@ def plotOnYears(property, min, max):
     ax[0,2].set_title('12')
     ax[0,2].set_xlabel("x coordinate")
     ax[0,2].tick_params(labelsize=12)
-    sc = ax[0,3].scatter(df22['x'], df22['y'],
+    
+    sc = ax[0,3].scatter(df18['x'], df18['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df22[property]),
+            c=(df18[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[0,3].set_title('18')
     ax[0,3].set_xlabel("x coordinate")
     ax[0,3].tick_params(labelsize=12)
-    """
-    sc = ax[1,0].scatter(df26['x'], df26['y'],
+    
+    sc = ax[1,0].scatter(x_array, y_array,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df26[property]),
+            c=(pred),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,0].set_title('22')
     ax[1,0].set_xlabel("x coordinate")
     ax[1,0].set_ylabel("y coordinate")
     ax[1,0].tick_params(labelsize=12)
-    
-    sc = ax[1,1].scatter(df30['x'], df30['y'],
+    """
+    sc = ax[1,1].scatter(x_array, y_array,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df30[property]),
+            c=(pred),
                 cmap=cm, vmin=min, vmax=max)
     cbar = fig5.colorbar(sc)
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
@@ -733,6 +735,7 @@ def plotOnYears(property, min, max):
     ax[1,1].set_title('26')
     ax[1,1].set_xlabel("x coordinate")
     ax[1,1].tick_params(labelsize=12)
+    
     sc = ax[1,2].scatter(df34['x'], df34['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
