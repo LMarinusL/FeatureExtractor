@@ -965,8 +965,15 @@ public class CreateGrid : MonoBehaviour
         Debug.Log(previous.cells.Length);
         Grid gridPred;
         int predYear = latestYear + interval;
-        gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction", false);
-        
+        if (latestYear == 2018)
+        {
+            gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 1.2f, skeletonA, skeletonB, 1, "prediction", false);
+        }
+        else
+        {
+            gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction", false);
+
+        }
         latestGrid = gridPred;
         latestYear = predYear;
 

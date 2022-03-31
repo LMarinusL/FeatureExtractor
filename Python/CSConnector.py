@@ -577,7 +577,7 @@ plotErrorHist(yt, y_pred)
 
 
 
-pred = forest5.predict(df[df.year == 2030][col_study3])
+pred = forest5.predict(df[df.year == 2022][col_study3])
 index_array = df['index'].to_numpy()
 x_array = df['x'].to_numpy()
 y_array = df['y'].to_numpy()
@@ -659,8 +659,8 @@ def plotOnYears(property, min, max):
     df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+    #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+    #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 
 
     print(df18.head())
@@ -709,7 +709,6 @@ def plotOnYears(property, min, max):
     ax[0,3].set_title('18')
     ax[0,3].set_xlabel("x coordinate")
     ax[0,3].tick_params(labelsize=12)
-    """
     sc = ax[1,0].scatter(df26['x'], df26['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -720,6 +719,7 @@ def plotOnYears(property, min, max):
     ax[1,0].set_xlabel("x coordinate")
     ax[1,0].set_ylabel("y coordinate")
     ax[1,0].tick_params(labelsize=12)
+    """
     sc = ax[1,1].scatter(df30['x'], df30['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
