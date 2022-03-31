@@ -135,6 +135,7 @@ public class MeshGenerator : MonoBehaviour
         string[] values;
         vertices = new float3[xSizer * zSizer];
         float3 VectorNew;
+
         while (index < arrayOfLines.Length -1)
         {
             
@@ -143,10 +144,10 @@ public class MeshGenerator : MonoBehaviour
             float zNoise = 0f;
             if (random == 20 && addNoise == true) { zNoise = 15f; }
             // 
-            
+
             values = arrayOfLines[index].Split(' ');
             VectorNew = new float3(((float.Parse(values[1], CultureInfo.InvariantCulture)- zCorrection) / scale),
-                               (((float.Parse(values[2] , CultureInfo.InvariantCulture))+zNoise) / scale),
+                               ((((float.Parse(values[2] , CultureInfo.InvariantCulture))+zNoise) / scale)),
                                ((float.Parse(values[0], CultureInfo.InvariantCulture)- xCorrection) / scale));
             vertices[index] = VectorNew;
             index++;
@@ -184,6 +185,20 @@ public class MeshGenerator : MonoBehaviour
             else { colors[i] = color3; }
         }
 
+        float ycorr = 0f;
+        if (vertexfile == vertexFile2008) { ycorr = -0.2f; } /// -.2
+        if (vertexfile == vertexFile2012) { ycorr = -1.1f; }// -0.9
+        if (vertexfile == vertexFile2018) { ycorr = 0.1f; }//+1/2
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            if(vertices[i].y != 0)
+            {
+                float oldY = vertices[i].y;
+                vertices[i].y = oldY + ycorr;
+            }
+
+        }
+
     }
 
     void ReadPredictionFile(TextAsset vertexfile, int scale)
@@ -200,6 +215,7 @@ public class MeshGenerator : MonoBehaviour
         int index = 0;
         string[] values;
         float3 VectorNew;
+
         while (index < arrayOfLines.Length - 1)
         {
             values = arrayOfLines[index].Split(' ');

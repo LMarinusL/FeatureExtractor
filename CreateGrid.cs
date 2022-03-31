@@ -874,7 +874,7 @@ public class CreateGrid : MonoBehaviour
     }
 
 
-    Grid append(TextAsset file, int year, int interval, float discharge, Grid gridNext, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int scale, string type, bool addNoise)
+    Grid append(TextAsset file, int year, int interval, float discharge, Grid gridPrev, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int scale, string type, bool addNoise)
     {
         Mesh meshNew;
         Grid gridNew;
@@ -892,11 +892,11 @@ public class CreateGrid : MonoBehaviour
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, true);
-        Debug.Log(gridNext.cells.Length);
+        Debug.Log(gridPrev.cells.Length);
         foreach (Cell cell in gridNew.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (gridNext.cells[cell.index].y - 74.6f) + " " + (cell.y + correction - (gridNext.cells[cell.index].y ) ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); 
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (gridPrev.cells[cell.index].y - 74.6f) + " " + (cell.y + correction - (gridPrev.cells[cell.index].y ) ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); 
         }
         writer.Close();
         return gridNew;
@@ -927,9 +927,9 @@ public class CreateGrid : MonoBehaviour
         getDistanceToLines(grid1997, skeletons.skeleton1997A, "Chagres");
         getDistanceToLines(grid1997, skeletons.skeleton1997B, "Pequeni");
 
-        grid2008 = append(meshGenerator.vertexFile2008, 2008, 11, 73.9f, grid1997, -0.2f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" , false);
-        grid2012 = append(meshGenerator.vertexFile2012, 2012, 4, 95.5f, grid2008, -0.9f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", false);
-        grid2018 = append(meshGenerator.vertexFile2018, 2018, 6, 58.2f, grid2012, 1.2f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
+        grid2008 = append(meshGenerator.vertexFile2008, 2008, 11, 73.9f, grid1997, 0f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" , false);
+        grid2012 = append(meshGenerator.vertexFile2012, 2012, 4, 95.5f, grid2008, 0f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", false);
+        grid2018 = append(meshGenerator.vertexFile2018, 2018, 6, 58.2f, grid2012, 0f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
 
         latestGrid = grid2018;
         latestYear = 2018;
@@ -965,15 +965,9 @@ public class CreateGrid : MonoBehaviour
         Debug.Log(previous.cells.Length);
         Grid gridPred;
         int predYear = latestYear + interval;
-        if (latestYear == 2018)
-        {
-            gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 1.2f, skeletonA, skeletonB, 1, "prediction", false);
-        }
-        else
-        {
-            gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction", false);
 
-        }
+        gridPred = append(meshGenerator.vertexFilePred, predYear, interval, 50f, previous, 0f, skeletonA, skeletonB, 1, "prediction", false);
+
         latestGrid = gridPred;
         latestYear = predYear;
 
