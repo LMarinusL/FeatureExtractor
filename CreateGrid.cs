@@ -33,9 +33,8 @@ public class CreateGrid : MonoBehaviour
   void Start()
     {
         getData();
-        InstantiateGrid(mesh);
+        latestGrid = InstantiateGrid(mesh);
         WriteString();
-        latestGrid = grid;
         latestYear = 2018;
         Debug.Log("Output written");
     }
@@ -74,7 +73,7 @@ public class CreateGrid : MonoBehaviour
         MATcol = MATlist.NewMATList;
     } 
 
-    public void  InstantiateGrid(Mesh mesh)
+    public Grid  InstantiateGrid(Mesh mesh)
     {
         grid = new Grid(meshGenerator.Vector3Tofloat3Array(mesh.vertices), 
             meshGenerator.Vector3Tofloat3Array(mesh.normals),
@@ -119,6 +118,7 @@ public class CreateGrid : MonoBehaviour
             }
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
         }
+        return grid;
     }
 
     public void WriteString()
@@ -883,9 +883,8 @@ public class CreateGrid : MonoBehaviour
         else { meshGenerator.StartPipe(file, scale, addNoise); }
 
         meshNew = meshGenerator.mesh;
-     
-        InstantiateGrid(meshNew);
-        gridNew = grid;
+
+        gridNew = InstantiateGrid(meshNew);
         setRunoffScores(gridNew);
         getDistanceToLines(gridNew, skeletonA, "Chagres");
         getDistanceToLines(gridNew, skeletonB, "Pequeni");
@@ -896,7 +895,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in gridNew.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (gridPrev.cells[cell.index].y - 74.6f) + " " + (cell.y + correction - (gridPrev.cells[cell.index].y ) ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); 
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (gridPrev.cells[cell.index].y - 74.6f) + " " + (cell.y  - (gridPrev.cells[cell.index].y ) ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); 
         }
         writer.Close();
         return gridNew;
@@ -921,8 +920,7 @@ public class CreateGrid : MonoBehaviour
         //1997
         meshGenerator.StartPipe(meshGenerator.vertexFile1997, 10, false);
         Mesh mesh1997 = meshGenerator.mesh;
-        InstantiateGrid(mesh1997);
-        grid1997 = grid;
+        grid1997 = InstantiateGrid(mesh1997);
         setRunoffScores(grid1997);
         getDistanceToLines(grid1997, skeletons.skeleton1997A, "Chagres");
         getDistanceToLines(grid1997, skeletons.skeleton1997B, "Pequeni");
