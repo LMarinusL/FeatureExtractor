@@ -709,6 +709,7 @@ def plotOnYears(property, min, max):
     ax[0,3].set_title('18')
     ax[0,3].set_xlabel("x coordinate")
     ax[0,3].tick_params(labelsize=12)
+    """
     sc = ax[1,0].scatter(df26['x'], df26['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -740,6 +741,7 @@ def plotOnYears(property, min, max):
     ax[1,2].set_title('30')
     ax[1,2].set_xlabel("x coordinate")
     ax[1,2].tick_params(labelsize=12)
+    """
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle('08, 12, 18, 22, 26, 30, 34 levels' )
     plt.draw()
