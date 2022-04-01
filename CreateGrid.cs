@@ -616,6 +616,7 @@ public class CreateGrid : MonoBehaviour
                     if (surroundingCell.index > cell.index + dist )
                     {
                         Z6 = surroundingCell;
+                        Debug.Log(Z6.y);
                     }
                     if (surroundingCell.index < cell.index - dist)
                     {

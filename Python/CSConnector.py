@@ -581,7 +581,7 @@ def predict(alg, Xtrain, ytrain, Xpredict):
     prediction = algorithm.predict(Xpredict)
     return prediction
 
-yearToUse = 2022
+yearToUse = 2026
 X_arr = df[df.year == yearToUse][col_study2][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
 
 pred = predict(forest6, Xo2, yo2, X_arr)
@@ -667,7 +667,7 @@ def plotOnYears(property, min, max):
     df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    #df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 
@@ -719,26 +719,24 @@ def plotOnYears(property, min, max):
     ax[0,3].set_xlabel("x coordinate")
     ax[0,3].tick_params(labelsize=12)
     
-    sc = ax[1,0].scatter(x_array, y_array,
+    sc = ax[1,0].scatter(df22['x'], df22['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(pred),
+            c=(df22[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,0].set_title('22')
     ax[1,0].set_xlabel("x coordinate")
     ax[1,0].set_ylabel("y coordinate")
     ax[1,0].tick_params(labelsize=12)
     
-    sc = ax[1,1].scatter(df22['x'], df22['y'],
+    sc = ax[1,1].scatter(df26['x'], df26['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df22[property]),
+            c=(df26[property]),
                 cmap=cm, vmin=min, vmax=max)
-    cbar = fig5.colorbar(sc)
-    cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
-    cbar.ax.get_yaxis().labelpad = 20
+
     ax[1,1].set_title('26')
     ax[1,1].set_xlabel("x coordinate")
     ax[1,1].tick_params(labelsize=12)
@@ -758,6 +756,7 @@ def plotOnYears(property, min, max):
     plt.draw()
 
 plotOnYears('hdifference', -2, 2)
+plotOnYears('height', 50, 70)
 
 
 

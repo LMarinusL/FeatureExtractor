@@ -224,7 +224,7 @@ public class MeshGenerator : MonoBehaviour
                                ((float.Parse(values[3], CultureInfo.InvariantCulture)) / scale),
                                ((float.Parse(values[2], CultureInfo.InvariantCulture)) / scale));
             vertices[vectorIndex] = VectorNew;
-            Instantiate(dotgreen, new Vector3(VectorNew.x, VectorNew.y, VectorNew.z), transform.rotation);
+            //Instantiate(dotgreen, new Vector3(VectorNew.x, VectorNew.y, VectorNew.z), transform.rotation);
             index++;
         }
        
