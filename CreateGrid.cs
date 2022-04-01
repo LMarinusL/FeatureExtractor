@@ -616,7 +616,6 @@ public class CreateGrid : MonoBehaviour
                     if (surroundingCell.index > cell.index + dist )
                     {
                         Z6 = surroundingCell;
-                        Debug.Log(Z6.y);
                     }
                     if (surroundingCell.index < cell.index - dist)
                     {
@@ -885,7 +884,6 @@ public class CreateGrid : MonoBehaviour
     {
         Mesh meshNext;
         Grid gridNext;
-        //2018
         if (type == "prediction") { meshGenerator.StartPredictionPipe(file, scale); }
         else { meshGenerator.StartPipe(file, scale, addNoise); }
 
@@ -959,9 +957,6 @@ public class CreateGrid : MonoBehaviour
 
     void AppendPrediction(Grid current, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int interval)
     {
-        Debug.Log("len: " );
-
-        Debug.Log(current.cells.Length + " tyo" );
         gridPred = append(meshGenerator.vertexFilePred, latestYear, interval, 50f, current, 0f, skeletonA, skeletonB, 1, "prediction", false);
         int predYear = latestYear + interval;
         latestGrid = gridPred;
