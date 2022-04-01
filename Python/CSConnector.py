@@ -93,15 +93,15 @@ yt = dfTest[param_study]
 # BOXPLOT OF DATA
 #######################
 
-df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
 
 
-print(df18.head())
+print(df12.head())
 fig4, ax4 = plt.subplots()
 ax4.set_title('Annual sedimentation')
-ax4.boxplot([df08['hdifference'],df12['hdifference'],df18['hdifference']], showfliers=False)
+ax4.boxplot([df97['hdifference'],df08['hdifference'],df12['hdifference']], showfliers=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
 plt.draw()
 
@@ -109,21 +109,21 @@ plt.rcParams.update({'font.size': 20})
 fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                     figsize=(20, 10))
 cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0].scatter(df08['x'], df08['y'],
+sc = ax[0].scatter(df97['x'], df97['y'],
         linewidths=1, alpha=.7,
             edgecolor='none',
         s = 20,
-        c=(df08['hdifference']),
+        c=(df97['hdifference']),
             cmap=cm, vmin=-2, vmax=2)
 ax[0].set_title('08')
 ax[0].set_xlabel("x coordinate")
 ax[0].set_ylabel("y coordinate")
 ax[0].tick_params(labelsize=12)
-sc = ax[1].scatter(df12['x'], df12['y'],
+sc = ax[1].scatter(df08['x'], df08['y'],
         linewidths=1, alpha=.7,
             edgecolor='none',
         s = 20,
-        c=(df12['hdifference']),
+        c=(df08['hdifference']),
             cmap=cm, vmin=-2, vmax=2)
 cbar = fig5.colorbar(sc)
 cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
@@ -131,11 +131,11 @@ cbar.ax.get_yaxis().labelpad = 20
 ax[1].set_title('12')
 ax[1].set_xlabel("x coordinate")
 ax[1].tick_params(labelsize=12)
-sc = ax[2].scatter(df18['x'], df18['y'],
+sc = ax[2].scatter(df12['x'], df12['y'],
         linewidths=1, alpha=.7,
             edgecolor='none',
         s = 20,
-        c=(df18['hdifference']),
+        c=(df12['hdifference']),
             cmap=cm,  vmin=-2, vmax=2)
 ax[2].set_title('18')
 ax[2].set_xlabel("x coordinate")
@@ -574,15 +574,22 @@ plotErrorHist(yt, y_pred)
 # Writer
 ####################
 
+forest6 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
+def predict(alg, Xtrain, ytrain, Xpredict):
+    algorithm = make_pipeline(StandardScaler(), alg)
+    algorithm.fit(Xtrain, ytrain)
+    prediction = algorithm.predict(Xpredict)
+    return prediction
 
+yearToUse = 2022
+X_arr = df[df.year == yearToUse][col_study2][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
 
-yearToUse = 2018
-pred = forest5.predict(df[df.year == yearToUse][col_study3][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920])
+pred = predict(forest6, Xo2, yo2, X_arr)
 index_array = df['index'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
 x_array = df['x'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
 y_array = df['y'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
-d_array = df['hprevious'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
-d_diff = df['hdifference'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+d_array = df['height'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+
 
 outputFile =  open('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/Python_Output.txt', 'w')
 for i in range(pred.size):
@@ -592,7 +599,7 @@ for i in range(pred.size):
     outputFile.write( " ")
     outputFile.write(str(y_array[i]))
     outputFile.write(" ")
-    outputFile.write(str(pred[i] + d_array[i] + d_diff[i]))
+    outputFile.write(str(pred[i] + d_array[i] ))
     outputFile.write('\n')
 outputFile.close()
 
@@ -655,7 +662,7 @@ graph = graphviz.Source(dot_data, format='png')
 #################################
 
 def plotOnYears(property, min, max):
-
+    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
     df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
@@ -670,21 +677,21 @@ def plotOnYears(property, min, max):
     fig5, ax = plt.subplots(nrows=2, ncols=4, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlBu')
-    sc = ax[0,0].scatter(df08['x'], df08['y'],
+    sc = ax[0,0].scatter(df97['x'], df97['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df08[property]),
+            c=(df97[property]),
                 cmap=cm,  vmin=min, vmax=max)
     ax[0,0].set_title('97')
     ax[0,0].set_xlabel("x coordinate")
     ax[0,0].set_ylabel("y coordinate")
     ax[0,0].tick_params(labelsize=12)
-    sc = ax[0,1].scatter(df12['x'], df12['y'],
+    sc = ax[0,1].scatter(df08['x'], df08['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df12[property]),
+            c=(df08[property]),
                 cmap=cm,  vmin=min, vmax=max)
     cbar = fig5.colorbar(sc)
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
@@ -692,11 +699,11 @@ def plotOnYears(property, min, max):
     ax[0,1].set_title('08')
     ax[0,1].set_xlabel("x coordinate")
     ax[0,1].tick_params(labelsize=12)
-    sc = ax[0,2].scatter(df18['x'], df18['y'],
+    sc = ax[0,2].scatter(df12['x'], df12['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df18[property]),
+            c=(df12[property]),
                 cmap=cm,  vmin=min, vmax=max)
     ax[0,2].set_title('12')
     ax[0,2].set_xlabel("x coordinate")
@@ -722,12 +729,12 @@ def plotOnYears(property, min, max):
     ax[1,0].set_xlabel("x coordinate")
     ax[1,0].set_ylabel("y coordinate")
     ax[1,0].tick_params(labelsize=12)
-    """
-    sc = ax[1,1].scatter(x_array, y_array,
+    
+    sc = ax[1,1].scatter(df22['x'], df22['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(pred),
+            c=(df22[property]),
                 cmap=cm, vmin=min, vmax=max)
     cbar = fig5.colorbar(sc)
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
@@ -735,7 +742,7 @@ def plotOnYears(property, min, max):
     ax[1,1].set_title('26')
     ax[1,1].set_xlabel("x coordinate")
     ax[1,1].tick_params(labelsize=12)
-    
+    """
     sc = ax[1,2].scatter(df34['x'], df34['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -750,7 +757,7 @@ def plotOnYears(property, min, max):
     fig5.suptitle('08, 12, 18, 22, 26, 30, 34 levels' )
     plt.draw()
 
-plotOnYears('hdifference', -5, 5)
+plotOnYears('hdifference', -2, 2)
 
 
 
