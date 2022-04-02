@@ -98,13 +98,13 @@ public class CreateGrid : MonoBehaviour
         int index2 = getIndexFromLoc(232, 625);
         int index3 = getIndexFromLoc(167, 483);
         int index4 = getIndexFromLoc(155, 460);
-        List<Vector3> list1 = getSkeletonList(grid, index1, 1);
-        List<Vector3> list2 = getSkeletonList(grid, index2, 1);
-        List<Vector3> list3 = getSkeletonList(grid, index3, 1);
-        List<Vector3> list4 = getSkeletonList(grid, index4, 1);
+        List<Vector3> list1 = getSkeletonList(grid, index2, 1);
+        List<Vector3> list2 = getSkeletonList(grid, index3, 1);
+        List<Vector3> list3 = getSkeletonList(grid, index4, 1);
+        list1.AddRange(list2);
+        list1.AddRange(list3);
+        List<Vector3> list4 = getSkeletonList(grid, index1, 1);
         skeleton.addListP(list1, dischargeP);
-        skeleton.addListP(list2, dischargeP);
-        skeleton.addListP(list3, dischargeP);
         skeleton.addListC(list4, dischargeC);
         getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
         getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
@@ -348,7 +348,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * ((grid.cells[i].riverDischargeChagres) / 20), 1f * ((grid.cells[i].riverDischargeChagres) / 20), 1f * ((grid.cells[i].riverDischargeChagres) / 20), 1f);
+            colors[i] = new Color(1f * ((grid.cells[i].distToRiverMouthPequeni) / 200), 1f * ((grid.cells[i].distToRiverMouthPequeni) / 200), 1f * ((grid.cells[i].distToRiverMouthPequeni) / 200), 1f);
         }
         mesh.colors = colors;
     }
@@ -415,7 +415,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (20/grid.cells[i].distToSkeletonChagres), 1f * (20/grid.cells[i].distToSkeletonChagres), 1f * (20/grid.cells[i].distToSkeletonChagres), 1f);
+            colors[i] = new Color(1f * (20/grid.cells[i].distToSkeletonPequeni), 1f * (20/grid.cells[i].distToSkeletonPequeni), 1f * (20/grid.cells[i].distToSkeletonPequeni), 1f);
         }
         mesh.colors = colors;
     }
@@ -732,12 +732,11 @@ public class CreateGrid : MonoBehaviour
         return cells;
     }
 
-    public void getDistanceToLines(Grid grid, List<List<SkeletonJoint>> list, String river )
+    public void getDistanceToLines(Grid grid, List<SkeletonJoint> list, String river )
     {
         foreach (Cell cell in grid.cells)
         {
             float smallestDist = 9999f;
-            float currentDist = 9999f;
             float lineAngle = 0f;
             float aspectToSkeleton = 0f;
             float riverLength = 0f;
@@ -745,17 +744,15 @@ public class CreateGrid : MonoBehaviour
 
             if (cell.y != 0)
             {
-                foreach (List<SkeletonJoint> sublist in list)
+                for (int index = 0; index < list.Count - 1; index++)
                 {
-                    for (int index = 0; index < sublist.Count - 1; index++)
-                    {
-                        currentDist = HandleUtility.DistancePointLine(new Vector3(cell.x, 0, cell.z), sublist[index].position, sublist[index + 1].position);
+                        float currentDist = Vector3.Distance(cell.position, list[index].position);
                         if (currentDist < smallestDist)
                         {
                             smallestDist = currentDist;
-                            lineAngle = computeAngle(sublist[index].position, sublist[index + 1].position);
-                            riverLength = sublist[index].distance;
-                            riverDischarge = sublist[index].discharge;
+                            lineAngle = computeAngle(list[index].position, list[index + 1].position);
+                            riverLength = list[index].distance;
+                            riverDischarge = list[index].discharge;
                             float diff = cell.aspect - lineAngle;
                             if (diff <= 180)
                             {
@@ -766,31 +763,33 @@ public class CreateGrid : MonoBehaviour
                                 aspectToSkeleton = 360f - diff;
                             }
                         }
-                    }
+                    
                 }
-                if (river == "Chagres")
-                {
-                    cell.riverDischargeChagres = riverDischarge;
-                    cell.distToRiverMouthChagres = riverLength;
-                    cell.skeletonAspectChagres = Mathf.Abs(aspectToSkeleton);
-                    cell.distToSkeletonChagres = smallestDist;
-                }
-                if (river == "Pequeni")
-                {
-                    cell.riverDischargePequeni = riverDischarge;
-                    cell.distToRiverMouthPequeni = riverLength;
-                    cell.skeletonAspectPequeni = Mathf.Abs(aspectToSkeleton);
-                    cell.distToSkeletonPequeni = smallestDist;
-                }
-                }
-            else
-                {
-                    cell.skeletonAspectChagres = 0f;
-                    cell.distToSkeletonChagres = 9999999999f;
-                    cell.skeletonAspectPequeni = 0f;
-                    cell.distToSkeletonPequeni = 9999999999f;
+            if(smallestDist < 1) { smallestDist = 1f; }
+
+            if (river == "Chagres")
+            {
+                cell.riverDischargeChagres = riverDischarge;
+                cell.distToRiverMouthChagres = riverLength;
+                cell.skeletonAspectChagres = Mathf.Abs(aspectToSkeleton);
+                cell.distToSkeletonChagres = smallestDist;
             }
-            
+            if (river == "Pequeni")
+            {
+                cell.riverDischargePequeni = riverDischarge;
+                cell.distToRiverMouthPequeni = riverLength;
+                cell.skeletonAspectPequeni = Mathf.Abs(aspectToSkeleton);
+                cell.distToSkeletonPequeni = smallestDist;
+            }
+        }
+            else
+            {
+                cell.skeletonAspectChagres = 0f;
+                cell.distToSkeletonChagres = 9999999999f;
+                cell.skeletonAspectPequeni = 0f;
+                cell.distToSkeletonPequeni = 9999999999f;
+            }
+
         }
 
     }

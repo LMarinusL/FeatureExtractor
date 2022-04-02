@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Skeleton : Component
 {
-    public List<List<SkeletonJoint>> skeletonC;
-    public List<List<SkeletonJoint>> skeletonP;
+    public List<SkeletonJoint> skeletonC;
+    public List<SkeletonJoint> skeletonP;
 
     public List<SkeletonJoint> VectorToJoints(List<Vector3> input, float discharge)
     {
@@ -23,18 +23,18 @@ public class Skeleton : Component
 
     public Skeleton()
     {
-        skeletonC = new List<List<SkeletonJoint>>();
-        skeletonP = new List<List<SkeletonJoint>>();
+        skeletonC = new List<SkeletonJoint>();
+        skeletonP = new List<SkeletonJoint>();
 
     }
 
     public void addListC(List<Vector3> inputList, float discharge)
     {
-        skeletonC.Add(VectorToJoints(inputList, discharge));
+        skeletonC = VectorToJoints(inputList, discharge);
     }
     public void addListP(List<Vector3> inputList, float discharge)
     {
-        skeletonP.Add(VectorToJoints(inputList, discharge));
+        skeletonP = VectorToJoints(inputList, discharge);
     }
 
 }
