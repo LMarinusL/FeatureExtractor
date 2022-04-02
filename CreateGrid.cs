@@ -94,15 +94,18 @@ public class CreateGrid : MonoBehaviour
 
         setRunoffScores(grid);
         skeleton = new Skeleton();
-        int index1 = getIndexFromLoc(232, 625);
-        int index2 = getIndexFromLoc(167, 483);
-        int index3 = getIndexFromLoc(155, 460);
-        List<Vector3> list1 = getSkeletonList(grid, index1);
-        List<Vector3> list2 = getSkeletonList(grid, index2);
-        List<Vector3> list3 = getSkeletonList(grid, index3);
-        skeleton.addListC(list1, dischargeC);
+        int index1 = getIndexFromLoc(290, 200);
+        int index2 = getIndexFromLoc(232, 625);
+        int index3 = getIndexFromLoc(167, 483);
+        int index4 = getIndexFromLoc(155, 460);
+        List<Vector3> list1 = getSkeletonList(grid, index1, 1);
+        List<Vector3> list2 = getSkeletonList(grid, index2, 1);
+        List<Vector3> list3 = getSkeletonList(grid, index3, 1);
+        List<Vector3> list4 = getSkeletonList(grid, index4, 1);
+        skeleton.addListP(list1, dischargeP);
         skeleton.addListP(list2, dischargeP);
         skeleton.addListP(list3, dischargeP);
+        skeleton.addListC(list4, dischargeC);
         getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
         getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
 
@@ -898,7 +901,7 @@ public class CreateGrid : MonoBehaviour
         }
     }
 
-    List<Vector3> getSkeletonList(Grid grid, int startIndex)
+    List<Vector3> getSkeletonList(Grid grid, int startIndex, int dist)
     {
         Cell currentCell = grid.cells[startIndex];
         List<Vector3> list = new List<Vector3> { currentCell.position };
@@ -908,7 +911,7 @@ public class CreateGrid : MonoBehaviour
         {
             int bestIndex = 0;
             int highestScore = 0;
-            List<Cell> surroundingCells = getSurroundingCells(currentCell, grid, 1, 8);
+            List<Cell> surroundingCells = getSurroundingCells(currentCell, grid, dist, 8);
             foreach (Cell candidate in surroundingCells)
             {
                 if (candidate.runoffScore > highestScore && listIndices.Contains(candidate.index) == false)
@@ -918,6 +921,7 @@ public class CreateGrid : MonoBehaviour
                 }
             }
             list.Add(grid.cells[bestIndex].position);
+            Instantiate(dotgreen, grid.cells[bestIndex].position, transform.rotation);
             listIndices.Add(bestIndex);
             currentCell = grid.cells[bestIndex];
             if (bestIndex == 0) { goToNext = false; }
