@@ -51,52 +51,40 @@ public class DropDownDataset : MonoBehaviour
             case 0:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2018, 10, false);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018A, "Chagres");
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018B, "Pequeni");
+                gridImporter.InstantiateGrid(gridImporter.mesh, gridImporter.discharge2018C, gridImporter.discharge2018P);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2018");
                 break;
             case 1:
                 meshGenerator.StartPipe(meshGenerator.vertexFile1983, 10, false);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997A, "Chagres"); 
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997B, "Pequeni");
+                gridImporter.InstantiateGrid(gridImporter.mesh, gridImporter.discharge1997C, gridImporter.discharge1997P);
                 gridImporter.WriteString();
                 Debug.Log("Output written 1983");
                 break;
             case 2:
                 meshGenerator.StartPipe(meshGenerator.vertexFile1997, 10, false);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997A, "Chagres");
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton1997B, "Pequeni");
+                gridImporter.InstantiateGrid(gridImporter.mesh, gridImporter.discharge1997C, gridImporter.discharge1997P);
                 gridImporter.WriteString();
                 Debug.Log("Output written 1997");
                 break;
             case 3:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2008, 10, false);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2008A, "Chagres");
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2008B, "Pequeni");
+                gridImporter.InstantiateGrid(gridImporter.mesh, gridImporter.discharge2008C, gridImporter.discharge2008P);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2008"); break;
             case 4:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2012, 10, false);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2012A, "Chagres");
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2012B, "Pequeni");
+                gridImporter.InstantiateGrid(gridImporter.mesh, gridImporter.discharge2012C, gridImporter.discharge2012P);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2012"); break;
             case 5:
                 meshGenerator.StartPipe(meshGenerator.vertexFile2018, 10, false);
                 gridImporter.getData();
-                gridImporter.InstantiateGrid(gridImporter.mesh);
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018A, "Chagres");
-                gridImporter.getDistanceToLines(gridImporter.grid, gridImporter.skeletons.skeleton2018B, "Pequeni");
+                gridImporter.InstantiateGrid(gridImporter.mesh, gridImporter.discharge2018C, gridImporter.discharge2018P);
                 gridImporter.WriteString();
                 Debug.Log("Output written 2018"); break;
             default:

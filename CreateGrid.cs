@@ -26,7 +26,7 @@ public class CreateGrid : MonoBehaviour
     public Mesh mesh;
     Color[] colors;
     MeshGenerator meshGenerator;
-    public Skeleton skeletons;
+    public Skeleton skeleton;
     public Grid latestGrid;
     public int latestYear;
     public Grid gridPred;
@@ -34,14 +34,21 @@ public class CreateGrid : MonoBehaviour
     public Grid grid2008;
     public Grid grid2012;
     public Grid grid2018;
-
+    public float discharge1997C = 32.93f;
+    public float discharge1997P = 13.67f;
+    public float discharge2008C = 39.24f;
+    public float discharge2008P = 15.72f;
+    public float discharge2012C = 29.38f;
+    public float discharge2012P = 12.23f;
+    public float discharge2018C = 26.82f;
+    public float discharge2018P = 12.18f;
 
 
     void Start()
     {
         getData();
-        latestGrid = InstantiateGrid(mesh);
-        WriteString();
+        latestGrid = InstantiateGrid(mesh, discharge2018C, discharge2018P);
+        //WriteString();
         latestYear = 2018;
         Debug.Log("Output written");
     }
@@ -55,8 +62,7 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            skeletons = new Skeleton();
-            AppendPrediction(latestGrid, skeletons.skeleton2018A, skeletons.skeleton2018B, 4);
+            AppendPrediction(latestGrid,50f,50f, 4);
         }
     }
 
@@ -80,13 +86,26 @@ public class CreateGrid : MonoBehaviour
         MATcol = MATlist.NewMATList;
     } 
 
-    public Grid  InstantiateGrid(Mesh mesh)
+    public Grid  InstantiateGrid(Mesh mesh, float dischargeC, float dischargeP)
     {
         grid = new Grid(meshGenerator.Vector3Tofloat3Array(mesh.vertices), 
             meshGenerator.Vector3Tofloat3Array(mesh.normals),
             mesh.triangles);
+
         setRunoffScores(grid);
-        skeletons = new Skeleton();
+        skeleton = new Skeleton();
+        int index1 = getIndexFromLoc(232, 625);
+        int index2 = getIndexFromLoc(167, 483);
+        int index3 = getIndexFromLoc(155, 460);
+        List<Vector3> list1 = getSkeletonList(grid, index1);
+        List<Vector3> list2 = getSkeletonList(grid, index2);
+        List<Vector3> list3 = getSkeletonList(grid, index3);
+        skeleton.addListC(list1, dischargeC);
+        skeleton.addListP(list2, dischargeP);
+        skeleton.addListP(list3, dischargeP);
+        getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
+        getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
+
         foreach (Cell cell in grid.cells)
         {
             if (cell.y == 0)
@@ -900,13 +919,14 @@ public class CreateGrid : MonoBehaviour
             }
             list.Add(grid.cells[bestIndex].position);
             listIndices.Add(bestIndex);
-            if(bestIndex == 0) { goToNext = false; }
+            currentCell = grid.cells[bestIndex];
+            if (bestIndex == 0) { goToNext = false; }
         }
         return list;
     }
 
 
-    Grid append(TextAsset file, int year, int interval, float discharge, Grid gridCurrent, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int scale, string type, bool addNoise)
+    Grid append(TextAsset file, int year, int interval, float discharge, float dischargeC, float dischargeP, Grid gridCurrent, float correction, int scale, string type, bool addNoise)
     {
         Mesh meshNext;
         Grid gridNext;
@@ -915,10 +935,7 @@ public class CreateGrid : MonoBehaviour
 
         meshNext = meshGenerator.mesh;
 
-        gridNext = InstantiateGrid(meshNext);
-        setRunoffScores(gridNext);
-        getDistanceToLines(gridNext, skeletonA, "Chagres");
-        getDistanceToLines(gridNext, skeletonB, "Pequeni");
+        gridNext = InstantiateGrid(meshNext, dischargeC, dischargeP);
 
         string path = "Assets/Output/outputGridFull.txt";
         StreamWriter writer = new StreamWriter(path, true);
@@ -943,15 +960,12 @@ public class CreateGrid : MonoBehaviour
         //1997
         meshGenerator.StartPipe(meshGenerator.vertexFile1997, 10, false);
         Mesh mesh1997 = meshGenerator.mesh;
-        grid1997 = InstantiateGrid(mesh1997);
-        setRunoffScores(grid1997);
-        getDistanceToLines(grid1997, skeletons.skeleton1997A, "Chagres");
-        getDistanceToLines(grid1997, skeletons.skeleton1997B, "Pequeni");
+        grid1997 = InstantiateGrid(mesh1997, discharge1997C, discharge1997P);
 
-        grid2008 = append(meshGenerator.vertexFile2008, 1997, 11, 73.9f, grid1997, 0f, skeletons.skeleton1997A, skeletons.skeleton1997B, 10, "data" , false);
-        grid2012 = append(meshGenerator.vertexFile2012, 2008, 4, 95.5f, grid2008, 0f, skeletons.skeleton2008A, skeletons.skeleton2008B, 10, "data", false);
-        grid2018 = append(meshGenerator.vertexFile2018, 2012, 6, 58.2f, grid2012, 0f, skeletons.skeleton2012A, skeletons.skeleton2012B, 10, "data", false);
-        append(meshGenerator.vertexFile2018, 2018, 6, 50f, grid2018, 0f, skeletons.skeleton2018A, skeletons.skeleton2018B, 10, "data", false);
+        grid2008 = append(meshGenerator.vertexFile2008, 1997, 11, 73.9f, discharge2008C, discharge2008P, grid1997, 0f,  10, "data" , false);
+        grid2012 = append(meshGenerator.vertexFile2012, 2008, 4, 95.5f, discharge2012C, discharge2012P, grid2008, 0f,  10, "data", false);
+        grid2018 = append(meshGenerator.vertexFile2018, 2012, 6, 58.2f, discharge2018C, discharge2018P, grid2012, 0f, 10, "data", false);
+        append(meshGenerator.vertexFile2018, 2018, 6, 50f, discharge2018C, discharge2018P, grid2018, 0f,  10, "data", false);
         latestGrid = grid2018;
         latestYear = 2018;
 
@@ -981,12 +995,12 @@ public class CreateGrid : MonoBehaviour
         
     }
 
-    void AppendPrediction(Grid current, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int interval)
+    void AppendPrediction(Grid current, float dischargeC, float dischargeP, int interval)
     {
-        gridPred = append(meshGenerator.vertexFilePred, latestYear, interval, 50f, current, 0f, skeletonA, skeletonB, 1, "prediction", false);
+        gridPred = append(meshGenerator.vertexFilePred, latestYear, interval, 50f, dischargeC, dischargeP, current, 0f, 1, "prediction", false);
         int predYear = latestYear + interval;
         latestGrid = gridPred;
-        append(meshGenerator.vertexFilePred, predYear, interval, 50f, gridPred, 0f, skeletonA, skeletonB, 1, "prediction", false);
+        append(meshGenerator.vertexFilePred, predYear, interval, 50f, dischargeC, dischargeP, gridPred, 0f, 1, "prediction", false);
         latestYear = predYear;
 
         List<Cell> cellsList = new List<Cell>();
