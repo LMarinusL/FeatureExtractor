@@ -879,6 +879,32 @@ public class CreateGrid : MonoBehaviour
         }
     }
 
+    List<Vector3> getSkeletonList(Grid grid, int startIndex)
+    {
+        Cell currentCell = grid.cells[startIndex];
+        List<Vector3> list = new List<Vector3> { currentCell.position };
+        List<int> listIndices = new List<int> { startIndex };
+        bool goToNext = true;
+        while (goToNext == true)
+        {
+            int bestIndex = 0;
+            int highestScore = 0;
+            List<Cell> surroundingCells = getSurroundingCells(currentCell, grid, 1, 8);
+            foreach (Cell candidate in surroundingCells)
+            {
+                if (candidate.runoffScore > highestScore && listIndices.Contains(candidate.index) == false)
+                {
+                    highestScore = candidate.runoffScore;
+                    bestIndex = candidate.index;
+                }
+            }
+            list.Add(grid.cells[bestIndex].position);
+            listIndices.Add(bestIndex);
+            if(bestIndex == 0) { goToNext = false; }
+        }
+        return list;
+    }
+
 
     Grid append(TextAsset file, int year, int interval, float discharge, Grid gridCurrent, float correction, List<List<SkeletonJoint>> skeletonA, List<List<SkeletonJoint>> skeletonB, int scale, string type, bool addNoise)
     {
