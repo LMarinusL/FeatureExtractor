@@ -79,12 +79,12 @@ from sklearn.ensemble import RandomForestRegressor
 col_study = ['year','interval','x','y','depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random', 'averageSlope', 'index']
 param_study = 'hdifference'
 
-#[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920]
+#[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970]
 
-dfTrain = sklearn.utils.resample(df[df.year < 2017][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
@@ -93,9 +93,9 @@ yt = dfTest[param_study]
 # BOXPLOT OF DATA
 #######################
 
-df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
 print(df12.head())
@@ -581,14 +581,14 @@ def predict(alg, Xtrain, ytrain, Xpredict):
     prediction = algorithm.predict(Xpredict)
     return prediction
 
-yearToUse = 2026
-X_arr = df[df.year == yearToUse][col_study2][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+dfpred = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridPredParams.txt', sep=" ")
+X_arr = dfpred[col_study2][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
 
 pred = predict(forest6, Xo2, yo2, X_arr)
-index_array = df['index'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
-x_array = df['x'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
-y_array = df['y'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
-d_array = df['height'][df.year == yearToUse][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920].to_numpy()
+index_array = dfpred['index'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
+x_array = dfpred['x'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
+y_array = dfpred['y'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
+d_array = dfpred['height'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
 
 
 outputFile =  open('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/Python_Output.txt', 'w')
@@ -662,14 +662,14 @@ graph = graphviz.Source(dot_data, format='png')
 #################################
 
 def plotOnYears(property, min, max):
-    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
-    #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 920], n_samples=10000, random_state=None, stratify=None)
+    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
 
@@ -757,6 +757,8 @@ def plotOnYears(property, min, max):
 
 plotOnYears('hdifference', -2, 2)
 plotOnYears('height', 50, 70)
+plotOnYears('distChagres', 0, 40)
+
 
 
 

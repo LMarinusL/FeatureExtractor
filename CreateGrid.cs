@@ -929,7 +929,7 @@ public class CreateGrid : MonoBehaviour
     }
 
 
-    Grid append(TextAsset file, int year, int interval, float discharge, float dischargeC, float dischargeP, Grid gridCurrent, float correction, int scale, string type, bool addNoise)
+    Grid append(string path, bool append, TextAsset file, int year, int interval, float discharge, float dischargeC, float dischargeP, Grid gridCurrent, float correction, int scale, string type, bool addNoise)
     {
         Mesh meshNext;
         Grid gridNext;
@@ -940,8 +940,11 @@ public class CreateGrid : MonoBehaviour
 
         gridNext = InstantiateGrid(meshNext, dischargeC, dischargeP);
 
-        string path = "Assets/Output/outputGridFull.txt";
-        StreamWriter writer = new StreamWriter(path, true);
+        StreamWriter writer = new StreamWriter(path, append);
+        if (append == false)
+        {
+            writer.WriteLine("year interval x y depth hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random averageSlope index height");
+        }
         foreach (Cell cell in gridCurrent.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
@@ -965,10 +968,10 @@ public class CreateGrid : MonoBehaviour
         Mesh mesh1997 = meshGenerator.mesh;
         grid1997 = InstantiateGrid(mesh1997, discharge1997C, discharge1997P);
 
-        grid2008 = append(meshGenerator.vertexFile2008, 1997, 11, 73.9f, discharge2008C, discharge2008P, grid1997, 0f,  10, "data" , false);
-        grid2012 = append(meshGenerator.vertexFile2012, 2008, 4, 95.5f, discharge2012C, discharge2012P, grid2008, 0f,  10, "data", false);
-        grid2018 = append(meshGenerator.vertexFile2018, 2012, 6, 58.2f, discharge2018C, discharge2018P, grid2012, 0f, 10, "data", false);
-        append(meshGenerator.vertexFile2018, 2018, 6, 50f, discharge2018C, discharge2018P, grid2018, 0f,  10, "data", false);
+        grid2008 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2008, 1997, 11, 73.9f, discharge2008C, discharge2008P, grid1997, 0f,  10, "data" , false);
+        grid2012 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2012, 2008, 4, 95.5f, discharge2012C, discharge2012P, grid2008, 0f,  10, "data", false);
+        grid2018 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2018, 2012, 6, 58.2f, discharge2018C, discharge2018P, grid2012, 0f, 10, "data", false);
+        append("Assets/Output/outputGridPredParams.txt", false, meshGenerator.vertexFile2018, 2018, 6, 50f, discharge2018C, discharge2018P, grid2018, 0f,  10, "data", false);
         latestGrid = grid2018;
         latestYear = 2018;
 
@@ -976,7 +979,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in grid2018.cells)
         {
             float maxDiff = 1.5f;
-            if (cell.z < -(9.5 / 2) * cell.x + 4545 && cell.z > -1.25 * cell.x + 1575 && cell.z > 630 && cell.z < 920 && cell.y != 0)
+            if (cell.z < -(9.5 / 2) * cell.x + 4545 && cell.z > -1.25 * cell.x + 1575 && cell.z > 630 && cell.z < 970 && cell.y != 0)
             {
                 cellsList.Add(cell);
             }
@@ -1000,17 +1003,17 @@ public class CreateGrid : MonoBehaviour
 
     void AppendPrediction(Grid current, float dischargeC, float dischargeP, int interval)
     {
-        gridPred = append(meshGenerator.vertexFilePred, latestYear, interval, 50f, dischargeC, dischargeP, current, 0f, 1, "prediction", false);
+        gridPred = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFilePred, latestYear, interval, 50f, dischargeC, dischargeP, current, 0f, 1, "prediction", false);
         int predYear = latestYear + interval;
         latestGrid = gridPred;
-        append(meshGenerator.vertexFilePred, predYear, interval, 50f, dischargeC, dischargeP, gridPred, 0f, 1, "prediction", false);
+        append("Assets/Output/outputGridPredParams.txt", false, meshGenerator.vertexFilePred, predYear, interval, 50f, dischargeC, dischargeP, gridPred, 0f, 1, "prediction", false);
         latestYear = predYear;
 
         List<Cell> cellsList = new List<Cell>();
         foreach (Cell cell in gridPred.cells)
         {
             float maxDiff = 1.5f;
-            if (cell.z < -(9.5 / 2) * cell.x + 4545 && cell.z > -1.25 * cell.x + 1575 && cell.z > 630 && cell.z < 920 && cell.y != 0)
+            if (cell.z < -(9.5 / 2) * cell.x + 4545 && cell.z > -1.25 * cell.x + 1575 && cell.z > 630 && cell.z < 970 && cell.y != 0)
             {
                 cellsList.Add(cell);
             }
