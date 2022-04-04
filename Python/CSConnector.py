@@ -582,13 +582,13 @@ def predict(alg, Xtrain, ytrain, Xpredict):
     return prediction
 
 dfpred = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridPredParams.txt', sep=" ")
-X_arr = dfpred[col_study2][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
+X_arr = dfpred[col_study2][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 
 pred = predict(forest6, Xo2, yo2, X_arr)
-index_array = dfpred['index'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
-x_array = dfpred['x'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
-y_array = dfpred['y'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
-d_array = dfpred['height'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 920].to_numpy()
+index_array = dfpred['index'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+x_array = dfpred['x'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+y_array = dfpred['y'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+d_array = dfpred['height'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 
 
 outputFile =  open('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/Python_Output.txt', 'w')
@@ -668,7 +668,7 @@ def plotOnYears(property, min, max):
     df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
@@ -740,16 +740,17 @@ def plotOnYears(property, min, max):
     ax[1,1].set_title('26')
     ax[1,1].set_xlabel("x coordinate")
     ax[1,1].tick_params(labelsize=12)
-    """
-    sc = ax[1,2].scatter(df34['x'], df34['y'],
+    
+    sc = ax[1,2].scatter(df30['x'], df30['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
-            c=(df34[property]),
+            c=(df30[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,2].set_title('30')
     ax[1,2].set_xlabel("x coordinate")
     ax[1,2].tick_params(labelsize=12)
+    """
     """
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle('08, 12, 18, 22, 26, 30, 34 levels' )
