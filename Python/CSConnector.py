@@ -694,7 +694,6 @@ def plotOnYears(property, min, max):
             c=(df08[property]),
                 cmap=cm,  vmin=min, vmax=max)
     cbar = fig5.colorbar(sc)
-    cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[0,1].set_title('08')
     ax[0,1].set_xlabel("x coordinate")
@@ -753,7 +752,7 @@ def plotOnYears(property, min, max):
     """
     """
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
-    fig5.suptitle('08, 12, 18, 22, 26, 30, 34 levels' )
+    fig5.suptitle(property)
     plt.draw()
 
 plotOnYears('hdifference', -2, 2)
