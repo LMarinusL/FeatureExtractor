@@ -76,7 +76,7 @@ from sklearn.ensemble import RandomForestRegressor
 
 ################
 #0-year 1-interval 2-x 3-y 4-depth 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
-col_study = ['year','interval','x','y','depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random', 'averageSlope', 'index']
+col_study = ['year','interval','x','y','depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random', 'averageSlope', 'index', 'totalDistChagres']
 param_study = 'hdifference'
 
 #[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970]
@@ -151,8 +151,8 @@ plt.draw()
 ###################
 # TRAINING ALGORITHMS
 ######################
-#0-year 1-interval 2-x 3-y 4-depth 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-random 27-averageSlope 28-index
-col_study2 = [ 'depth', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'averageSlope']
+#0-year 1-interval 2-x 3-y 4-depth 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-random 27-averageSlope 28-index 29-height 30-totalDistChagres
+col_study2 = [ 'depth', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'averageSlope', 'totalDistChagres']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -193,7 +193,7 @@ print('predicted')
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21, 26, 27]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21, 26, 27, 30]]
 
 def plotImportances(alg, feat, Xtrain, ytrain):
     alg.fit(Xtrain, ytrain)
@@ -455,7 +455,7 @@ def plotMaps1Binned(actual, pred, title):
     x_array = Xt['x'].to_numpy()
     y_array = Xt['y'].to_numpy()
     actual_array = actual.to_numpy()
-    ranges = [-5, -1.5, -0.5, 0.5, 1.5, 2.5, 20]
+    ranges = [-5, -1.5, -0.5, 0.5, 1.5, 20]
 
     plt.rcParams.update({'font.size': 8})
     fig5, axs = plt.subplots(nrows=1, ncols=2, figsize=(20, 10))
@@ -471,10 +471,7 @@ def plotMaps1Binned(actual, pred, title):
             sc = axs[0].scatter(x_array[i], y_array[i], c='green')
         if ranges[4] < pred[i] < ranges[5]:
             sc = axs[0].scatter(x_array[i], y_array[i], c='blue')
-        if ranges[5] < pred[i] < ranges[6]:
-            sc = axs[0].scatter(x_array[i], y_array[i], c='black')    
-    print(type(actual_array))
-    print(type(pred))
+
     for i in range(actual_array.size):
         if ranges[0] < actual_array[i] < ranges[1]:
             sc = axs[1].scatter(x_array[i], y_array[i], c='red')
@@ -486,8 +483,6 @@ def plotMaps1Binned(actual, pred, title):
             sc = axs[1].scatter(x_array[i], y_array[i], c='green')
         if ranges[4] < actual_array[i] < ranges[5]:
             sc = axs[1].scatter(x_array[i], y_array[i], c='blue')
-        if ranges[5] < actual_array[i] < ranges[6]:
-            sc = axs[1].scatter(x_array[i], y_array[i], c='black')    
 
     axs[0].set_title('Prediction')
     axs[1].set_title('Actual')
@@ -497,8 +492,7 @@ def plotMaps1Binned(actual, pred, title):
     plt.draw()
     return
 
-#plotMaps1Set(yt, y_predSVR, 'SVR Annual sedimentation 2012-2018')
-#plotMaps1Binned(yt, y_pred, 'title')
+plotMaps1Binned(yt, y_pred, 'Binned')
 
 
 ###################################
@@ -669,7 +663,7 @@ def plotOnYears(property, min, max):
     df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
 
@@ -749,8 +743,17 @@ def plotOnYears(property, min, max):
     ax[1,2].set_title('30')
     ax[1,2].set_xlabel("x coordinate")
     ax[1,2].tick_params(labelsize=12)
-    """
-    """
+
+    sc = ax[1,3].scatter(df34['x'], df34['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df34[property]),
+                cmap=cm, vmin=min, vmax=max)
+    ax[1,3].set_title('34')
+    ax[1,3].set_xlabel("x coordinate")
+    ax[1,3].tick_params(labelsize=12)
+
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle(property)
     plt.draw()

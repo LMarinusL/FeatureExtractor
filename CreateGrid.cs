@@ -943,12 +943,12 @@ public class CreateGrid : MonoBehaviour
         StreamWriter writer = new StreamWriter(path, append);
         if (append == false)
         {
-            writer.WriteLine("year interval x y depth hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random averageSlope index height");
+            writer.WriteLine("year interval x y depth hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random averageSlope index height totalDistChagres");
         }
         foreach (Cell cell in gridCurrent.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y); 
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y + " " + (cell.distToRiverMouthChagres + (4*cell.distToSkeletonChagres))); 
         }
         writer.Close();
         return gridNext;
