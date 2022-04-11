@@ -93,21 +93,7 @@ public class CreateGrid : MonoBehaviour
             mesh.triangles);
 
         setRunoffScores(grid);
-        skeleton = new Skeleton();
-        int index1 = getIndexFromLoc(290, 200);
-        int index2 = getIndexFromLoc(232, 625);
-        int index3 = getIndexFromLoc(167, 483);
-        int index4 = getIndexFromLoc(155, 460);
-        List<Vector3> list1 = getSkeletonList(grid, index2, 1);
-        List<Vector3> list2 = getSkeletonList(grid, index3, 1);
-        List<Vector3> list3 = getSkeletonList(grid, index4, 1);
-        list1.AddRange(list2);
-        list1.AddRange(list3);
-        List<Vector3> list4 = getSkeletonList(grid, index1, 1);
-        skeleton.addListP(list1, dischargeP);
-        skeleton.addListC(list4, dischargeC);
-        getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
-        getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
+
 
         foreach (Cell cell in grid.cells)
         {
@@ -140,13 +126,29 @@ public class CreateGrid : MonoBehaviour
                 cell.averageSlope = averageSlope(cell.index, grid, 2);
                 cell.relativeAspect = relativeAspect(cell.index, grid, 1);
                 cell.dRM1 = DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection));
-                cell.averageRunoff1 = averageRunoff(grid, cell, 5);
-                cell.averageRunoff2 = averageRunoff(grid, cell, 10);
-                cell.averageRunoff3 = averageRunoff(grid, cell, 15);
+                cell.averageRunoff1 = averageRunoff(grid, cell, 2);
+                cell.averageRunoff2 = averageRunoff(grid, cell, 5);
+                cell.averageRunoff3 = averageRunoff(grid, cell, 10);
 
             }
             //cell.dLN1 = Mathf.Pow(HandleUtility.DistancePointLine(new float3(cell.x, cell.y, cell.z), vertices[10], vertices[150800]), 2);
+
         }
+        skeleton = new Skeleton();
+        int index1 = getIndexFromLoc(296, 192);
+        int index2 = getIndexFromLoc(232, 625);
+        int index3 = getIndexFromLoc(167, 483);
+        int index4 = getIndexFromLoc(155, 460);
+        List<Vector3> list1 = getSkeletonList(grid, index2, 4);
+        List<Vector3> list2 = getSkeletonList(grid, index3, 4);
+        List<Vector3> list3 = getSkeletonList(grid, index4, 4);
+        list1.AddRange(list2);
+        list1.AddRange(list3);
+        List<Vector3> list4 = getSkeletonList(grid, index1, 4);
+        skeleton.addListP(list1, dischargeP);
+        skeleton.addListC(list4, dischargeC);
+        getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
+        getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
         return grid;
     }
 
@@ -447,18 +449,18 @@ public class CreateGrid : MonoBehaviour
 
 
         int ind2 = 0;
-        int discharge = 5000;
+        int discharge = 1000;
         int[] array2 = new int[discharge];
         while (ind2 < discharge)
         {
-            array2[ind2] = getIndexFromLoc(290, 200);
+            array2[ind2] = getIndexFromLoc(296, 192);
             ind2++;
         }
         int[] result2 = getRunoffPatterns(grid, array2, 500, 20f);
 
 
         int ind3 = 0;
-        int discharge2 = 2500;
+        int discharge2 = 500;
         int[] array3 = new int[discharge2*3];
         while (ind3 < discharge2 * 3)
         {
@@ -903,19 +905,28 @@ public class CreateGrid : MonoBehaviour
     List<Vector3> getSkeletonList(Grid grid, int startIndex, int dist)
     {
         Cell currentCell = grid.cells[startIndex];
+        Cell startCell = grid.cells[startIndex];
         List<Vector3> list = new List<Vector3> { currentCell.position };
         List<int> listIndices = new List<int> { startIndex };
+        float distToStart = 0f;
         bool goToNext = true;
+        int bestIndex = 0;
+        float highestScore = 0f;
         while (goToNext == true)
         {
-            int bestIndex = 0;
-            int highestScore = 0;
+            bestIndex = 0;
+            highestScore = 0;
             List<Cell> surroundingCells = getSurroundingCells(currentCell, grid, dist, 8);
             foreach (Cell candidate in surroundingCells)
             {
-                if (candidate.runoffScore > highestScore && listIndices.Contains(candidate.index) == false)
+                if (candidate.averageRunoff1 > highestScore
+                    && listIndices.Contains(candidate.index) == false
+                   // && Vector3.Distance(candidate.position, startCell.position) > distToStart
+                    && candidate.y < (currentCell.y + 1f)
+                    && candidate.z < startCell.z // hardcode downward for z, only for Chagres
+                    ) 
                 {
-                    highestScore = candidate.runoffScore;
+                    highestScore = candidate.averageRunoff1;
                     bestIndex = candidate.index;
                 }
             }
@@ -923,6 +934,7 @@ public class CreateGrid : MonoBehaviour
             Instantiate(dotgreen, grid.cells[bestIndex].position, transform.rotation);
             listIndices.Add(bestIndex);
             currentCell = grid.cells[bestIndex];
+            distToStart = Vector3.Distance(currentCell.position, startCell.position);
             if (bestIndex == 0) { goToNext = false; }
         }
         return list;
@@ -948,7 +960,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in gridCurrent.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y + " " + (cell.distToRiverMouthChagres + (4*cell.distToSkeletonChagres))); 
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y + " " + (cell.distToRiverMouthChagres + Mathf.Pow(cell.distToSkeletonChagres, 1.5f))); 
         }
         writer.Close();
         return gridNext;
