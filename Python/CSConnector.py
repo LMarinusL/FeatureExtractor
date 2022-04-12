@@ -171,24 +171,86 @@ def predict(alg, Xtrain, ytrain, Xpredict):
 forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
 y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
 
-"""
-print('SVR-predicting: ')
-regr = SVR(C=1.0, epsilon=0.2)
-y_predSVR = predict(regr, X_traino2, y_traino2, Xt2)
+def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2):
+    print('SVR-predicting: ')
+    regr = SVR(C=1.0, epsilon=0.2)
+    y_predSVR = predict(regr, X_traino2, y_traino2, Xt2)
 
 
-print('Gaussian-predicting: ')
-kernel = DotProduct() + WhiteKernel()
-GPR = GaussianProcessRegressor(kernel=kernel, random_state=0)
-y_predGPR = predict(GPR, X_traino2, y_traino2, Xt2)
+    print('Gaussian-predicting: ')
+    kernel = DotProduct() + WhiteKernel()
+    GPR = GaussianProcessRegressor(kernel=kernel, random_state=0)
+    y_predGPR = predict(GPR, X_traino2, y_traino2, Xt2)
 
 
-print('MLPR-predicting: ')
-MLPR = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
-y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt2)
-print('predicted')
-"""
+    print('MLPR-predicting: ')
+    MLPR = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
+    y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt2)
+    print('predicted')
 
+    forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
+    y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
+
+    plt.rcParams.update({'font.size': 8})
+    fig5, ax = plt.subplots(nrows=1, ncols=5, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc = ax[0].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(actual),
+                cmap=cm, vmin=-2, vmax=2)
+    ax[0].set_title('Actual')
+    ax[0].set_xlabel("x coordinate")
+    ax[0].set_ylabel("y coordinate")
+    ax[0].tick_params(labelsize=12)
+    sc = ax[1].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(y_predSVR),
+                cmap=cm, vmin=-2, vmax=2)
+    cbar = fig5.colorbar(sc)
+    cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
+    cbar.ax.get_yaxis().labelpad = 20
+    ax[1].set_title('SVR')
+    ax[1].set_xlabel("x coordinate")
+    ax[1].tick_params(labelsize=12)
+    sc = ax[2].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(y_predGPR),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[2].set_title('GPR')
+    ax[2].set_xlabel("x coordinate")
+    ax[2].tick_params(labelsize=12)
+    sc = ax[3].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(y_predMLPR),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[3].set_title('MLPR')
+    ax[3].set_xlabel("x coordinate")
+    ax[3].tick_params(labelsize=12)
+    sc = ax[4].scatter(Xt['x'], Xt['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(y_pred),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[4].set_title('RFR')
+    ax[4].set_xlabel("x coordinate")
+    ax[4].tick_params(labelsize=12)
+
+    fig5.subplots_adjust(wspace=0.03, hspace=0)
+    fig5.suptitle('Different algorithms')
+    plt.draw()
+    return
+    
+#predictOtherAlgs(yt, Xt, X_traino2, y_traino2, Xt2)
 ###################################
 # RF IMPORTANCES
 ###############################
@@ -230,23 +292,8 @@ X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo3, yo3, test_size=
 forest5 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 print('rf-predicting less features: ')
 y_predXS = predict(forest5, X_traino2, y_traino2, Xt3)
-"""
-print('SVR-predicting: ')
-regr = SVR(C=1.0, epsilon=0.2)
-y_predSVR = predict(regr, X_traino2, y_traino2, Xt3)
 
-
-print('Gaussian-predicting: ')
-kernel = DotProduct() + WhiteKernel()
-GPR = GaussianProcessRegressor(kernel=kernel, random_state=0)
-y_predGPR = predict(GPR, X_traino2, y_traino2, Xt3)
-
-
-print('MLPR-predicting: ')
-MLPR = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
-y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt3)
-print('predicted')
-"""
+predictOtherAlgs(yt, Xt, X_traino2, y_traino2, Xt3)
 ##################################
 # CV
 ########################################
@@ -491,6 +538,8 @@ def plotMaps1Binned(actual, pred, title):
     fig5.suptitle(title)
     plt.draw()
     return
+
+
 
 #plotMaps1Binned(yt, y_pred, 'Binned')
 
