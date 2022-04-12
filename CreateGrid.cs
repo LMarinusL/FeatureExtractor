@@ -135,16 +135,16 @@ public class CreateGrid : MonoBehaviour
 
         }
         skeleton = new Skeleton();
-        int index1 = getIndexFromLoc(296, 192);
+        int index1 = getIndexFromLoc(299, 194);
         int index2 = getIndexFromLoc(232, 625);
         int index3 = getIndexFromLoc(167, 483);
         int index4 = getIndexFromLoc(155, 460);
-        List<Vector3> list1 = getSkeletonList(grid, index2, 4);
-        List<Vector3> list2 = getSkeletonList(grid, index3, 4);
-        List<Vector3> list3 = getSkeletonList(grid, index4, 4);
+        List<Vector3> list1 = getSkeletonList(grid, index2, 1);
+        List<Vector3> list2 = getSkeletonList(grid, index3, 1);
+        List<Vector3> list3 = getSkeletonList(grid, index4, 1);
         list1.AddRange(list2);
         list1.AddRange(list3);
-        List<Vector3> list4 = getSkeletonList(grid, index1, 4);
+        List<Vector3> list4 = getSkeletonList(grid, index1, 1);
         skeleton.addListP(list1, dischargeP);
         skeleton.addListC(list4, dischargeC);
         getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
@@ -453,7 +453,7 @@ public class CreateGrid : MonoBehaviour
         int[] array2 = new int[discharge];
         while (ind2 < discharge)
         {
-            array2[ind2] = getIndexFromLoc(296, 192);
+            array2[ind2] = getIndexFromLoc(299, 194);
             ind2++;
         }
         int[] result2 = getRunoffPatterns(grid, array2, 500, 20f);
@@ -915,18 +915,19 @@ public class CreateGrid : MonoBehaviour
         while (goToNext == true)
         {
             bestIndex = 0;
-            highestScore = 0;
+            highestScore = 999999f;
             List<Cell> surroundingCells = getSurroundingCells(currentCell, grid, dist, 8);
             foreach (Cell candidate in surroundingCells)
             {
-                if (candidate.averageRunoff1 > highestScore
+                if (candidate.y < highestScore
                     && listIndices.Contains(candidate.index) == false
-                   // && Vector3.Distance(candidate.position, startCell.position) > distToStart
-                    && candidate.y < (currentCell.y + 1f)
+                    && candidate.y != 0
+                    //&& Vector3.Distance(candidate.position, startCell.position) > (distToStart + 2)
+                    //&& candidate.y < (currentCell.y + 1f)
                     && candidate.z < startCell.z // hardcode downward for z, only for Chagres
                     ) 
                 {
-                    highestScore = candidate.averageRunoff1;
+                    highestScore = candidate.y;
                     bestIndex = candidate.index;
                 }
             }

@@ -760,9 +760,9 @@ def plotOnYears(property, min, max):
     fig5.suptitle(property)
     plt.draw()
 
-#plotOnYears('hdifference', -2, 2)
-#plotOnYears('height', 50, 70)
-#plotOnYears('distChagres', 0, 40)
+plotOnYears('hdifference', -2, 2)
+plotOnYears('height', 50, 70)
+plotOnYears('distChagres', 0, 40)
 
 
 
