@@ -171,25 +171,31 @@ def predict(alg, Xtrain, ytrain, Xpredict):
 forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
 y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
 
-def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2):
+def rmse(actual, pred):
+    return np.sqrt(((pred - actual) ** 2).mean())
+
+def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
     print('SVR-predicting: ')
     regr = SVR(C=1.0, epsilon=0.2)
     y_predSVR = predict(regr, X_traino2, y_traino2, Xt2)
-
+    RMSE_SVR = rmse(actual, y_predSVR)
 
     print('Gaussian-predicting: ')
     kernel = DotProduct() + WhiteKernel()
     GPR = GaussianProcessRegressor(kernel=kernel, random_state=0)
     y_predGPR = predict(GPR, X_traino2, y_traino2, Xt2)
+    RMSE_GPR = rmse(actual, y_predGPR)
 
 
     print('MLPR-predicting: ')
     MLPR = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
     y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt2)
-    print('predicted')
+    RMSE_MLPR = rmse(actual, y_predMLPR)
 
     forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
     y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
+    RMSE_RFR = rmse(actual, y_pred)
+
 
     plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=1, ncols=5, sharex=True, sharey=True,
@@ -214,7 +220,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2):
     cbar = fig5.colorbar(sc)
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
-    ax[1].set_title('SVR')
+    ax[1].set_title('SVR  RMSE: '+ str(RMSE_SVR))
     ax[1].set_xlabel("x coordinate")
     ax[1].tick_params(labelsize=12)
     sc = ax[2].scatter(Xt['x'], Xt['y'],
@@ -223,7 +229,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2):
             s = 20,
             c=(y_predGPR),
                 cmap=cm,  vmin=-2, vmax=2)
-    ax[2].set_title('GPR')
+    ax[2].set_title('GPR  RMSE: '+ str(RMSE_GPR))
     ax[2].set_xlabel("x coordinate")
     ax[2].tick_params(labelsize=12)
     sc = ax[3].scatter(Xt['x'], Xt['y'],
@@ -232,7 +238,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2):
             s = 20,
             c=(y_predMLPR),
                 cmap=cm,  vmin=-2, vmax=2)
-    ax[3].set_title('MLPR')
+    ax[3].set_title('MLPR  RMSE: '+ str(RMSE_MLPR))
     ax[3].set_xlabel("x coordinate")
     ax[3].tick_params(labelsize=12)
     sc = ax[4].scatter(Xt['x'], Xt['y'],
@@ -241,16 +247,16 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2):
             s = 20,
             c=(y_pred),
                 cmap=cm,  vmin=-2, vmax=2)
-    ax[4].set_title('RFR')
+    ax[4].set_title('RFR  RMSE: '+ str(RMSE_RFR))
     ax[4].set_xlabel("x coordinate")
     ax[4].tick_params(labelsize=12)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
-    fig5.suptitle('Different algorithms')
+    fig5.suptitle(title)
     plt.draw()
     return
     
-#predictOtherAlgs(yt, Xt, X_traino2, y_traino2, Xt2)
+#predictOtherAlgs(yt, Xt, X_traino2, y_traino2, Xt2, 'all features')
 ###################################
 # RF IMPORTANCES
 ###############################
@@ -293,7 +299,20 @@ forest5 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_sam
 print('rf-predicting less features: ')
 y_predXS = predict(forest5, X_traino2, y_traino2, Xt3)
 
-predictOtherAlgs(yt, Xt, X_traino2, y_traino2, Xt3)
+#predictOtherAlgs(yt, Xt, X_traino2, y_traino2, Xt3, 'Only highest impurity features')
+############################################
+# tests with range of features
+###########################################
+#0-year 1-interval 2-x 3-y 4-depth 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-random 27-averageSlope 28-index 29-height 30-totalDistChagres
+col_studyP = [ 'depth', 'hrelative3', 'slope', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'averageSlope', 'totalDistChagres']
+XoP = dfTrain[col_studyP]
+yoP = dfTrain[param_study]
+XtP = dfTest[col_studyP]
+
+predictOtherAlgs(yt, Xt, XoP, yoP, XtP, 'Param selection')
+
+
+
 ##################################
 # CV
 ########################################
