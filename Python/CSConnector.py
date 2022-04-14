@@ -80,14 +80,15 @@ col_study = ['year','interval','x','y','depth',  'hrelative1', 'hrelative2', 'hr
 param_study = 'hdifference'
 
 #[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970]
-
 dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
 dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+
 Xt = dfTest[col_study]
 yt = dfTest[param_study]
 
+print(yt.max())
 
 #######################
 # BOXPLOT OF DATA
@@ -159,7 +160,7 @@ param_study = 'hdifference'
 Xo2 = dfTrain[col_study2]
 yo2 = dfTrain[param_study]
 Xt2 = dfTest[col_study2]
-yt = dfTest[param_study]
+yt = dfTest[param_study].clip(upper=2.5)
 X_traino2, X_testo2, y_traino2, y_testo2 = train_test_split(Xo2, yo2, test_size=0.3, random_state=42)
 
 def predict(alg, Xtrain, ytrain, Xpredict):
@@ -171,14 +172,15 @@ def predict(alg, Xtrain, ytrain, Xpredict):
 forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
 y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
 
-def rmse(actual, pred):
-    return np.sqrt(((pred - actual) ** 2).mean())
+
+def rmse(actual, pred, max):
+    return np.sqrt(((np.clip(pred, -5, max) - np.clip(actual, -5, max)) ** 2).mean())
 
 def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
     print('SVR-predicting: ')
     regr = SVR(C=1.0, epsilon=0.2)
     y_predSVR = predict(regr, X_traino2, y_traino2, Xt2)
-    RMSE_SVR = rmse(actual, y_predSVR)
+    RMSE_SVR = rmse(actual, y_predSVR, 2)
     """
     print('Gaussian-predicting: ')
     kernel = DotProduct() + WhiteKernel()
@@ -190,11 +192,11 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
     print('MLPR-predicting: ')
     MLPR = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
     y_predMLPR = predict(MLPR, X_traino2, y_traino2, Xt2)
-    RMSE_MLPR = rmse(actual, y_predMLPR)
+    RMSE_MLPR = rmse(actual, y_predMLPR, 2)
 
     forest3 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
     y_pred = predict(forest3, X_traino2, y_traino2, Xt2)
-    RMSE_RFR = rmse(actual, y_pred)
+    RMSE_RFR = rmse(actual, y_pred, 2)
 
 
     plt.rcParams.update({'font.size': 8})
@@ -304,63 +306,38 @@ col_study_No_Curvature = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', '
 col_study_No_hrelative = [ 'depth', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'averageSlope', 'totalDistChagres']
 col_study_No_skeleton = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge', 'inflowChagres', 'averageSlope']
 col_study_No_runoff = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'averageSlope', 'totalDistChagres']
-
+col_study_handpicked = [  'depth',  'hrelative2', 'slope', 'aspect','curvatureM','averageRunoff2', 'averageRunoff3','riverLengthChagres', 'distChagres', 'averageSlope', 'inflowChagres','totalDistChagres']
+"""
 forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,27,30]]
+
 
 indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
 print(featuresP[indicesP])
 title = 'params number: '+ str(indicesP.size)
 plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
 
-for i in range(10):
-    featuresP = featuresP[indicesP[1:]]
+for i in range(2):
+    featuresP = featuresP[indicesP[4:]]
     forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
     indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
     print(featuresP[indicesP])
     title = 'params number: '+ str(indicesP.size)
     plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
-
-
-
 """
-col_study_best_6 = featuresP[indicesP[6:-1]]
-col_study_best_7 = featuresP[indicesP[7:-1]]
-col_study_best_8 = featuresP[indicesP[8:-1]]
-col_study_best_9 = featuresP[indicesP[9:-1]]
-col_study_best_10 = featuresP[indicesP[10:-1]]
-col_study_best_11 = featuresP[indicesP[11:-1]]
-col_study_best_12 = featuresP[indicesP[12:-1]]
-col_study_best_13 = featuresP[indicesP[13:-1]]
-col_study_best_14 = featuresP[indicesP[14:-1]]
-col_study_best_15 = featuresP[indicesP[15:-1]]
-col_study_best_16 = featuresP[indicesP[16:-1]]
-col_study_best_17 = featuresP[indicesP[17:-1]]
-col_study_best_18 = featuresP[indicesP[18:-1]]
+dfTestNew10 = dfTest.replace('inflowChagres',10)
+dfTestNew20 = dfTest.replace('inflowChagres',20)
+dfTestNew30 = dfTest.replace('inflowChagres',30)
+dfTestNew40 = dfTest.replace('inflowChagres',40)
+dfTestNew50 = dfTest.replace('inflowChagres',50)
+
+plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTestNew10, 'inflow 10')
+plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTestNew20, 'inflow 20')
+plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTestNew30, 'inflow 30')
+plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTestNew40, 'inflow 40')
+plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTestNew50, 'inflow 50')
 
 
-
-
-#plotSelection(col_study_All_Chagres, yt, Xt, dfTrain, dfTest, 'param col_study_All_Chagres')
-#plotSelection(col_study_No_Curvature, yt, Xt, dfTrain, dfTest, 'param col_study_No_Curvature')
-#plotSelection(col_study_No_hrelative, yt, Xt, dfTrain, dfTest, 'param col_study_No_hrelative')
-#plotSelection(col_study_No_skeleton, yt, Xt, dfTrain, dfTest, 'param col_study_No_skeleton')
-#plotSelection(col_study_No_runoff, yt, Xt, dfTrain, dfTest, 'param col_study_No_runoff')
-
-plotSelection(col_study_best_6, yt, Xt, dfTrain, dfTest, 'param col_study_best_6')
-plotSelection(col_study_best_7, yt, Xt, dfTrain, dfTest, 'param col_study_best_7')
-plotSelection(col_study_best_8, yt, Xt, dfTrain, dfTest, 'param col_study_best_8')
-plotSelection(col_study_best_9, yt, Xt, dfTrain, dfTest, 'param col_study_best_9')
-plotSelection(col_study_best_10, yt, Xt, dfTrain, dfTest, 'param col_study_best_10')
-plotSelection(col_study_best_11, yt, Xt, dfTrain, dfTest, 'param col_study_best_11')
-plotSelection(col_study_best_12, yt, Xt, dfTrain, dfTest, 'param col_study_best_12')
-plotSelection(col_study_best_13, yt, Xt, dfTrain, dfTest, 'param col_study_best_13')
-plotSelection(col_study_best_14, yt, Xt, dfTrain, dfTest, 'param col_study_best_14')
-plotSelection(col_study_best_15, yt, Xt, dfTrain, dfTest, 'param col_study_best_15')
-plotSelection(col_study_best_16, yt, Xt, dfTrain, dfTest, 'param col_study_best_16')
-plotSelection(col_study_best_17, yt, Xt, dfTrain, dfTest, 'param col_study_best_17')
-plotSelection(col_study_best_18, yt, Xt, dfTrain, dfTest, 'param col_study_best_18')
-"""
 
 
 
