@@ -136,7 +136,7 @@ public class CreateGrid : MonoBehaviour
         }
         skeleton = new Skeleton();
         int index1 = getIndexFromLoc(299, 194);
-        int index2 = getIndexFromLoc(232, 625);
+        int index2 = getIndexFromLoc(266, 659);
         int index3 = getIndexFromLoc(167, 483);
         int index4 = getIndexFromLoc(155, 460);
         List<Vector3> list1 = getSkeletonList(grid, index2, 1);
@@ -464,7 +464,7 @@ public class CreateGrid : MonoBehaviour
         int[] array3 = new int[discharge2*3];
         while (ind3 < discharge2 * 3)
         {
-            array3[ind3] = getIndexFromLoc(232, 625);
+            array3[ind3] = getIndexFromLoc(266, 659);
             ind3++;
             array3[ind3] = getIndexFromLoc(167, 483);
             ind3++;
@@ -961,7 +961,7 @@ public class CreateGrid : MonoBehaviour
         foreach (Cell cell in gridCurrent.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y + " " + (cell.distToRiverMouthChagres + Mathf.Pow(cell.distToSkeletonChagres, 1.5f))); 
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthPequeni + " " + cell.riverDischargePequeni + " " + cell.distToSkeletonPequeni + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y + " " + (cell.distToRiverMouthChagres + Mathf.Pow(cell.distToSkeletonChagres, 1.5f))); 
         }
         writer.Close();
         return gridNext;
@@ -1016,7 +1016,7 @@ public class CreateGrid : MonoBehaviour
         latestGrid = gridPred;
         append("Assets/Output/outputGridPredParams.txt", false, meshGenerator.vertexFilePred, predYear, interval, 50f, dischargeC, dischargeP, gridPred, 0f, 1, "prediction", false);
         latestYear = predYear;
-
+        /*
         List<Cell> cellsList = new List<Cell>();
         foreach (Cell cell in gridPred.cells)
         {
@@ -1034,6 +1034,7 @@ public class CreateGrid : MonoBehaviour
             sumPred += (gridPred.cells[cell.index].y - current.cells[cell.index].y);
         }
         Debug.Log(" total volume chagre pred: " + sumPred);
+        */
         
     }
 
