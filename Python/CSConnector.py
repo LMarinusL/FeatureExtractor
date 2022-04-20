@@ -76,14 +76,20 @@ from sklearn.ensemble import RandomForestRegressor
 
 ################
 #0-year 1-interval 2-x 3-y 4-depth 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-profileCurvature 27-planformCurvature
-col_study = ['year','interval','x','y','depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random', 'averageSlope', 'index', 'totalDistChagres']
+col_study = ['year','interval','x','y','depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni', 'random', 'averageSlope', 'index', 'totalDistChagres','totalDistPequeni']
 param_study = 'hdifference'
 
 #[df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970]
-dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+"""dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
 dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+"""
+
+dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+Xo = dfTrain[col_study]
+yo = dfTrain[param_study]
+dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
 
 Xt = dfTest[col_study]
 yt = np.clip(dfTest[param_study], -5, 2)
@@ -96,9 +102,15 @@ print(yt.max())
 # BOXPLOT OF DATA
 #######################
 
-df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+#df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+#df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+#df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+
+df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+
+
 
 yt97 = df97[param_study] * 0.6
 yt08 = df08[param_study]
@@ -108,55 +120,110 @@ print(" full volume 97-08 diff: "+str(yt97.sum()))
 print(" full volume 08-12 diff: "+str(yt08.sum()))
 print(" full volume 12-18 diff: "+str(yt12.sum()))
 
-
-
-print(df12.head())
 fig4, ax4 = plt.subplots()
 ax4.set_title('Annual sedimentation')
 ax4.boxplot([df97['hdifference'],df08['hdifference'],df12['hdifference']], showfliers=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
 plt.draw()
 
-plt.rcParams.update({'font.size': 20})
-fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                    figsize=(20, 10))
-cm = plt.cm.get_cmap('RdYlBu')
-sc = ax[0].scatter(df97['x'], df97['y'],
-        linewidths=1, alpha=.7,
-            edgecolor='none',
-        s = 20,
-        c=(df97['hdifference']),
-            cmap=cm, vmin=-2, vmax=2)
-ax[0].set_title('08')
-ax[0].set_xlabel("x coordinate")
-ax[0].set_ylabel("y coordinate")
-ax[0].tick_params(labelsize=12)
-sc = ax[1].scatter(df08['x'], df08['y'],
-        linewidths=1, alpha=.7,
-            edgecolor='none',
-        s = 20,
-        c=(df08['hdifference']),
-            cmap=cm, vmin=-2, vmax=2)
-cbar = fig5.colorbar(sc)
-cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
-cbar.ax.get_yaxis().labelpad = 20
-ax[1].set_title('12')
-ax[1].set_xlabel("x coordinate")
-ax[1].tick_params(labelsize=12)
-sc = ax[2].scatter(df12['x'], df12['y'],
-        linewidths=1, alpha=.7,
-            edgecolor='none',
-        s = 20,
-        c=(df12['hdifference']),
-            cmap=cm,  vmin=-2, vmax=2)
-ax[2].set_title('18')
-ax[2].set_xlabel("x coordinate")
-ax[2].tick_params(labelsize=12)
+print(df12.head())
+def plotHeightForYears():
 
-fig5.subplots_adjust(wspace=0.03, hspace=0.05)
-fig5.suptitle('08, 12, 18 levels' )
-plt.draw()
 
+    plt.rcParams.update({'font.size': 20})
+    fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc = ax[0].scatter(df97['x'], df97['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df97['height']),
+                cmap=cm, vmin=60, vmax=70)
+    ax[0].set_title('97')
+    ax[0].set_xlabel("x coordinate")
+    ax[0].set_ylabel("y coordinate")
+    ax[0].tick_params(labelsize=12)
+    sc = ax[1].scatter(df08['x'], df08['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df08['height']),
+                cmap=cm, vmin=60, vmax=70)
+    cbar = fig5.colorbar(sc)
+    cbar.ax.set_ylabel('bed level height [m]', rotation=270)
+    cbar.ax.get_yaxis().labelpad = 20
+    ax[1].set_title('08')
+    ax[1].set_xlabel("x coordinate")
+    ax[1].tick_params(labelsize=12)
+    sc = ax[2].scatter(df12['x'], df12['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df12['height']),
+                cmap=cm,  vmin=60, vmax=70)
+    ax[2].set_title('12')
+    ax[2].set_xlabel("x coordinate")
+    ax[2].tick_params(labelsize=12)
+    sc = ax[3].scatter(df12['x'], df12['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df12['height'] + df12['hdifference']),
+                cmap=cm,  vmin=60, vmax=70)
+    ax[3].set_title('18')
+    ax[3].set_xlabel("x coordinate")
+    ax[3].tick_params(labelsize=12)
+
+    fig5.subplots_adjust(wspace=0.03, hspace=0.05)
+    fig5.suptitle('Height over the yeears' )
+    plt.draw()
+plotHeightForYears()
+
+print(df12.head())
+def plotDiffForYears():
+
+    plt.rcParams.update({'font.size': 20})
+    fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc = ax[0].scatter(df97['x'], df97['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df97['hdifference']),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[0].set_title('97')
+    ax[0].set_xlabel("x coordinate")
+    ax[0].set_ylabel("y coordinate")
+    ax[0].tick_params(labelsize=12)
+    sc = ax[1].scatter(df08['x'], df08['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df08['hdifference']),
+                cmap=cm, vmin=-2, vmax=2)
+    cbar = fig52.colorbar(sc)
+    cbar.ax.set_ylabel('difference in height [m]', rotation=270)
+    cbar.ax.get_yaxis().labelpad = 20
+    ax[1].set_title('08')
+    ax[1].set_xlabel("x coordinate")
+    ax[1].tick_params(labelsize=12)
+    sc = ax[2].scatter(df12['x'], df12['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df12['hdifference']),
+                cmap=cm,  vmin=-2, vmax=2)
+    ax[2].set_title('12')
+    ax[2].set_xlabel("x coordinate")
+    ax[2].tick_params(labelsize=12)
+
+
+    fig52.subplots_adjust(wspace=0.03, hspace=0.05)
+    fig52.suptitle('Difference over the yeears' )
+    plt.draw()
+plotDiffForYears()
 
 
 
@@ -164,7 +231,7 @@ plt.draw()
 # TRAINING ALGORITHMS
 ######################
 #0-year 1-interval 2-x 3-y 4-depth 5-hdifference 6-hrelative1 7-hrelative2 8-hrelative3 9-slope 10-aspect 11-curvatureS 12-curvatureM 13-curvatureL 14-averageRunoff1 15-averageRunoff2 16-averageRunoff3 17-discharge 18-skeletonAngleChagres 19-riverLengthChagres 20-inflowChagres 21-distChagres 22-skeletonAnglePequeni 23-riverLengthPequeni 24-inflowPequeni 25-distPequeni 26-random 27-averageSlope 28-index 29-height 30-totalDistChagres
-col_study2 = [ 'depth', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'averageSlope', 'totalDistChagres']
+col_study2 = [ 'depth', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'averageSlope', 'totalDistChagres','skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni','totalDistPequeni']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
 
@@ -264,7 +331,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
 # RF IMPORTANCES
 ###############################
 forestImportance = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21, 26, 27, 30]]
+features=df.columns[[4,8,9, 11, 12, 13, 14,15,16,17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 30, 31]]
 
 def plotImportances(imp, feat, Xtrain, ytrain):
     imp.fit(Xtrain, ytrain)
@@ -316,7 +383,7 @@ col_study_No_Curvature = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', '
 col_study_No_hrelative = [ 'depth', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'averageSlope', 'totalDistChagres']
 col_study_No_skeleton = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge', 'inflowChagres', 'averageSlope']
 col_study_No_runoff = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'averageSlope', 'totalDistChagres']
-col_study_handpicked = [  'depth', 'aspect','curvatureM','averageRunoff2', 'averageRunoff3','riverLengthChagres', 'distChagres', 'averageSlope','totalDistChagres']
+col_study_handpicked = [  'depth', 'aspect','curvatureM','averageRunoff2', 'averageRunoff3','riverLengthPequeni', 'distPequeni', 'averageSlope','totalDistPequeni']
 """
 forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,27,30]]
