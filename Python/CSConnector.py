@@ -86,10 +86,10 @@ yo = dfTrain[param_study]
 dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 """
 
-dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -2][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 
 Xt = dfTest[col_study]
 yt = np.clip(dfTest[param_study], -5, 2)
@@ -106,9 +106,14 @@ print(yt.max())
 #df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 #df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
-df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+"""df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
 df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
 df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
+"""
+
+df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -2][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -2][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 
 
 
@@ -183,7 +188,7 @@ plotHeightForYears()
 print(df12.head())
 def plotDiffForYears():
 
-    plt.rcParams.update({'font.size': 20})
+    plt.rcParams.update({'font.size': 10})
     fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlBu')
@@ -410,10 +415,6 @@ dfTestNew40 = dfTest.assign(inflowChagres=40)
 dfTestNew50 = dfTest.assign(inflowChagres=50)
 """
 plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTest, 'handpicked')
-
-
-
-
 
 
 
@@ -936,6 +937,105 @@ def plotOnYears(property, min, max):
 #plotOnYears('hdifference', -2, 2)
 #plotOnYears('height', 50, 70)
 #plotOnYears('distChagres', 0, 40)
+
+
+##################################
+# PROB
+########################################
+
+def probSVR(iter, limit, col_study, dfTrain, dfTest):
+    XoTrain = dfTrain[col_study]
+    yoTrain = dfTrain[param_study]
+    XtTest = dfTest[col_study]
+
+    print('computing probabilities')
+    values = [0] *dfTest['y'].size
+    for i in range(iter):
+        algNew = SVR(C=1.0, epsilon=0.2)
+        y_pred = predict(algNew, XoTrain, yoTrain, XtTest)
+        for i in range(y_pred.size):
+            if y_pred[i] > limit:
+                values[i] = values[i] + 1
+    return values
+
+def probRFR(iter, limit, col_study, dfTrain, dfTest):
+    XoTrain = dfTrain[col_study]
+    yoTrain = dfTrain[param_study]
+    XtTest = dfTest[col_study]
+
+    print('computing probabilities')
+    values = [0] *dfTest['y'].size
+    for i in range(iter):
+        algNew = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
+        y_pred = predict(algNew, XoTrain, yoTrain, XtTest)
+        for i in range(y_pred.size):
+            if y_pred[i] > limit:
+                values[i] = values[i] + 1
+    return values
+
+def probMLPR(iter, limit, col_study, dfTrain, dfTest):
+    XoTrain = dfTrain[col_study]
+    yoTrain = dfTrain[param_study]
+    XtTest = dfTest[col_study]
+
+    print('computing probabilities')
+    values = [0] *dfTest['y'].size
+    for i in range(iter):
+        algNew = MLPRegressor(alpha=1e-05, random_state=1, max_iter=500, learning_rate='adaptive', solver='sgd')
+        y_pred = predict(algNew, XoTrain, yoTrain, XtTest)
+        for i in range(y_pred.size):
+            if y_pred[i] > limit:
+                values[i] = values[i] + 1
+    return values
+
+
+def plotProb(limit, values, dfTest, title):        
+    X_arr = dfTest['x']
+    Y_arr = dfTest['y']
+    Diff_arr = dfTest['hdifference'].to_numpy()
+    ActualValues = [0] *dfTest['y'].size
+    margin = 0.4
+    for i in range(Diff_arr.size):
+        if Diff_arr[i] > (limit + margin):
+            ActualValues[i] = ActualValues[i] + 1
+
+    plt.rcParams.update({'font.size': 8})
+    fig5, ax = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('binary')
+    sc = ax[0].scatter(X_arr, Y_arr,
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 10,
+            c=(values),
+                cmap=cm, vmin=-2, vmax=2)
+    subtitle = 'Probability of sedimentation above: ' + str(limit)
+    ax[0].set_title(subtitle)
+    ax[0].set_xlabel("x coordinate")
+    ax[0].set_ylabel("y coordinate")
+    ax[0].tick_params(labelsize=12)    
+    sc = ax[1].scatter(X_arr, Y_arr,
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 10,
+            c=(ActualValues),
+                cmap=cm, vmin=-2, vmax=2)
+    ax[1].set_title('Actual')
+    ax[1].set_xlabel("x coordinate")
+    ax[1].set_ylabel("y coordinate")
+    ax[1].tick_params(labelsize=12)
+   
+    fig5.subplots_adjust(wspace=0.03, hspace=0)
+    fig5.suptitle(title)
+    plt.draw()
+    return
+
+
+valuesRFR = probRFR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
+plotProb(0.5, valuesRFR, dfTest, 'RFR')
+
+valuesSVR = probSVR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
+plotProb(0.5, valuesSVR, dfTest, 'SVR')
 
 
 

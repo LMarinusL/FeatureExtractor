@@ -137,16 +137,19 @@ public class CreateGrid : MonoBehaviour
         skeleton = new Skeleton();
         int index1 = getIndexFromLoc(299, 194);
         int index2 = getIndexFromLoc(266, 659);
-        int index3 = getIndexFromLoc(167, 483);
-        int index4 = getIndexFromLoc(155, 460);
+        int index3 = getIndexFromLoc(167, 495);
+        int index4 = getIndexFromLoc(167, 483);
+        int index5 = getIndexFromLoc(155, 460);
         List<Vector3> list1 = getSkeletonList(grid, index2, 3);
         List<Vector3> list2 = getSkeletonList(grid, index3, 3);
         List<Vector3> list3 = getSkeletonList(grid, index4, 3);
+        List<Vector3> list4 = getSkeletonList(grid, index5, 3);
         list1.AddRange(list2);
         list1.AddRange(list3);
-        List<Vector3> list4 = getSkeletonList(grid, index1, 1);
+        list1.AddRange(list4);
+        List<Vector3> list5 = getSkeletonList(grid, index1, 1);
         skeleton.addListP(list1, dischargeP);
-        skeleton.addListC(list4, dischargeC);
+        skeleton.addListC(list5, dischargeC);
         getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
         getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
         return grid;
@@ -465,6 +468,8 @@ public class CreateGrid : MonoBehaviour
         while (ind3 < discharge2 * 3)
         {
             array3[ind3] = getIndexFromLoc(266, 659);
+            ind3++;
+            array3[ind3] = getIndexFromLoc(167, 495);
             ind3++;
             array3[ind3] = getIndexFromLoc(167, 483);
             ind3++;
