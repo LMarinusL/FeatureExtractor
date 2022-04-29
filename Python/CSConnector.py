@@ -389,9 +389,8 @@ col_study_No_hrelative = [ 'depth', 'slope', 'aspect', 'curvatureS','curvatureM'
 col_study_No_skeleton = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1','averageRunoff2', 'averageRunoff3','discharge', 'inflowChagres', 'averageSlope']
 col_study_No_runoff = [ 'depth',  'hrelative1', 'hrelative2', 'hrelative3', 'slope', 'aspect', 'curvatureS','curvatureM','curvatureL', 'discharge','skeletonAngleChagres', 'riverLengthChagres', 'inflowChagres', 'distChagres', 'averageSlope', 'totalDistChagres']
 col_study_handpicked = [  'depth', 'aspect','curvatureM','averageRunoff2', 'averageRunoff3','riverLengthPequeni', 'distPequeni', 'averageSlope','totalDistPequeni']
-"""
 forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
-featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,27,30]]
+featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,22,23,24,25,27,31]]
 
 
 indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
@@ -399,14 +398,13 @@ print(featuresP[indicesP])
 title = 'params number: '+ str(indicesP.size)
 plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
 
-for i in range(2):
-    featuresP = featuresP[indicesP[4:]]
+for i in range(1):
+    featuresP = featuresP[indicesP[1:]]
     forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
     indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
     print(featuresP[indicesP])
     title = 'params number: '+ str(indicesP.size)
     plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
-"""
 
 """dfTestNew10 = dfTest.assign(inflowChagres=10)
 dfTestNew20 = dfTest.assign(inflowChagres=20)
@@ -742,6 +740,9 @@ plotErrorHist(yt, y_pred)
 ####################
 
 forest6 = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 200, bootstrap= False)
+svrModel = SVR(C=1.0, epsilon=0.2)
+col_study_peq = [ 'depth', 'hrelative3','hrelative2', 'slope', 'curvatureL', 'averageRunoff1', 'averageRunoff2','averageSlope','riverLengthPequeni', 'distPequeni','totalDistPequeni']
+
 def predict(alg, Xtrain, ytrain, Xpredict):
     algorithm = make_pipeline(StandardScaler(), alg)
     algorithm.fit(Xtrain, ytrain)
@@ -749,10 +750,14 @@ def predict(alg, Xtrain, ytrain, Xpredict):
     return prediction
 
 dfpred = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridPredParams.txt', sep=" ")
-X_arr = dfpred[col_study2][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+X_arr = dfpred[col_study_peq][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 print("pred file read")
 
-pred = predict(forest6, Xo2, yo2, X_arr)
+dfTrainFull = sklearn.utils.resample(df[df.year < 2013][df.hdifference > -2][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+set_X_T = dfTrainFull[col_study_peq]
+set_y_T = dfTrainFull['hdifference']
+
+pred = predict(svrModel, set_X_T, set_y_T, X_arr)
 index_array = dfpred['index'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 x_array = dfpred['x'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 y_array = dfpred['y'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
@@ -836,9 +841,9 @@ def plotOnYears(property, min, max):
     df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
 
@@ -897,7 +902,7 @@ def plotOnYears(property, min, max):
     ax[1,0].set_xlabel("x coordinate")
     ax[1,0].set_ylabel("y coordinate")
     ax[1,0].tick_params(labelsize=12)
-    
+    """
     sc = ax[1,1].scatter(df26['x'], df26['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -928,7 +933,7 @@ def plotOnYears(property, min, max):
     ax[1,3].set_title('34')
     ax[1,3].set_xlabel("x coordinate")
     ax[1,3].tick_params(labelsize=12)
-    """
+    
     """
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle(property)
@@ -998,7 +1003,13 @@ def plotProb(limit, values, dfTest, title):
     for i in range(Diff_arr.size):
         if Diff_arr[i] > (limit + margin):
             ActualValues[i] = ActualValues[i] + 1
-
+    total = 0
+    for i in range(len(values)):
+        if values[i] == 0 & ActualValues[i] == 0:
+            total = total + 1
+        if values[i] != 0 & ActualValues[i] != 0:
+            total = total + 1
+    accuracy = total/len(values)
     plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True,
                                         figsize=(20, 10))
@@ -1009,7 +1020,7 @@ def plotProb(limit, values, dfTest, title):
             s = 10,
             c=(values),
                 cmap=cm, vmin=-2, vmax=2)
-    subtitle = 'Probability of sedimentation above: ' + str(limit)
+    subtitle = 'Probability of sedimentation above: ' + str(limit) + 'accuracy :' + str(accuracy)
     ax[0].set_title(subtitle)
     ax[0].set_xlabel("x coordinate")
     ax[0].set_ylabel("y coordinate")
@@ -1031,12 +1042,14 @@ def plotProb(limit, values, dfTest, title):
     return
 
 
-valuesRFR = probRFR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
+"""valuesRFR = probRFR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
 plotProb(0.5, valuesRFR, dfTest, 'RFR')
 
 valuesSVR = probSVR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
 plotProb(0.5, valuesSVR, dfTest, 'SVR')
 
+valuesSVR = probMLPR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
+plotProb(0.5, valuesSVR, dfTest, 'MPLR')"""
 
 
 
