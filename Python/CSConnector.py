@@ -393,7 +393,7 @@ forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 
 featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,22,23,24,25,27,31]]
 
 
-indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
+"""indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
 print(featuresP[indicesP])
 title = 'params number: '+ str(indicesP.size)
 plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
@@ -405,14 +405,14 @@ for i in range(1):
     print(featuresP[indicesP])
     title = 'params number: '+ str(indicesP.size)
     plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
-
+"""
 """dfTestNew10 = dfTest.assign(inflowChagres=10)
 dfTestNew20 = dfTest.assign(inflowChagres=20)
 dfTestNew30 = dfTest.assign(inflowChagres=30)
 dfTestNew40 = dfTest.assign(inflowChagres=40)
 dfTestNew50 = dfTest.assign(inflowChagres=50)
 """
-plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTest, 'handpicked')
+#plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTest, 'handpicked')
 
 
 
@@ -572,7 +572,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     plt.draw()
     return
 
-plotMaps2Sets(yt, y_pred, y_predXS)
+#plotMaps2Sets(yt, y_pred, y_predXS)
 
 
 ###################################
@@ -727,12 +727,12 @@ def plotErrorHist(actual, pred):
     plt.draw()
     return
 
-plotErrorHist(yt, y_pred)
+"""plotErrorHist(yt, y_pred)
 print(y_pred[89])
 np.random.shuffle(y_pred)
 print(y_pred[89])
 plotErrorHist(yt, y_pred)
-
+"""
 
 
 ####################
@@ -750,18 +750,22 @@ def predict(alg, Xtrain, ytrain, Xpredict):
     return prediction
 
 dfpred = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridPredParams.txt', sep=" ")
-X_arr = dfpred[col_study_peq][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+#X_arr = dfpred[col_study_peq][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+X_arr = dfpred[col_study_peq][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525].to_numpy()
 print("pred file read")
-
 dfTrainFull = sklearn.utils.resample(df[df.year < 2013][df.hdifference > -2][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 set_X_T = dfTrainFull[col_study_peq]
 set_y_T = dfTrainFull['hdifference']
 
 pred = predict(svrModel, set_X_T, set_y_T, X_arr)
-index_array = dfpred['index'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
-x_array = dfpred['x'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
-y_array = dfpred['y'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
-d_array = dfpred['height'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+#index_array = dfpred['index'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+#x_array = dfpred['x'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+#y_array = dfpred['y'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+#d_array = dfpred['height'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+index_array = dfpred['index'][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525].to_numpy()
+x_array = dfpred['x'][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525].to_numpy()
+y_array = dfpred['y'][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525].to_numpy()
+d_array = dfpred['height'][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525].to_numpy()
 print("pred made")
 
 
@@ -836,7 +840,7 @@ graph = graphviz.Source(dot_data, format='png')
 #################################
 
 def plotOnYears(property, min, max):
-    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    """    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
@@ -844,6 +848,17 @@ def plotOnYears(property, min, max):
     #df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    """
+
+    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+
 
 
 
@@ -902,7 +917,7 @@ def plotOnYears(property, min, max):
     ax[1,0].set_xlabel("x coordinate")
     ax[1,0].set_ylabel("y coordinate")
     ax[1,0].tick_params(labelsize=12)
-    """
+    
     sc = ax[1,1].scatter(df26['x'], df26['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -933,15 +948,15 @@ def plotOnYears(property, min, max):
     ax[1,3].set_title('34')
     ax[1,3].set_xlabel("x coordinate")
     ax[1,3].tick_params(labelsize=12)
-    
+    """
     """
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle(property)
     plt.draw()
 
-#plotOnYears('hdifference', -2, 2)
-#plotOnYears('height', 50, 70)
-#plotOnYears('distChagres', 0, 40)
+plotOnYears('hdifference', -2, 2)
+plotOnYears('height', 50, 70)
+plotOnYears('distChagres', 0, 40)
 
 
 ##################################
