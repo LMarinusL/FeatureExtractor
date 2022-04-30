@@ -731,8 +731,8 @@ def plotErrorHist(actual, pred):
 print(y_pred[89])
 np.random.shuffle(y_pred)
 print(y_pred[89])
-plotErrorHist(yt, y_pred)
-"""
+plotErrorHist(yt, y_pred)"""
+
 
 
 ####################
@@ -954,9 +954,9 @@ def plotOnYears(property, min, max):
     fig5.suptitle(property)
     plt.draw()
 
-plotOnYears('hdifference', -2, 2)
-plotOnYears('height', 50, 70)
-plotOnYears('distChagres', 0, 40)
+#plotOnYears('hdifference', -2, 2)
+#plotOnYears('height', 50, 70)
+#plotOnYears('distChagres', 0, 40)
 
 
 ##################################
@@ -1067,6 +1067,41 @@ valuesSVR = probMLPR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
 plotProb(0.5, valuesSVR, dfTest, 'MPLR')"""
 
 
+###################################
+# CUMULATIVE ERROR
+#####################################
+
+col_studyPe = [ 'depth', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'averageSlope', 'totalDistChagres','skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni','totalDistPequeni']
+#col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
+param_study = 'hdifference'
+
+XoPe = dfTrain[col_study2]
+yoPe = dfTrain[param_study]
+XtPe = dfTest[col_study2]
+X_trainoPe, X_testoPe, y_trainoPe, y_testoPe = train_test_split(Xo2, yo2, test_size=0.3, random_state=42)
+svrPe = SVR(C=1.0, epsilon=0.2)
+y_predPe = predict(svrPe, X_trainoPe, y_trainoPe, XtPe)
+
+def plotCumulative(pred, actual, bins, title):
+    plt.rcParams.update({'font.size': 8})
+    fig, ax = plt.subplots(nrows=1, ncols=2, sharey=False, tight_layout=True)
+    hist1 = ax[0].hist(
+           (pred - actual),
+           bins = bins)     
+    ax[0].set_title(title)
+    ax[0].set_xlabel("error")
+    ax[0].set_ylabel("distribution")
+    hist2 = ax[1].hist(
+           (pred - actual),
+           bins = bins, 
+           cumulative=True,
+           histtype='stepfilled')     
+    ax[1].set_title(title)
+    ax[1].set_xlabel("error")
+    ax[1].set_ylabel("distribution")
+plotCumulative(y_predPe, yt, 30, 'histo')
+
+plotErrorHist(yt, y_predPe)
 
 #################################
 plt.show()
