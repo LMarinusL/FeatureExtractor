@@ -1087,21 +1087,38 @@ def plotCumulative(pred, actual, bins, title):
     fig, ax = plt.subplots(nrows=1, ncols=2, sharey=False, tight_layout=True)
     hist1 = ax[0].hist(
            (pred - actual),
-           bins = bins)     
-    ax[0].set_title(title)
+           bins = bins,
+           cumulative=True,
+           histtype='stepfilled')     
     ax[0].set_xlabel("error")
     ax[0].set_ylabel("distribution")
     hist2 = ax[1].hist(
-           (pred - actual),
+           abs(pred- actual),
            bins = bins, 
            cumulative=True,
            histtype='stepfilled')     
-    ax[1].set_title(title)
-    ax[1].set_xlabel("error")
+    ax[1].set_xlabel("absolute error")
     ax[1].set_ylabel("distribution")
-plotCumulative(y_predPe, yt, 30, 'histo')
-
+    fig.suptitle(title)
+plotCumulative(y_predPe, yt, 30, 'Cumulative Error Distribution')
+print(max(y_predPe))
 plotErrorHist(yt, y_predPe)
 
+def plotActPred(actual, pred):
+
+    plt.rcParams.update({'font.size': 8})
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, tight_layout=True)
+    hist1 = ax.hist2d(actual,
+           pred,
+           bins = [80,80], 
+           cmap = "RdYlGn_r",
+           norm = colors.LogNorm(),
+           density = True)     
+    ax.set_title('prediction and actual values')
+    ax.set_xlabel("actual")
+    ax.set_ylabel("pred")
+plotActPred(yt, y_predPe)
+#plt.matshow(df.corr())
 #################################
 plt.show()
