@@ -68,6 +68,8 @@ import pathlib
 print(pathlib.Path(__file__).parent.resolve())
 df = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridFull.txt', sep=" ")
 print(df.head())
+print(df.columns)
+
 ##############
 
 from sklearn.model_selection import train_test_split
@@ -101,10 +103,17 @@ print(yt.max())
 #######################
 # BOXPLOT OF DATA
 #######################
+df12T = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10], n_samples=10000, random_state=None, stratify=None)
+df08T = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10], n_samples=10000, random_state=None, stratify=None)
+df97T = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10], n_samples=10000, random_state=None, stratify=None)
 
-#df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-#df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-#df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df12H = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489], n_samples=10000, random_state=None, stratify=None)
+df08H = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489], n_samples=10000, random_state=None, stratify=None)
+df97H = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489], n_samples=10000, random_state=None, stratify=None)
+
+df12C = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df08C = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df97C = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 """df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
 df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1888][df.x > 1535], n_samples=10000, random_state=None, stratify=None)
@@ -126,8 +135,34 @@ print(" full volume 08-12 diff: "+str(yt08.sum()))
 print(" full volume 12-18 diff: "+str(yt12.sum()))
 
 fig4, ax4 = plt.subplots()
-ax4.set_title('Annual sedimentation')
+ax4.set_title('Morphological changes for Rio Pequeni')
+ax4.set_ylim(-3,4)
 ax4.boxplot([df97['hdifference'],df08['hdifference'],df12['hdifference']], showfliers=False)
+ax4.violinplot([df97T['hdifference'],df08T['hdifference'],df12T['hdifference']], showextrema=False)
+plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
+plt.draw()
+
+fig4, ax4 = plt.subplots()
+ax4.set_title('Morphological changes for Rio Chagres')
+ax4.set_ylim(-3,4)
+ax4.boxplot([df97C['hdifference'],df08C['hdifference'],df12C['hdifference']], showfliers=False)
+ax4.violinplot([df97C['hdifference'],df08C['hdifference'],df12C['hdifference']], showextrema=False)
+plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
+plt.draw()
+
+fig4, ax4 = plt.subplots()
+ax4.set_title('Alhajuela Lake total morphological changes')
+ax4.set_ylim(-3,4)
+ax4.boxplot([df97T['hdifference'],df08T['hdifference'],df12T['hdifference']], showfliers=False)
+ax4.violinplot([df97T['hdifference'],df08T['hdifference'],df12T['hdifference']], showextrema=False)
+plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
+plt.draw()
+
+fig4, ax4 = plt.subplots()
+ax4.set_title('Alhajuela Lake main basin morphological changes')
+ax4.set_ylim(-3,4)
+ax4.boxplot([df97H['hdifference'],df08H['hdifference'],df12H['hdifference']], showfliers=False)
+ax4.violinplot([df97H['hdifference'],df08H['hdifference'],df12H['hdifference']], showextrema=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
 plt.draw()
 
@@ -192,35 +227,35 @@ def plotDiffForYears():
     fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlBu')
-    sc = ax[0].scatter(df97['x'], df97['y'],
+    sc = ax[0].scatter(df97T['x'], df97T['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
-            c=(df97['hdifference']),
+            s = 10,
+            c=(df97T['hdifference']),
                 cmap=cm,  vmin=-2, vmax=2)
-    ax[0].set_title('97')
+    ax[0].set_title('97-08')
     ax[0].set_xlabel("x coordinate")
     ax[0].set_ylabel("y coordinate")
     ax[0].tick_params(labelsize=12)
-    sc = ax[1].scatter(df08['x'], df08['y'],
+    sc = ax[1].scatter(df08T['x'], df08T['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
-            c=(df08['hdifference']),
+            s = 10,
+            c=(df08T['hdifference']),
                 cmap=cm, vmin=-2, vmax=2)
     cbar = fig52.colorbar(sc)
     cbar.ax.set_ylabel('difference in height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
-    ax[1].set_title('08')
+    ax[1].set_title('08-12')
     ax[1].set_xlabel("x coordinate")
     ax[1].tick_params(labelsize=12)
-    sc = ax[2].scatter(df12['x'], df12['y'],
+    sc = ax[2].scatter(df12T['x'], df12T['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 20,
-            c=(df12['hdifference']),
+            s = 10,
+            c=(df12T['hdifference']),
                 cmap=cm,  vmin=-2, vmax=2)
-    ax[2].set_title('12')
+    ax[2].set_title('12-18')
     ax[2].set_xlabel("x coordinate")
     ax[2].tick_params(labelsize=12)
 
@@ -1119,6 +1154,6 @@ def plotActPred(actual, pred):
     ax.set_xlabel("actual")
     ax.set_ylabel("pred")
 plotActPred(yt, y_predPe)
-#plt.matshow(df.corr())
+plt.matshow(df.corr())
 #################################
 plt.show()
