@@ -52,7 +52,7 @@ public class CreateGrid : MonoBehaviour
         latestYear = 2018;
         Debug.Log("Output written");
     }
-  
+
 
     void Update()
     {
@@ -62,7 +62,7 @@ public class CreateGrid : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            AppendPrediction(latestGrid,50f,50f, 4);
+            AppendPrediction(latestGrid, 50f, 50f, 4);
         }
     }
 
@@ -84,11 +84,11 @@ public class CreateGrid : MonoBehaviour
         triangles = meshGenerator.triangles;
         MATlist = MATalg.list;
         MATcol = MATlist.NewMATList;
-    } 
+    }
 
-    public Grid  InstantiateGrid(Mesh mesh, float dischargeC, float dischargeP)
+    public Grid InstantiateGrid(Mesh mesh, float dischargeC, float dischargeP)
     {
-        grid = new Grid(meshGenerator.Vector3Tofloat3Array(mesh.vertices), 
+        grid = new Grid(meshGenerator.Vector3Tofloat3Array(mesh.vertices),
             meshGenerator.Vector3Tofloat3Array(mesh.normals),
             mesh.triangles);
 
@@ -136,20 +136,17 @@ public class CreateGrid : MonoBehaviour
         }
         skeleton = new Skeleton();
         int index1 = getIndexFromLoc(299, 194);
-        int index2 = getIndexFromLoc(266, 659);
-        int index3 = getIndexFromLoc(167, 495);
-        int index4 = getIndexFromLoc(167, 483);
-        int index5 = getIndexFromLoc(155, 460);
-        List<Vector3> list1 = getSkeletonList(grid, index2, 3);
-        List<Vector3> list2 = getSkeletonList(grid, index3, 3);
-        List<Vector3> list3 = getSkeletonList(grid, index4, 3);
-        List<Vector3> list4 = getSkeletonList(grid, index5, 3);
+        int index2 = getIndexFromLoc(232, 625);
+        int index3 = getIndexFromLoc(167, 483);
+        int index4 = getIndexFromLoc(155, 460);
+        List<Vector3> list1 = getSkeletonList(grid, index2, 1);
+        List<Vector3> list2 = getSkeletonList(grid, index3, 1);
+        List<Vector3> list3 = getSkeletonList(grid, index4, 1);
         list1.AddRange(list2);
         list1.AddRange(list3);
-        list1.AddRange(list4);
-        List<Vector3> list5 = getSkeletonList(grid, index1, 1);
+        List<Vector3> list4 = getSkeletonList(grid, index1, 1);
         skeleton.addListP(list1, dischargeP);
-        skeleton.addListC(list5, dischargeC);
+        skeleton.addListC(list4, dischargeC);
         getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
         getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
         return grid;
@@ -162,9 +159,9 @@ public class CreateGrid : MonoBehaviour
         writer.WriteLine("x y h slope aspect RM1 RM2 RM3 relativeHeight averageSlope relativeAspect");
         foreach (Cell cell in grid.cells)
         {
-            if(cell.y == 0) { continue; }
-            writer.WriteLine(cell.x + " "+ cell.z + " " + cell.y + " " + 
-                cell.slope + " " + cell.aspect + " " 
+            if (cell.y == 0) { continue; }
+            writer.WriteLine(cell.x + " " + cell.z + " " + cell.y + " " +
+                cell.slope + " " + cell.aspect + " "
                 + DistTo(cell.x, cell.z, Correct2D(RM1, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM2, xCorrection, zCorrection))
                 + " " + DistTo(cell.x, cell.z, Correct2D(RM3, xCorrection, zCorrection))
@@ -175,7 +172,7 @@ public class CreateGrid : MonoBehaviour
         writer.Close();
     }
 
-    public float DistTo(float x, float y , Vector2 Point)
+    public float DistTo(float x, float y, Vector2 Point)
     {
         float dist = Mathf.Pow((Mathf.Pow(x - Point.x, 2f) + Mathf.Pow(y - Point.y, 2f)), 0.5f);
         return dist;
@@ -183,7 +180,7 @@ public class CreateGrid : MonoBehaviour
 
     public Vector2 Correct2D(Vector2 point, float xcor, float ycor)
     {
-        return new Vector2((point.x-xcor)/10 , (point.y - ycor) / 10);
+        return new Vector2((point.x - xcor) / 10, (point.y - ycor) / 10);
     }
 
     public List<int> getIndicesOfSurroundingCells(int index, Grid grid, int dist)
@@ -192,12 +189,12 @@ public class CreateGrid : MonoBehaviour
         int xLoc = getXFromIndex(index);
         int zLoc = getZFromIndex(index);
         List<int> indices = new List<int>();
-        if(xLoc > 0 + dist )
+        if (xLoc > 0 + dist)
         {
             indices.Add(getIndexFromLoc(xLoc - dist, zLoc));
             if (zLoc > 0 + dist)
             {
-                indices.Add(getIndexFromLoc(xLoc - dist, zLoc- dist));
+                indices.Add(getIndexFromLoc(xLoc - dist, zLoc - dist));
             }
             if (zLoc < (zSize - dist))
             {
@@ -206,13 +203,13 @@ public class CreateGrid : MonoBehaviour
         }
         if (zLoc > 0 + dist)
         {
-            indices.Add(getIndexFromLoc(xLoc , zLoc- dist));
+            indices.Add(getIndexFromLoc(xLoc, zLoc - dist));
         }
         if (zLoc < (zSize - dist))
         {
             indices.Add(getIndexFromLoc(xLoc, zLoc + dist));
         }
-        if (xLoc < (xSize- dist))
+        if (xLoc < (xSize - dist))
         {
             indices.Add(getIndexFromLoc(xLoc + dist, zLoc));
             if (zLoc > 0 + dist)
@@ -304,9 +301,9 @@ public class CreateGrid : MonoBehaviour
 
     public int getIndexFromLoc(int xLoc, int zLoc)
     {
-        return (xLoc ) + (zLoc * xSize); 
+        return (xLoc) + (zLoc * xSize);
     }
-    
+
     public int getZFromIndex(int index)
     {
         int result = Mathf.FloorToInt(index / xSize);
@@ -324,16 +321,16 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f , 1f * (1 - grid.cells[i].slope/1.52f), 0f, 1f);
+            colors[i] = new Color(1f, 1f * (1 - grid.cells[i].slope / 1.52f), 0f, 1f);
         }
         mesh.colors = colors;
     }
     public void setMeshAspectColors()
     {
-        colors = new Color[vertices.Length]; 
+        colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].aspect/90), 1f * (grid.cells[i].aspect / 90), 1f * ((grid.cells[i].aspect)/90), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].aspect / 90), 1f * (grid.cells[i].aspect / 90), 1f * ((grid.cells[i].aspect) / 90), 1f);
         }
         mesh.colors = colors;
     }
@@ -363,7 +360,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope*3), 2f), 0.5f),  Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope * 3), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope * 3), 2f), 0.5f), 1f);
+            colors[i] = new Color(Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope * 3), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope * 3), 2f), 0.5f), Mathf.Pow(Mathf.Pow((grid.cells[i].averageSlope * 3), 2f), 0.5f), 1f);
         }
         mesh.colors = colors;
     }
@@ -372,7 +369,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].relativeAspect / 50), 1f * (grid.cells[i].relativeAspect / 50), 1f * (1-((grid.cells[i].relativeAspect) / 50)), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].relativeAspect / 50), 1f * (grid.cells[i].relativeAspect / 50), 1f * (1 - ((grid.cells[i].relativeAspect) / 50)), 1f);
         }
         mesh.colors = colors;
     }
@@ -390,7 +387,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (grid.cells[i].curvatureL), 1f * (grid.cells[i].curvatureL ), 1f * (grid.cells[i].curvatureL), 1f);
+            colors[i] = new Color(1f * (grid.cells[i].curvatureL), 1f * (grid.cells[i].curvatureL), 1f * (grid.cells[i].curvatureL), 1f);
 
         }
         mesh.colors = colors;
@@ -420,24 +417,24 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(1f * (20/grid.cells[i].distToSkeletonPequeni), 1f * (20/grid.cells[i].distToSkeletonPequeni), 1f * (20/grid.cells[i].distToSkeletonPequeni), 1f);
+            colors[i] = new Color(1f * (20 / grid.cells[i].distToSkeletonPequeni), 1f * (20 / grid.cells[i].distToSkeletonPequeni), 1f * (20 / grid.cells[i].distToSkeletonPequeni), 1f);
         }
         mesh.colors = colors;
     }
 
-   /* void setRunoffScores(Grid grid)
-    {
-        int ind = 0;
-        int[] array = new int[vertices.Length];
-        //while (ind < vertices.Length)
-        while (ind < vertices.Length)
-        {
-            array[ind] = ind;
+    /* void setRunoffScores(Grid grid)
+     {
+         int ind = 0;
+         int[] array = new int[vertices.Length];
+         //while (ind < vertices.Length)
+         while (ind < vertices.Length)
+         {
+             array[ind] = ind;
 
-            ind++;
-        }
-        int[] result = getRunoffPatterns(grid, array, 800, 20f);
-    }*/
+             ind++;
+         }
+         int[] result = getRunoffPatterns(grid, array, 800, 20f);
+     }*/
 
     void setRunoffScores(Grid grid)
     {
@@ -464,12 +461,10 @@ public class CreateGrid : MonoBehaviour
 
         int ind3 = 0;
         int discharge2 = 500;
-        int[] array3 = new int[discharge2*3];
+        int[] array3 = new int[discharge2 * 3];
         while (ind3 < discharge2 * 3)
         {
-            array3[ind3] = getIndexFromLoc(266, 659);
-            ind3++;
-            array3[ind3] = getIndexFromLoc(167, 495);
+            array3[ind3] = getIndexFromLoc(232, 625);
             ind3++;
             array3[ind3] = getIndexFromLoc(167, 483);
             ind3++;
@@ -485,7 +480,7 @@ public class CreateGrid : MonoBehaviour
         colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            colors[i] = new Color(0f , 1f * (grid.cells[i].runoffScore / 10), 1f * (grid.cells[i].runoffScore / 10), 1f);
+            colors[i] = new Color(0f, 1f * (grid.cells[i].runoffScore / 10), 1f * (grid.cells[i].runoffScore / 10), 1f);
         }
         mesh.colors = colors;
     }
@@ -526,14 +521,14 @@ public class CreateGrid : MonoBehaviour
             while (keepRolling == true)
             {
                 iteration++;
-                
+
                 if (iteration == numOfIterations) { keepRolling = false; }
                 float ownHeight = grid.cells[ownIndex].y;
                 List<int> possiblePaths = getIndicesOfSurroundingCells(ownIndex, grid, 1);
                 int lowestHeightIndex = ownIndex;
                 float lowestHeight = ownHeight + margin;
-                foreach( int index in possiblePaths)
-                { 
+                foreach (int index in possiblePaths)
+                {
                     if (grid.cells[index].y < lowestHeight && index != previousIndex && grid.cells[index].y != 0 && currentPattern.Contains(index) == false)
                     {
                         lowestHeight = grid.cells[index].y;
@@ -541,13 +536,14 @@ public class CreateGrid : MonoBehaviour
                     }
                 }
                 if (lowestHeightIndex == ownIndex) { keepRolling = false; }
-                else {
+                else
+                {
                     grid.cells[lowestHeightIndex].runoffScore += 1;
                     patterns.Add(lowestHeightIndex);
                     currentPattern.Add(lowestHeightIndex);
                     previousIndex = ownIndex;
                     ownIndex = lowestHeightIndex;
-                    }
+                }
             }
         }
         return patterns.ToArray();
@@ -555,58 +551,58 @@ public class CreateGrid : MonoBehaviour
 
     void computeCurvatureY(Cell cell)
     {
-        if (cell.y == 0 || cell.attachedTriangles.Count != 6) 
+        if (cell.y == 0 || cell.attachedTriangles.Count != 6)
         {
             cell.curvatureY = 0f;
             return;
-        } 
-        else 
+        }
+        else
         {
-                Face[] crossingFaces = new Face[2];
-                Vector3[] crossingVertices = new Vector3[2];
+            Face[] crossingFaces = new Face[2];
+            Vector3[] crossingVertices = new Vector3[2];
 
-                int indexNewFace = 0;
-                foreach (Triangle triangle in cell.attachedTriangles)
+            int indexNewFace = 0;
+            foreach (Triangle triangle in cell.attachedTriangles)
+            {
+                foreach (Face face in triangle.faces)
                 {
-                    foreach (Face face in triangle.faces)
+                    if (((face.startVertex.y < cell.y && face.endVertex.y > cell.y) ||
+                        (face.startVertex.y > cell.y && face.endVertex.y < cell.y)) && indexNewFace < 2)
                     {
-                        if (((face.startVertex.y < cell.y && face.endVertex.y > cell.y) ||
-                            (face.startVertex.y > cell.y && face.endVertex.y < cell.y)) && indexNewFace< 2)
-                        {
-                            crossingFaces[indexNewFace] = face;
-                            indexNewFace++;
-                        }
+                        crossingFaces[indexNewFace] = face;
+                        indexNewFace++;
                     }
                 }
-                int indexNewLoc = 0;
-                if(indexNewFace != 2)
+            }
+            int indexNewLoc = 0;
+            if (indexNewFace != 2)
+            {
+                cell.curvatureY = 2.5f;
+                return;
+            }
+            foreach (Face face in crossingFaces)
+            {
+                if (face.startVertex.y != 0 && face.endVertex.y != 0)
                 {
-                    cell.curvatureY = 2.5f;
+                    float xStep = face.startVertex.x - face.endVertex.x;
+                    float zStep = face.startVertex.z - face.endVertex.z;
+
+                    float ratio = ((face.startVertex.y - cell.y) / (face.endVertex.y - face.startVertex.y));
+                    Vector3 crossPoint = new Vector3(face.startVertex.x + (xStep * ratio), cell.y, face.startVertex.z + (zStep * ratio));
+                    crossingVertices[indexNewLoc] = crossPoint;
+                    indexNewLoc++;
+                }
+                else
+                {
+                    cell.curvatureY = 0;
                     return;
                 }
-                foreach (Face face in crossingFaces)
-                {
-                    if (face.startVertex.y != 0 && face.endVertex.y != 0)
-                    {
-                        float xStep = face.startVertex.x - face.endVertex.x;
-                        float zStep = face.startVertex.z - face.endVertex.z;
-
-                        float ratio = ((face.startVertex.y - cell.y) / (face.endVertex.y - face.startVertex.y));
-                        Vector3 crossPoint = new Vector3(face.startVertex.x + (xStep * ratio), cell.y, face.startVertex.z + (zStep * ratio));
-                        crossingVertices[indexNewLoc] = crossPoint;
-                        indexNewLoc++;
-                    }
-                    else
-                    {
-                        cell.curvatureY = 0;
-                        return;
-                    }
-                }
-                Vector3 expectedLocation = new Vector3(((crossingVertices[0].x - crossingVertices[1].x) / 2) + crossingVertices[1].x,
-                                                        ((crossingVertices[0].y - crossingVertices[1].y) / 2) + crossingVertices[1].y,
-                                                        ((crossingVertices[0].z - crossingVertices[1].z) / 2) + crossingVertices[1].z);
-                cell.curvatureY = Mathf.Pow(Mathf.Pow(Vector3.Distance(cell.position, expectedLocation), 2), 0.5f);
             }
+            Vector3 expectedLocation = new Vector3(((crossingVertices[0].x - crossingVertices[1].x) / 2) + crossingVertices[1].x,
+                                                    ((crossingVertices[0].y - crossingVertices[1].y) / 2) + crossingVertices[1].y,
+                                                    ((crossingVertices[0].z - crossingVertices[1].z) / 2) + crossingVertices[1].z);
+            cell.curvatureY = Mathf.Pow(Mathf.Pow(Vector3.Distance(cell.position, expectedLocation), 2), 0.5f);
+        }
     }
 
 
@@ -619,7 +615,7 @@ public class CreateGrid : MonoBehaviour
         //Curvature = -2(D + E) * 100
 
         if (cell.y == 0 || cell.attachedTriangles.Count != 6)
-        { 
+        {
             return 0f;
         }
         else
@@ -633,8 +629,8 @@ public class CreateGrid : MonoBehaviour
             {
                 foreach (Cell surroundingCell in cells)
                 {
-                    if(surroundingCell.y == 0) { return 0f; }
-                    if (surroundingCell.index == cell.index - dist )
+                    if (surroundingCell.y == 0) { return 0f; }
+                    if (surroundingCell.index == cell.index - dist)
                     {
                         Z8 = surroundingCell;
                     }
@@ -642,7 +638,7 @@ public class CreateGrid : MonoBehaviour
                     {
                         Z2 = surroundingCell;
                     }
-                    if (surroundingCell.index > cell.index + dist )
+                    if (surroundingCell.index > cell.index + dist)
                     {
                         Z6 = surroundingCell;
                     }
@@ -652,9 +648,9 @@ public class CreateGrid : MonoBehaviour
                     }
                 }
             }
-            else 
-            { 
-            return 0f; 
+            else
+            {
+                return 0f;
             }
             float xStep = cell.attachedFaces[2].startVertex.x - cell.attachedFaces[2].endVertex.x;
             float zStep = cell.attachedFaces[0].startVertex.z - cell.attachedFaces[0].endVertex.z;
@@ -670,24 +666,27 @@ public class CreateGrid : MonoBehaviour
         float runoffSum = 0;
         int xLoc = getXFromIndex(cell.index);
         int zLoc = getZFromIndex(cell.index);
-        float numOfCells = Mathf.Pow((1 + (2*dist)), 2);
-        if(xLoc < 0 + dist || xLoc > xSize - dist || zLoc < 0 + dist || zLoc > zSize - dist)
+        float numOfCells = Mathf.Pow((1 + (2 * dist)), 2);
+        if (xLoc < 0 + dist || xLoc > xSize - dist || zLoc < 0 + dist || zLoc > zSize - dist)
         {
             return 0;
         }
-        for( int i = -dist; i < dist; i++)
+        for (int i = -dist; i < dist; i++)
         {
             for (int j = -dist; j < dist; j++)
             {
                 try
                 {
                     Cell additionalCell = grid.cells[getIndexFromLoc(xLoc + i, zLoc + j)];
-                    if (additionalCell.index != cell.index) {
+                    if (additionalCell.index != cell.index)
+                    {
                         runoffSum += additionalCell.runoffScore;
                     }
                 }
-                catch { 
-                    Debug.Log(" index error x" + (xLoc + i) + " z " + (zLoc + j)); }
+                catch
+                {
+                    Debug.Log(" index error x" + (xLoc + i) + " z " + (zLoc + j));
+                }
             }
         }
         return runoffSum / numOfCells;
@@ -739,7 +738,7 @@ public class CreateGrid : MonoBehaviour
         return cells;
     }
 
-    public void getDistanceToLines(Grid grid, List<SkeletonJoint> list, String river )
+    public void getDistanceToLines(Grid grid, List<SkeletonJoint> list, String river)
     {
         foreach (Cell cell in grid.cells)
         {
@@ -753,42 +752,42 @@ public class CreateGrid : MonoBehaviour
             {
                 for (int index = 0; index < list.Count - 1; index++)
                 {
-                        float currentDist = Vector3.Distance(cell.position, list[index].position);
-                        if (currentDist < smallestDist)
+                    float currentDist = Vector3.Distance(cell.position, list[index].position);
+                    if (currentDist < smallestDist)
+                    {
+                        smallestDist = currentDist;
+                        lineAngle = computeAngle(list[index].position, list[index + 1].position);
+                        riverLength = list[index].distance;
+                        riverDischarge = list[index].discharge;
+                        float diff = cell.aspect - lineAngle;
+                        if (diff <= 180)
                         {
-                            smallestDist = currentDist;
-                            lineAngle = computeAngle(list[index].position, list[index + 1].position);
-                            riverLength = list[index].distance;
-                            riverDischarge = list[index].discharge;
-                            float diff = cell.aspect - lineAngle;
-                            if (diff <= 180)
-                            {
-                                aspectToSkeleton = diff;
-                            }
-                            else
-                            {
-                                aspectToSkeleton = 360f - diff;
-                            }
+                            aspectToSkeleton = diff;
                         }
-                    
-                }
-            if(smallestDist < 1) { smallestDist = 1f; }
+                        else
+                        {
+                            aspectToSkeleton = 360f - diff;
+                        }
+                    }
 
-            if (river == "Chagres")
-            {
-                cell.riverDischargeChagres = riverDischarge;
-                cell.distToRiverMouthChagres = riverLength;
-                cell.skeletonAspectChagres = Mathf.Abs(aspectToSkeleton);
-                cell.distToSkeletonChagres = smallestDist;
+                }
+                if (smallestDist < 1) { smallestDist = 1f; }
+
+                if (river == "Chagres")
+                {
+                    cell.riverDischargeChagres = riverDischarge;
+                    cell.distToRiverMouthChagres = riverLength;
+                    cell.skeletonAspectChagres = Mathf.Abs(aspectToSkeleton);
+                    cell.distToSkeletonChagres = smallestDist;
+                }
+                if (river == "Pequeni")
+                {
+                    cell.riverDischargePequeni = riverDischarge;
+                    cell.distToRiverMouthPequeni = riverLength;
+                    cell.skeletonAspectPequeni = Mathf.Abs(aspectToSkeleton);
+                    cell.distToSkeletonPequeni = smallestDist;
+                }
             }
-            if (river == "Pequeni")
-            {
-                cell.riverDischargePequeni = riverDischarge;
-                cell.distToRiverMouthPequeni = riverLength;
-                cell.skeletonAspectPequeni = Mathf.Abs(aspectToSkeleton);
-                cell.distToSkeletonPequeni = smallestDist;
-            }
-        }
             else
             {
                 cell.skeletonAspectChagres = 0f;
@@ -854,7 +853,7 @@ public class CreateGrid : MonoBehaviour
                 index++;
             }
             int highInd = lowInd + 4;
-            if(highInd > 7) { highInd = highInd - 8; }
+            if (highInd > 7) { highInd = highInd - 8; }
             high = cells[highInd];
             float Step1 = Vector3.Distance(cell.position, low.position);
             float Step2 = Vector3.Distance(cell.position, high.position);
@@ -883,7 +882,7 @@ public class CreateGrid : MonoBehaviour
             if (cells.Count != 8) { return 0; }
             foreach (Cell c in cells)
             {
-                if(c.y == 0) { return 0; }
+                if (c.y == 0) { return 0; }
                 if (c.y <= lowVal)
                 {
                     lowInd = index;
@@ -896,7 +895,7 @@ public class CreateGrid : MonoBehaviour
             if (leftInd > 7) { leftInd = leftInd - 8; }
             left = cells[leftInd];
             int rightInd = lowInd - 2;
-            if (rightInd <0 ) { rightInd = rightInd + 8; }
+            if (rightInd < 0) { rightInd = rightInd + 8; }
             right = cells[rightInd];
 
 
@@ -929,8 +928,8 @@ public class CreateGrid : MonoBehaviour
                     && candidate.y != 0
                     //&& Vector3.Distance(candidate.position, startCell.position) > (distToStart + 2)
                     //&& candidate.y < (currentCell.y + 1f)
-                    && candidate.x < startCell.x // hardcode downward for z, only for Chagres, x for pequeni
-                    ) 
+                    && candidate.z < startCell.z // hardcode downward for z, only for Chagres
+                    )
                 {
                     highestScore = candidate.y;
                     bestIndex = candidate.index;
@@ -961,12 +960,12 @@ public class CreateGrid : MonoBehaviour
         StreamWriter writer = new StreamWriter(path, append);
         if (append == false)
         {
-            writer.WriteLine("year interval x y depth hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random averageSlope index height totalDistChagres totalDistPequeni");
+            writer.WriteLine("year interval x y depth hdifference hrelative1 hrelative2 hrelative3 slope aspect curvatureS curvatureM curvatureL averageRunoff1 averageRunoff2 averageRunoff3 discharge skeletonAngleChagres riverLengthChagres inflowChagres distChagres skeletonAnglePequeni riverLengthPequeni inflowPequeni distPequeni random averageSlope index height totalDistChagres");
         }
         foreach (Cell cell in gridCurrent.cells)
         {
             if (cell.y == 0 || double.IsNaN(cell.aspect)) { continue; }
-            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y ) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthPequeni + " " + cell.riverDischargePequeni + " " + cell.distToSkeletonPequeni + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y + " " + (cell.distToRiverMouthChagres + Mathf.Pow(cell.distToSkeletonChagres, 1.5f)) + " " + (cell.distToRiverMouthPequeni + Mathf.Pow(cell.distToSkeletonPequeni, 1.5f))); 
+            writer.WriteLine(year + " " + interval + " " + cell.x + " " + cell.z + " " + (cell.y - 74.6f) + " " + ((gridNext.cells[cell.index].y) - cell.y) + " " + cell.relativeHeight1 + " " + cell.relativeHeight2 + " " + cell.relativeHeight3 + " " + cell.slope + " " + cell.aspect + " " + cell.curvatureS + " " + cell.curvatureM + " " + cell.curvatureL + " " + cell.averageRunoff1 + " " + cell.averageRunoff2 + " " + cell.averageRunoff3 + " " + (discharge * interval) + " " + cell.skeletonAspectChagres + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + cell.skeletonAspectPequeni + " " + cell.distToRiverMouthChagres + " " + cell.riverDischargeChagres + " " + cell.distToSkeletonChagres + " " + UnityEngine.Random.Range(10, 1000) + " " + cell.averageSlope + " " + cell.index + " " + cell.y + " " + (cell.distToRiverMouthChagres + Mathf.Pow(cell.distToSkeletonChagres, 1.5f)));
         }
         writer.Close();
         return gridNext;
@@ -981,10 +980,10 @@ public class CreateGrid : MonoBehaviour
         Mesh mesh1997 = meshGenerator.mesh;
         grid1997 = InstantiateGrid(mesh1997, discharge1997C, discharge1997P);
 
-        grid2008 = append("Assets/Output/outputGridFull.txt", false, meshGenerator.vertexFile2008, 1997, 11, 73.9f, discharge2008C, discharge2008P, grid1997, 0f,  10, "data" , false);
-        grid2012 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2012, 2008, 4, 95.5f, discharge2012C, discharge2012P, grid2008, 0f,  10, "data", false);
+        grid2008 = append("Assets/Output/outputGridFull.txt", false, meshGenerator.vertexFile2008, 1997, 11, 73.9f, discharge2008C, discharge2008P, grid1997, 0f, 10, "data", false);
+        grid2012 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2012, 2008, 4, 95.5f, discharge2012C, discharge2012P, grid2008, 0f, 10, "data", false);
         grid2018 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2018, 2012, 6, 58.2f, discharge2018C, discharge2018P, grid2012, 0f, 10, "data", false);
-        append("Assets/Output/outputGridPredParams.txt", false, meshGenerator.vertexFile2018, 2018, 6, 50f, discharge2018C, discharge2018P, grid2018, 0f,  10, "data", false);
+        append("Assets/Output/outputGridPredParams.txt", false, meshGenerator.vertexFile2018, 2018, 6, 50f, discharge2018C, discharge2018P, grid2018, 0f, 10, "data", false);
         latestGrid = grid2018;
         latestYear = 2018;
 
@@ -1011,7 +1010,7 @@ public class CreateGrid : MonoBehaviour
         Debug.Log(" total volume chagre 18: " + sum2018);
         Debug.Log(" total volume chagre 12: " + sum2012);
         Debug.Log(" total volume chagre 08: " + sum2008);
-        
+
     }
 
     void AppendPrediction(Grid current, float dischargeC, float dischargeP, int interval)
@@ -1021,7 +1020,7 @@ public class CreateGrid : MonoBehaviour
         latestGrid = gridPred;
         append("Assets/Output/outputGridPredParams.txt", false, meshGenerator.vertexFilePred, predYear, interval, 50f, dischargeC, dischargeP, gridPred, 0f, 1, "prediction", false);
         latestYear = predYear;
-        /*
+
         List<Cell> cellsList = new List<Cell>();
         foreach (Cell cell in gridPred.cells)
         {
@@ -1039,8 +1038,7 @@ public class CreateGrid : MonoBehaviour
             sumPred += (gridPred.cells[cell.index].y - current.cells[cell.index].y);
         }
         Debug.Log(" total volume chagre pred: " + sumPred);
-        */
-        
+
     }
 
 
