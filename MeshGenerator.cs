@@ -140,9 +140,9 @@ public class MeshGenerator : MonoBehaviour
         {
             
             // Add random noise
-            int random = UnityEngine.Random.Range(1, 50);
+            int random = UnityEngine.Random.Range(1, 20);
             float zNoise = 0f;
-            if (random == 20 && addNoise == true) { zNoise = 15f; }
+            if (random == 10 && addNoise == true) { zNoise = 15f; }
             // 
 
             values = arrayOfLines[index].Split(' ');
