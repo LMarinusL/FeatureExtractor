@@ -124,6 +124,10 @@ df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdiffe
 df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
+df12C = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df08C = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df97C = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+
 
 
 yt97 = df97[param_study] * 0.6
@@ -264,6 +268,107 @@ def plotDiffForYears():
     fig52.suptitle('Difference over the yeears' )
     plt.draw()
 plotDiffForYears()
+
+def plotHeightForYears():
+
+
+    plt.rcParams.update({'font.size': 20})
+    fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc = ax[0].scatter(df97['x'], df97['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df97['height']),
+                cmap=cm, vmin=60, vmax=70)
+    ax[0].set_title('97')
+    ax[0].set_xlabel("x coordinate")
+    ax[0].set_ylabel("y coordinate")
+    ax[0].tick_params(labelsize=12)
+    sc = ax[1].scatter(df08['x'], df08['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df08['height']),
+                cmap=cm, vmin=60, vmax=70)
+    cbar = fig5.colorbar(sc)
+    cbar.ax.set_ylabel('bed level height [m]', rotation=270)
+    cbar.ax.get_yaxis().labelpad = 20
+    ax[1].set_title('08')
+    ax[1].set_xlabel("x coordinate")
+    ax[1].tick_params(labelsize=12)
+    sc = ax[2].scatter(df12['x'], df12['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df12['height']),
+                cmap=cm,  vmin=60, vmax=70)
+    ax[2].set_title('12')
+    ax[2].set_xlabel("x coordinate")
+    ax[2].tick_params(labelsize=12)
+    sc = ax[3].scatter(df12['x'], df12['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 20,
+            c=(df12['height'] + df12['hdifference']),
+                cmap=cm,  vmin=60, vmax=70)
+    ax[3].set_title('18')
+    ax[3].set_xlabel("x coordinate")
+    ax[3].tick_params(labelsize=12)
+
+    fig5.subplots_adjust(wspace=0.03, hspace=0.05)
+    fig5.suptitle('Height over the yeears' )
+    plt.draw()
+plotHeightForYears()
+
+print(df12.head())
+def plotFeatureForYears(D97, D08, D12, feature):
+
+    plt.rcParams.update({'font.size': 10})
+    fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
+                                        figsize=(20, 10))
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc = ax[0].scatter(D97['x'], D97['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 10,
+            c=(D97[feature]),
+                cmap=cm)
+    ax[0].set_title('97-08')
+    ax[0].set_xlabel("x coordinate")
+    ax[0].set_ylabel("y coordinate")
+    ax[0].tick_params(labelsize=12)
+    sc = ax[1].scatter(D08['x'], D08['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 10,
+            c=(D08[feature]),
+                cmap=cm)
+    cbar = fig52.colorbar(sc)
+    cbar.ax.set_ylabel('difference in height [m]', rotation=270)
+    cbar.ax.get_yaxis().labelpad = 20
+    ax[1].set_title('08-12')
+    ax[1].set_xlabel("x coordinate")
+    ax[1].tick_params(labelsize=12)
+    sc = ax[2].scatter(D12['x'], D12['y'],
+            linewidths=1, alpha=.7,
+                edgecolor='none',
+            s = 10,
+            c=(D12[feature]),
+                cmap=cm)
+    ax[2].set_title('12-18')
+    ax[2].set_xlabel("x coordinate")
+    ax[2].tick_params(labelsize=12)
+
+
+    fig52.subplots_adjust(wspace=0.03, hspace=0.05)
+    fig52.suptitle(feature + ' over the years' )
+    plt.draw()
+
+plotFeatureForYears(df97C, df08C, df12C, 'riverLengthChagres')
+plotFeatureForYears(df97C, df08C, df12C, 'distChagres')
+
 
 
 
@@ -809,7 +914,7 @@ def predict(alg, Xtrain, ytrain, Xpredict):
 dfpred = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridPredParams.txt', sep=" ")
 X_arr = dfpred[col_study_chag][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970].to_numpy()
 print("pred file read")
-dfTrainFull = sklearn.utils.resample(df[df.year < 2013][df.hdifference > -0.5][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+dfTrainFull = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 set_X_T = dfTrainFull[col_study_chag]
 set_y_T = dfTrainFull['hdifference']
 
@@ -898,10 +1003,10 @@ def plotOnYears(property, min, max):
     df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    #df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    #df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    #df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    #df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
     #plotBinned(df12['hdifference'], df12, 'binned 12')
@@ -950,7 +1055,7 @@ def plotOnYears(property, min, max):
     ax[0,3].set_title('18')
     ax[0,3].set_xlabel("x coordinate")
     ax[0,3].tick_params(labelsize=12)
-    """
+    
     sc = ax[1,0].scatter(df22['x'], df22['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -992,7 +1097,7 @@ def plotOnYears(property, min, max):
     ax[1,3].set_title('34')
     ax[1,3].set_xlabel("x coordinate")
     ax[1,3].tick_params(labelsize=12)
-    """
+    
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle(property)
     plt.draw()
