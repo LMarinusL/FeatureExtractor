@@ -184,7 +184,7 @@ def plotHeightForYears():
     plt.rcParams.update({'font.size': 20})
     fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0].scatter(df97['x'], df97['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -245,7 +245,7 @@ def plotDiffForYears():
     plt.rcParams.update({'font.size': 10})
     fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0].scatter(df97T['x'], df97T['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -290,7 +290,7 @@ def plotHeightForYears():
     plt.rcParams.update({'font.size': 20})
     fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0].scatter(df97['x'], df97['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -343,7 +343,7 @@ def plotFeatureForYears(D97, D08, D12, feature):
     plt.rcParams.update({'font.size': 10})
     fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0].scatter(D97['x'], D97['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -439,7 +439,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
     plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -659,7 +659,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0,0].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -737,7 +737,7 @@ def plotMaps1Set(actual, pred, title):
     plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0].scatter(Xt['x'], Xt['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -992,7 +992,7 @@ def plotOnYears(property, min, max):
     plt.rcParams.update({'font.size': 20})
     fig5, ax = plt.subplots(nrows=3, ncols=4, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', 5)
     sc = ax[0,0].scatter(df97['x'], df97['y'],
             linewidths=1, alpha=.7,
                 edgecolor='none',
