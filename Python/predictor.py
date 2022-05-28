@@ -84,11 +84,11 @@ for i in range(pred.size):
 outputFile.close()
 print("output written")
 
-def plotPred(x_vals, y_vals, pred_vals, title, min, max):
+def plotPred(x_vals, y_vals, pred_vals, title, min, max, range):
     plt.rcParams.update({'font.size': 20})
     fig5, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True,
                                         figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlBu')
+    cm = plt.cm.get_cmap('RdYlGn', range)
     sc = ax.scatter(x_vals, y_vals,
             linewidths=1, alpha=.7,
                 edgecolor='none',
@@ -104,7 +104,7 @@ def plotPred(x_vals, y_vals, pred_vals, title, min, max):
     plt.draw()
 
 
-plotPred(x_array, y_array, d_array + pred, 'height', 50, 80)
-plotPred(x_array, y_array, pred, 'difference', -2, 2)
+plotPred(x_array, y_array, d_array + pred, 'height', 50, 80, 7)
+plotPred(x_array, y_array, pred, 'difference', -2, 2, 3)
 
 plt.show()

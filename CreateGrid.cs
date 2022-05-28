@@ -149,6 +149,8 @@ public class CreateGrid : MonoBehaviour
         skeleton.addListC(list4, dischargeC);
         getDistanceToLines(grid, skeleton.skeletonC, "Chagres");
         getDistanceToLines(grid, skeleton.skeletonP, "Pequeni");
+
+
         return grid;
     }
 
