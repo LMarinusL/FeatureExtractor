@@ -187,8 +187,8 @@ public class MeshGenerator : MonoBehaviour
 
         float ycorr = 0f;
         if (vertexfile == vertexFile2008) { ycorr = -0.2f; } /// -.2
-        if (vertexfile == vertexFile2012) { ycorr = -1.1f; }// -0.9
-        if (vertexfile == vertexFile2018) { ycorr = 0.1f; }//+1/2
+        if (vertexfile == vertexFile2012) { ycorr = -1.15f; }// -0.9
+        if (vertexfile == vertexFile2018) { ycorr = 0.15f; }//+1/2
         for (int i = 0; i < vertices.Length; i++)
         {
             if(vertices[i].y != 0)

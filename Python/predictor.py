@@ -58,7 +58,7 @@ dfpred = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMView
 X_arr = dfpred[col_study_chag][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][dfpred.y > dfpred.x + 50][dfpred.y < 920][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 X_arr_sample = dfpred[col_study_chag][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][dfpred.y > dfpred.x + 50][dfpred.y < 920][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970]
 print("pred file read")
-dfTrainFull = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+dfTrainFull = sklearn.utils.resample(df[df.year < 2013][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 set_X_T = dfTrainFull[col_study_chag]
 set_y_T = dfTrainFull['hdifference']
 
@@ -67,6 +67,7 @@ index_array = dfpred['index'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][dfpred.y
 x_array =         dfpred['x'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][dfpred.y > dfpred.x + 50][dfpred.y < 920][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 y_array =         dfpred['y'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][dfpred.y > dfpred.x + 50][dfpred.y < 920][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 d_array =    dfpred['height'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][dfpred.y > dfpred.x + 50][dfpred.y < 920][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
+path_array = dfpred['distChagres'][dfpred.y < -(9.5 / 2) * dfpred.x + 4545 ][dfpred.y > dfpred.x + 50][dfpred.y < 920][ dfpred.y > -1.25 * dfpred.x + 1575 ][ dfpred.y > 630 ][ dfpred.y < 970].to_numpy()
 print("pred made")
 
 
@@ -104,7 +105,9 @@ def plotPred(x_vals, y_vals, pred_vals, title, min, max, range):
     plt.draw()
 
 
-plotPred(x_array, y_array, d_array + pred, 'height', 50, 80, 7)
-plotPred(x_array, y_array, pred, 'difference', -2, 2, 3)
+#plotPred(x_array, y_array, d_array + pred, 'height', 50, 80, 7)
+plotPred(x_array, y_array, pred, 'difference', -2, 2, 5)
+plotPred(x_array, y_array, path_array, 'path', 0, 30, 5)
+
 
 plt.show()

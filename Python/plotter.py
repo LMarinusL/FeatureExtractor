@@ -28,7 +28,7 @@ from sklearn.feature_selection import chi2
 from matplotlib import colors
 import graphviz
 from sklearn.tree import export_graphviz
-
+from matplotlib.ticker import StrMethodFormatter
 
 
 import numpy as np
@@ -36,6 +36,8 @@ plt.rcParams.update({'font.size': 16})
 
 #https://epsg.io/transform#s_srs=4326&t_srs=32617&x=-79.6170883&y=9.1944523
 #https://openaltimetry.org/data/icesat2/
+
+#############   EPSG:32617 WGS 84 / UTM zone 17N    ##############
 
 #print(pd.__version__)  
 
@@ -66,7 +68,7 @@ print(df.head())
 ##############
 import pathlib
 print(pathlib.Path(__file__).parent.resolve())
-df = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridFull.txt', sep=" ")
+df = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/ChagresFullOutput290522v2.txt', sep=" ")
 print(df.head())
 print(df.columns)
 
@@ -111,6 +113,9 @@ df12H = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdif
 df08H = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489], n_samples=10000, random_state=None, stratify=None)
 df97H = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489], n_samples=10000, random_state=None, stratify=None)
 
+df12U = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x > 1489], n_samples=10000, random_state=None, stratify=None)
+df08U = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x > 1489], n_samples=10000, random_state=None, stratify=None)
+df97U = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x > 1489], n_samples=10000, random_state=None, stratify=None)
 """
 df12P = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 df08P = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
@@ -145,36 +150,41 @@ print(" full volume 97-08 diff: "+str(yt97.sum()))
 print(" full volume 08-12 diff: "+str(yt08.sum()))
 print(" full volume 12-18 diff: "+str(yt12.sum()))
 
+plt.rcParams.update({'font.size': 10})
 fig4, ax4 = plt.subplots()
-ax4.set_title('Morphological changes for Chagres')
+ax4.set_title('Morphological changes -  Chagres')
 ax4.set_ylim(-3,4)
 ax4.boxplot([df97['hdifference'],df08['hdifference'],df12['hdifference']], showfliers=False)
 ax4.violinplot([df97T['hdifference'],df08T['hdifference'],df12T['hdifference']], showextrema=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
+plt.ylabel('Height change [m]')
 plt.draw()
 
 fig4, ax4 = plt.subplots()
-ax4.set_title('Morphological changes for Rio Pequeni')
+ax4.set_title('Morphological changes -  Rio Pequeni')
 ax4.set_ylim(-3,4)
 ax4.boxplot([df97P['hdifference'],df08P['hdifference'],df12P['hdifference']], showfliers=False)
 ax4.violinplot([df97P['hdifference'],df08P['hdifference'],df12P['hdifference']], showextrema=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
+plt.ylabel('Height change [m]')
 plt.draw()
 
 fig4, ax4 = plt.subplots()
-ax4.set_title('Alhajuela Lake total morphological changes')
+ax4.set_title('Morphological changes - entire Alhajuela Lake')
 ax4.set_ylim(-3,4)
 ax4.boxplot([df97T['hdifference'],df08T['hdifference'],df12T['hdifference']], showfliers=False)
 ax4.violinplot([df97T['hdifference'],df08T['hdifference'],df12T['hdifference']], showextrema=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
+plt.ylabel('Height change [m]')
 plt.draw()
 
 fig4, ax4 = plt.subplots()
-ax4.set_title('Alhajuela Lake main basin morphological changes')
+ax4.set_title('Morphological changes - Alhajuela Lake main basin')
 ax4.set_ylim(-3,4)
 ax4.boxplot([df97H['hdifference'],df08H['hdifference'],df12H['hdifference']], showfliers=False)
 ax4.violinplot([df97H['hdifference'],df08H['hdifference'],df12H['hdifference']], showextrema=False)
 plt.xticks([1, 2, 3], ['97-08', '08-12', '12-18'])
+plt.ylabel('Height change [m]')
 plt.draw()
 
 print(df12.head())
@@ -185,17 +195,19 @@ def plotHeightForYears():
     fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0].scatter(df97['x'], df97['y'],
+
+
+    sc = ax[0].scatter(df97['x']*10+1013618, df97['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df97['height']),
                 cmap=cm, vmin=60, vmax=70)
     ax[0].set_title('97')
-    ax[0].set_xlabel("x coordinate")
-    ax[0].set_ylabel("y coordinate")
-    ax[0].tick_params(labelsize=12)
-    sc = ax[1].scatter(df08['x'], df08['y'],
+    ax[0].set_xlabel("Y [EPSG:32617]")
+    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].tick_params(labelsize=8)
+    sc = ax[1].scatter(df08['x']*10+1013618, df08['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
@@ -205,26 +217,26 @@ def plotHeightForYears():
     cbar.ax.set_ylabel('bed level height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08')
-    ax[1].set_xlabel("x coordinate")
-    ax[1].tick_params(labelsize=12)
-    sc = ax[2].scatter(df12['x'], df12['y'],
+    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].tick_params(labelsize=8)
+    sc = ax[2].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df12['height']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[2].set_title('12')
-    ax[2].set_xlabel("x coordinate")
-    ax[2].tick_params(labelsize=12)
-    sc = ax[3].scatter(df12['x'], df12['y'],
+    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].tick_params(labelsize=8)
+    sc = ax[3].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df12['height'] + df12['hdifference']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[3].set_title('18')
-    ax[3].set_xlabel("x coordinate")
-    ax[3].tick_params(labelsize=12)
+    ax[3].set_xlabel("Y [EPSG:32617]")
+    ax[3].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle('Height over the yeears' )
@@ -244,19 +256,20 @@ def plotDiffForYears():
 
     plt.rcParams.update({'font.size': 10})
     fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                        figsize=(20, 10))
+                                        figsize=(25, 10), constrained_layout=True)
     cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0].scatter(df97T['x'], df97T['y'],
+
+    sc = ax[0].scatter(df97T['x']*10+1013618, df97T['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
             c=(df97T['hdifference']),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[0].set_title('97-08')
-    ax[0].set_xlabel("x coordinate")
-    ax[0].set_ylabel("y coordinate")
-    ax[0].tick_params(labelsize=12)
-    sc = ax[1].scatter(df08T['x'], df08T['y'],
+    ax[0].set_xlabel("Y [EPSG:32617]")
+    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].tick_params(labelsize=8)
+    sc = ax[1].scatter(df08T['x']*10+1013618, df08T['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
@@ -266,17 +279,17 @@ def plotDiffForYears():
     cbar.ax.set_ylabel('difference in height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08-12')
-    ax[1].set_xlabel("x coordinate")
-    ax[1].tick_params(labelsize=12)
-    sc = ax[2].scatter(df12T['x'], df12T['y'],
+    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].tick_params(labelsize=8)
+    sc = ax[2].scatter(df12T['x']*10+1013618, df12T['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
             c=(df12T['hdifference']),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[2].set_title('12-18')
-    ax[2].set_xlabel("x coordinate")
-    ax[2].tick_params(labelsize=12)
+    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].tick_params(labelsize=8)
 
 
     fig52.subplots_adjust(wspace=0.03, hspace=0.05)
@@ -291,17 +304,17 @@ def plotHeightForYears():
     fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0].scatter(df97['x'], df97['y'],
+    sc = ax[0].scatter(df97['x']*10+1013618, df97['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df97['height']),
                 cmap=cm, vmin=60, vmax=70)
     ax[0].set_title('97')
-    ax[0].set_xlabel("x coordinate")
-    ax[0].set_ylabel("y coordinate")
-    ax[0].tick_params(labelsize=12)
-    sc = ax[1].scatter(df08['x'], df08['y'],
+    ax[0].set_xlabel("Y [EPSG:32617]")
+    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].tick_params(labelsize=8)
+    sc = ax[1].scatter(df08['x']*10+1013618, df08['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
@@ -311,26 +324,26 @@ def plotHeightForYears():
     cbar.ax.set_ylabel('bed level height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08')
-    ax[1].set_xlabel("x coordinate")
-    ax[1].tick_params(labelsize=12)
-    sc = ax[2].scatter(df12['x'], df12['y'],
+    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].tick_params(labelsize=8)
+    sc = ax[2].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df12['height']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[2].set_title('12')
-    ax[2].set_xlabel("x coordinate")
-    ax[2].tick_params(labelsize=12)
-    sc = ax[3].scatter(df12['x'], df12['y'],
+    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].tick_params(labelsize=8)
+    sc = ax[3].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df12['height'] + df12['hdifference']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[3].set_title('18')
-    ax[3].set_xlabel("x coordinate")
-    ax[3].tick_params(labelsize=12)
+    ax[3].set_xlabel("Y [EPSG:32617]")
+    ax[3].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle('Height over the yeears' )
@@ -340,49 +353,55 @@ def plotHeightForYears():
 print(df12.head())
 def plotFeatureForYears(D97, D08, D12, feature):
 
-    plt.rcParams.update({'font.size': 10})
+    plt.rcParams.update({'font.size': 8})
     fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                        figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0].scatter(D97['x'], D97['y'],
+                                        figsize=(10, 2.5))
+    cm = plt.cm.get_cmap('RdYlGn', 8)
+    sc = ax[0].scatter(D97['x']*10+1013618, D97['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 10,
+            s = 6,
             c=(D97[feature]),
-                cmap=cm)
+                cmap=cm, vmin=-2, vmax=2)
     ax[0].set_title('97-08')
-    ax[0].set_xlabel("x coordinate")
-    ax[0].set_ylabel("y coordinate")
-    ax[0].tick_params(labelsize=12)
-    sc = ax[1].scatter(D08['x'], D08['y'],
+    ax[0].set_xlabel("Y [EPSG:32617]")
+    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].tick_params(labelsize=8)
+    sc = ax[1].scatter(D08['x']*10+1013618, D08['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 10,
+            s = 6,
             c=(D08[feature]),
-                cmap=cm)
-    cbar = fig52.colorbar(sc)
+                cmap=cm, vmin=-2, vmax=2)
+    ticks = np.linspace(-2, 2, 5, endpoint=True)
+    cbar = fig52.colorbar(sc, ticks = ticks)
+    cbar.ax.set_title('>2')
     cbar.ax.set_ylabel('difference in height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08-12')
-    ax[1].set_xlabel("x coordinate")
-    ax[1].tick_params(labelsize=12)
-    sc = ax[2].scatter(D12['x'], D12['y'],
+    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].tick_params(labelsize=8)
+    sc = ax[2].scatter(D12['x']*10+1013618, D12['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 10,
+            s = 6,
             c=(D12[feature]),
-                cmap=cm)
+                cmap=cm, vmin=-2, vmax=2)
     ax[2].set_title('12-18')
-    ax[2].set_xlabel("x coordinate")
-    ax[2].tick_params(labelsize=12)
+    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].tick_params(labelsize=8)
 
+    fig52.tight_layout()
 
     fig52.subplots_adjust(wspace=0.03, hspace=0.05)
-    fig52.suptitle(feature + ' over the years' )
     plt.draw()
 
-#plotFeatureForYears(df97C, df08C, df12C, 'riverLengthChagres')
-#plotFeatureForYears(df97C, df08C, df12C, 'distChagres')
+plotFeatureForYears(df97T, df08T, df12T, 'hdifference')
+plotFeatureForYears(df97, df08, df12, 'hdifference')
+plotFeatureForYears(df97H, df08H, df12H, 'hdifference')
+plotFeatureForYears(df97P, df08P, df12P, 'hdifference')
+plotFeatureForYears(df97U, df08U, df12U, 'hdifference')
+
 
 
 
@@ -394,6 +413,10 @@ def plotFeatureForYears(D97, D08, D12, feature):
 col_study2 = [ 'depth', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'averageSlope', 'totalDistChagres','skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
 param_study = 'hdifference'
+
+col_study_peq = [ 'depth', 'hrelative3','hrelative2', 'slope', 'curvatureL', 'averageRunoff1', 'averageRunoff2','averageSlope','riverLengthPequeni', 'distPequeni','totalDistPequeni']
+col_study_chag = [ 'depth', 'riverLengthChagres','totalDistChagres', 'distChagres','averageRunoff3', 'averageRunoff2', 'averageRunoff1','aspect', 'averageSlope','skeletonAngleChagres','hrelative3','hrelative2','slope', 'curvatureL']
+
 
 Xo2 = dfTrain[col_study2]
 yo2 = dfTrain[param_study]
@@ -438,49 +461,50 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
 
     plt.rcParams.update({'font.size': 8})
     fig5, ax = plt.subplots(nrows=1, ncols=4, sharex=True, sharey=True,
-                                        figsize=(20, 10))
-    cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0].scatter(Xt['x'], Xt['y'],
+                                        figsize=(8, 3))
+    cm = plt.cm.get_cmap('RdYlGn', 8)
+    sc = ax[0].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0].set_title('Actual')
-    ax[0].set_xlabel("x coordinate")
-    ax[0].set_ylabel("y coordinate")
-    ax[0].tick_params(labelsize=12)
-    sc = ax[1].scatter(Xt['x'], Xt['y'],
+    ax[0].set_xlabel("Y [EPSG:32617]")
+    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].tick_params(labelsize=8)
+    sc = ax[1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(y_predSVR),
                 cmap=cm, vmin=-2, vmax=2)
-    cbar = fig5.colorbar(sc)
+    ticks = np.linspace(-2, 2, 5, endpoint=True)
+    cbar = fig5.colorbar(sc, ticks = ticks)
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
-    ax[1].set_title('SVR  RMSE: '+ str(RMSE_SVR))
-    ax[1].set_xlabel("x coordinate")
-    ax[1].tick_params(labelsize=12)
-    sc = ax[2].scatter(Xt['x'], Xt['y'],
+    ax[1].set_title('SVR')
+    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].tick_params(labelsize=8)
+    sc = ax[2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(y_predMLPR),
                 cmap=cm,  vmin=-2, vmax=2)
-    ax[2].set_title('MLPR  RMSE: '+ str(RMSE_MLPR))
-    ax[2].set_xlabel("x coordinate")
-    ax[2].tick_params(labelsize=12)
-    sc = ax[3].scatter(Xt['x'], Xt['y'],
+    ax[2].set_title('MLPR')
+    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].tick_params(labelsize=8)
+    sc = ax[3].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(y_pred),
                 cmap=cm,  vmin=-2, vmax=2)
-    ax[3].set_title('RFR  RMSE: '+ str(RMSE_RFR))
-    ax[3].set_xlabel("x coordinate")
-    ax[3].tick_params(labelsize=12)
-
+    ax[3].set_title('RFR')
+    ax[3].set_xlabel("Y [EPSG:32617]")
+    ax[3].tick_params(labelsize=8)
+    fig5.tight_layout()
     fig5.subplots_adjust(wspace=0.03, hspace=0)
     fig5.suptitle(title)
     plt.draw()
@@ -547,73 +571,24 @@ col_study_handpicked = [  'depth', 'aspect','curvatureM','averageRunoff2', 'aver
 forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,27,30]]
 
-
-"""indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
+indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
 print(featuresP[indicesP])
 title = 'params number: '+ str(indicesP.size)
 plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
 
-for i in range(1):
+for i in range(18):
     featuresP = featuresP[indicesP[1:]]
     forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
     indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
     print(featuresP[indicesP])
     title = 'params number: '+ str(indicesP.size)
     plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
-"""
-"""dfTestNew10 = dfTest.assign(inflowChagres=10)
-dfTestNew20 = dfTest.assign(inflowChagres=20)
-dfTestNew30 = dfTest.assign(inflowChagres=30)
-dfTestNew40 = dfTest.assign(inflowChagres=40)
-dfTestNew50 = dfTest.assign(inflowChagres=50)
-"""
+
 #plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTest, 'handpicked')
 
 
 
-##################################
-# CV
-########################################
 
-from sklearn.model_selection import RandomizedSearchCV
-
-n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
-max_features = ['auto', 'sqrt']
-max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-max_depth.append(None)
-min_samples_split = [2, 5, 10]
-min_samples_leaf = [1, 2, 4]
-bootstrap = [True, False]
-random_grid = {'n_estimators': n_estimators,
-               'max_features': max_features,
-               'max_depth': max_depth,
-               'min_samples_split': min_samples_split,
-               'min_samples_leaf': min_samples_leaf,
-               'bootstrap': bootstrap}
-rf = RandomForestRegressor()
-
-#rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
-#rf_random.fit(X_traino2, y_traino2)
-#print(rf_random.best_params_)
-"""
-def evaluate(model, test_features, test_labels):
-    predictions = model.predict(test_features)
-    errors = abs(predictions  - test_labels)
-    mape = 100 * np.mean(errors / (test_labels+ test_features['hprevious']))
-    accuracy = 100 - mape
-    print('Model Performance')
-    print('Average Error: {:0.4f} meters.'.format(np.mean(errors)))
-    print('Accuracy = {:0.2f}%.'.format(accuracy))
-    
-    return accuracy
-base_model = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators = 10, random_state = 42))
-base_model.fit(X_traino2, y_traino2)
-Xt6 = dfTest[col_study2]
-yt6 = dfTest[param_study]
-base_accuracy = evaluate(base_model, Xt6, yt6)
-optimized_accuracy = evaluate(forest3, Xt6, yt6)
-print('Improvement of {:0.2f}%.'.format( 100 * (optimized_accuracy - base_accuracy) / base_accuracy))
-"""
 
 
 ###################################
@@ -660,17 +635,17 @@ def plotMaps2Sets(actual, pred1, pred2):
     fig5, ax = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0,0].scatter(Xt['x'], Xt['y'],
+    sc = ax[0,0].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0,0].set_title('Actual')
-    ax[0,0].set_xlabel("x coordinate")
-    ax[0,0].set_ylabel("y coordinate")
-    ax[0,0].tick_params(labelsize=12)
-    sc = ax[0,1].scatter(Xt['x'], Xt['y'],
+    ax[0,0].set_xlabel("Y [EPSG:32617]")
+    ax[0,0].set_ylabel("X [EPSG:32617]")
+    ax[0,0].tick_params(labelsize=8)
+    sc = ax[0,1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
@@ -680,29 +655,29 @@ def plotMaps2Sets(actual, pred1, pred2):
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 40
     ax[0,1].set_title('Prediction')
-    ax[0,1].set_xlabel("x coordinate")
-    ax[0,1].tick_params(labelsize=12)
-    sc = ax[0,2].scatter(Xt['x'], Xt['y'],
+    ax[0,1].set_xlabel("Y [EPSG:32617]")
+    ax[0,1].tick_params(labelsize=8)
+    sc = ax[0,2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
             c=(pred1 - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[0,2].set_title('Residual')
-    ax[0,2].set_xlabel("x coordinate")
-    ax[0,2].tick_params(labelsize=12)
+    ax[0,2].set_xlabel("Y [EPSG:32617]")
+    ax[0,2].tick_params(labelsize=8)
 
-    sc = ax[1,0].scatter(Xt['x'], Xt['y'],
+    sc = ax[1,0].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[1,0].set_title('Actual')
-    ax[1,0].set_xlabel("x coordinate")
-    ax[1,0].set_ylabel("y coordinate")
-    ax[1,0].tick_params(labelsize=12)
-    sc = ax[1,1].scatter(Xt['x'], Xt['y'],
+    ax[1,0].set_xlabel("Y [EPSG:32617]")
+    ax[1,0].set_ylabel("X [EPSG:32617]")
+    ax[1,0].tick_params(labelsize=8)
+    sc = ax[1,1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
@@ -710,17 +685,17 @@ def plotMaps2Sets(actual, pred1, pred2):
                 cmap=cm, vmin=-2, vmax=2)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1,1].set_title('Prediction with only high importance params')
-    ax[1,1].set_xlabel("x coordinate")
-    ax[1,1].tick_params(labelsize=12)
-    sc = ax[1,2].scatter(Xt['x'], Xt['y'],
+    ax[1,1].set_xlabel("Y [EPSG:32617]")
+    ax[1,1].tick_params(labelsize=8)
+    sc = ax[1,2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 10,
             c=(pred2 - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[1,2].set_title('Residual')
-    ax[1,2].set_xlabel("x coordinate")
-    ax[1,2].tick_params(labelsize=12)
+    ax[1,2].set_xlabel("Y [EPSG:32617]")
+    ax[1,2].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
     fig5.suptitle('RF Annual sedimentation 2012-2018')
@@ -738,17 +713,17 @@ def plotMaps1Set(actual, pred, title):
     fig5, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
                                         figsize=(20, 10))
     cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0].scatter(Xt['x'], Xt['y'],
+    sc = ax[0].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0].set_title('Actual')
-    ax[0].set_xlabel("x coordinate")
-    ax[0].set_ylabel("y coordinate")
-    ax[0].tick_params(labelsize=12)
-    sc = ax[1].scatter(Xt['x'], Xt['y'],
+    ax[0].set_xlabel("Y [EPSG:32617]")
+    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].tick_params(labelsize=8)
+    sc = ax[1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
@@ -758,17 +733,17 @@ def plotMaps1Set(actual, pred, title):
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('Prediction')
-    ax[1].set_xlabel("x coordinate")
-    ax[1].tick_params(labelsize=12)
-    sc = ax[2].scatter(Xt['x'], Xt['y'],
+    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].tick_params(labelsize=8)
+    sc = ax[2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(pred - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[2].set_title('Residual')
-    ax[2].set_xlabel("x coordinate")
-    ax[2].tick_params(labelsize=12)
+    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
     fig5.suptitle(title)
@@ -786,27 +761,27 @@ def plotMaps1Binned(actual, pred, title):
 
     for i in range(pred.size):
         if ranges[0] < pred[i] < ranges[1]:
-            sc = axs[0].scatter(x_array[i], y_array[i], c='red')
+            sc = axs[0].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='red')
         if ranges[1] < pred[i] < ranges[2]:
-            sc = axs[0].scatter(x_array[i], y_array[i], c='orange')
+            sc = axs[0].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='orange')
         if ranges[2] < pred[i] < ranges[3]:
-            sc = axs[0].scatter(x_array[i], y_array[i], c='yellow')
+            sc = axs[0].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='yellow')
         if ranges[3] < pred[i] < ranges[4]:
-            sc = axs[0].scatter(x_array[i], y_array[i], c='green')
+            sc = axs[0].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='green')
         if ranges[4] < pred[i] < ranges[5]:
-            sc = axs[0].scatter(x_array[i], y_array[i], c='blue')
+            sc = axs[0].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='blue')
 
     for i in range(actual_array.size):
         if ranges[0] < actual_array[i] < ranges[1]:
-            sc = axs[1].scatter(x_array[i], y_array[i], c='red')
+            sc = axs[1].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='red')
         if ranges[1] < actual_array[i] < ranges[2]:
-            sc = axs[1].scatter(x_array[i], y_array[i], c='orange')
+            sc = axs[1].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='orange')
         if ranges[2] < actual_array[i] < ranges[3]:
-            sc = axs[1].scatter(x_array[i], y_array[i], c='yellow')
+            sc = axs[1].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='yellow')
         if ranges[3] < actual_array[i] < ranges[4]:
-            sc = axs[1].scatter(x_array[i], y_array[i], c='green')
+            sc = axs[1].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='green')
         if ranges[4] < actual_array[i] < ranges[5]:
-            sc = axs[1].scatter(x_array[i], y_array[i], c='blue')
+            sc = axs[1].scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='blue')
 
     axs[0].set_title('Prediction')
     axs[1].set_title('Actual')
@@ -827,11 +802,11 @@ def plotBinned(data, X, title):
 
     for i in range(data_array.size):
         if ranges[0] < data_array[i] < ranges[1]:
-            sc = axs.scatter(x_array[i], y_array[i], c='yellow')
+            sc = axs.scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='yellow')
         if ranges[1] < data_array[i] < ranges[2]:
-            sc = axs.scatter(x_array[i], y_array[i], c='orange')
+            sc = axs.scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='orange')
         if ranges[2] < data_array[i] < ranges[3]:
-            sc = axs.scatter(x_array[i], y_array[i], c='red')
+            sc = axs.scatter(x_array[i]*10+1013618, y_array[i]*10+649502, c='red')
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
     fig5.suptitle(title)
@@ -842,15 +817,13 @@ def plotBinned(data, X, title):
 
 ###################################
 # GPR PLOT
-###################################
-
+####################################
 #plotMaps1Set(yt, y_predGPR, 'GPR Annual sedimentation 2012-2018')
 
 
 ###################################
 # MLPR PLOT
 ###################################
-
 #plotMaps1Set(yt, y_predMLPR, 'MLPR Annual sedimentation 2012-2018')
 
 ################
@@ -983,27 +956,24 @@ def plotOnYears(property, min, max):
     df38 = sklearn.utils.resample(df[df.year == 2038][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df42 = sklearn.utils.resample(df[df.year == 2042][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df46 = sklearn.utils.resample(df[df.year == 2046][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df50 = sklearn.utils.resample(df[df.year == 2050][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df54 = sklearn.utils.resample(df[df.year == 2054][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
     #plotBinned(df12['hdifference'], df12, 'binned 12')
 
-    plt.rcParams.update({'font.size': 20})
+    plt.rcParams.update({'font.size': 10})
     fig5, ax = plt.subplots(nrows=3, ncols=4, sharex=True, sharey=True,
-                                        figsize=(20, 10))
+                                        figsize=(15, 7))
     cm = plt.cm.get_cmap('RdYlGn', 5)
-    sc = ax[0,0].scatter(df97['x'], df97['y'],
+    sc = ax[0,0].scatter(df97['x']*10+1013618, df97['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df97[property]),
                 cmap=cm,  vmin=min, vmax=max)
     ax[0,0].set_title('97')
-    ax[0,0].set_xlabel("x coordinate")
-    ax[0,0].set_ylabel("y coordinate")
-    ax[0,0].tick_params(labelsize=12)
-    sc = ax[0,1].scatter(df08['x'], df08['y'],
+    ax[0,0].set_ylabel("X [EPSG:32617]")
+    ax[0,0].tick_params(labelsize=8)
+    sc = ax[0,1].scatter(df08['x']*10+1013618, df08['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
@@ -1012,40 +982,36 @@ def plotOnYears(property, min, max):
     cbar = fig5.colorbar(sc)
     cbar.ax.get_yaxis().labelpad = 20
     ax[0,1].set_title('08')
-    ax[0,1].set_xlabel("x coordinate")
-    ax[0,1].tick_params(labelsize=12)
-    sc = ax[0,2].scatter(df12['x'], df12['y'],
+    ax[0,1].tick_params(labelsize=8)
+    sc = ax[0,2].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df12[property]),
                 cmap=cm,  vmin=min, vmax=max)
     ax[0,2].set_title('12')
-    ax[0,2].set_xlabel("x coordinate")
-    ax[0,2].tick_params(labelsize=12)
+    ax[0,2].tick_params(labelsize=8)
     
-    sc = ax[0,3].scatter(df18['x'], df18['y'],
+    sc = ax[0,3].scatter(df18['x']*10+1013618, df18['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df18[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[0,3].set_title('18')
-    ax[0,3].set_xlabel("x coordinate")
-    ax[0,3].tick_params(labelsize=12)
+    ax[0,3].tick_params(labelsize=8)
     
-    sc = ax[1,0].scatter(df22['x'], df22['y'],
+    sc = ax[1,0].scatter(df22['x']*10+1013618, df22['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df22[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,0].set_title('22')
-    ax[1,0].set_xlabel("x coordinate")
-    ax[1,0].set_ylabel("y coordinate")
-    ax[1,0].tick_params(labelsize=12)
+    ax[1,0].set_ylabel("X [EPSG:32617]")
+    ax[1,0].tick_params(labelsize=8)
     
-    sc = ax[1,1].scatter(df26['x'], df26['y'],
+    sc = ax[1,1].scatter(df26['x']*10+1013618, df26['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
@@ -1053,41 +1019,39 @@ def plotOnYears(property, min, max):
                 cmap=cm, vmin=min, vmax=max)
 
     ax[1,1].set_title('26')
-    ax[1,1].set_xlabel("x coordinate")
-    ax[1,1].tick_params(labelsize=12)
+    ax[1,1].tick_params(labelsize=8)
     
-    sc = ax[1,2].scatter(df30['x'], df30['y'],
+    sc = ax[1,2].scatter(df30['x']*10+1013618, df30['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df30[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,2].set_title('30')
-    ax[1,2].set_xlabel("x coordinate")
-    ax[1,2].tick_params(labelsize=12)
+    ax[1,2].tick_params(labelsize=8)
     
-    sc = ax[1,3].scatter(df34['x'], df34['y'],
+    sc = ax[1,3].scatter(df34['x']*10+1013618, df34['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df34[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,3].set_title('34')
-    ax[1,3].set_xlabel("x coordinate")
-    ax[1,3].tick_params(labelsize=12)
+    ax[1,3].set_xlabel("Y [EPSG:32617]")
+    ax[1,3].tick_params(labelsize=8)
     
-    sc = ax[2,0].scatter(df38['x'], df38['y'],
+    sc = ax[2,0].scatter(df38['x']*10+1013618, df38['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df38[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[2,0].set_title('38')
-    ax[2,0].set_xlabel("x coordinate")
-    ax[2,0].set_ylabel("y coordinate")
-    ax[2,0].tick_params(labelsize=12)
+    ax[2,0].set_xlabel("Y [EPSG:32617]")
+    ax[2,0].set_ylabel("X [EPSG:32617]")
+    ax[2,0].tick_params(labelsize=8)
     
-    sc = ax[2,1].scatter(df42['x'], df42['y'],
+    sc = ax[2,1].scatter(df42['x']*10+1013618, df42['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
@@ -1095,44 +1059,35 @@ def plotOnYears(property, min, max):
                 cmap=cm, vmin=min, vmax=max)
 
     ax[2,1].set_title('42')
-    ax[2,1].set_xlabel("x coordinate")
-    ax[2,1].tick_params(labelsize=12)
+    ax[2,1].set_xlabel("Y [EPSG:32617]")
+    ax[2,1].tick_params(labelsize=8)
     
-    sc = ax[2,2].scatter(df46['x'], df46['y'],
+    sc = ax[2,2].scatter(df46['x']*10+1013618, df46['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 20,
             c=(df46[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[2,2].set_title('46')
-    ax[2,2].set_xlabel("x coordinate")
-    ax[2,2].tick_params(labelsize=12)
-    
-    sc = ax[2,3].scatter(df50['x'], df50['y'],
-            linewidths=1, alpha=.7,
-                edgecolor='none',
-            s = 20,
-            c=(df50[property]),
-                cmap=cm, vmin=min, vmax=max)
-    ax[2,3].set_title('50')
-    ax[2,3].set_xlabel("x coordinate")
-    ax[2,3].tick_params(labelsize=12)
+    ax[2,2].set_xlabel("Y [EPSG:32617]")
+    ax[2,2].tick_params(labelsize=8)
 
+    fig5.tight_layout()
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     fig5.suptitle(property)
     plt.draw()
 
-"""plotOnYears('hdifference', -2, 2)
+plotOnYears('hdifference', -2, 2)
 plotOnYears('height', 50, 70)
-plotOnYears('distChagres', 0, 40)"""
+plotOnYears('distChagres', 0, 40)
 
 
 
 ##################################
 # PROB
 ########################################
-
-def probSVR(iter, limit, col_study, dfTrain, dfTest):
+{'kernel': 'rbf', 'gamma': 0.0001, 'epsilon': 0.1, 'C': 10}
+def probSVR(iter, limit, col_study, dfTrain, dfTest, kernel, C, epsilon):
     XoTrain = dfTrain[col_study]
     yoTrain = dfTrain[param_study]
     XtTest = dfTest[col_study]
@@ -1141,7 +1096,24 @@ def probSVR(iter, limit, col_study, dfTrain, dfTest):
     print('computing probabilities')
     values = [0] *dfTest['y'].size
     for i in range(iter):
-        algNew = SVR(C=1.0, epsilon=0.2)
+        algNew = SVR(C=C, epsilon=epsilon, kernel=kernel)
+        y_pred = predict(algNew, XoTrain, yoTrain, XtTest)
+        for i in range(y_pred.size):
+            if y_pred[i] > limit:
+                values[i] = values[i] + 1
+    print('rmse: ' + str(rmse(ytTest, y_pred)))
+    return values
+
+def probSVRPoly(iter, limit, col_study, dfTrain, dfTest, kernel, C, epsilon, degree):
+    XoTrain = dfTrain[col_study]
+    yoTrain = dfTrain[param_study]
+    XtTest = dfTest[col_study]
+    ytTest =  dfTest[param_study]
+
+    print('computing probabilities')
+    values = [0] *dfTest['y'].size
+    for i in range(iter):
+        algNew = SVR(C=C, epsilon=epsilon, kernel=kernel, degree=degree)
         y_pred = predict(algNew, XoTrain, yoTrain, XtTest)
         for i in range(y_pred.size):
             if y_pred[i] > limit:
@@ -1181,61 +1153,125 @@ def probMLPR(iter, limit, col_study, dfTrain, dfTest):
 
 
 def plotProb(limit, values, dfTest, title):        
-    X_arr = dfTest['x']
-    Y_arr = dfTest['y']
+    X_arr = dfTest['x']*10+1013618
+    Y_arr = dfTest['y']*10+649502
     Diff_arr = dfTest['hdifference'].to_numpy()
     ActualValues = [0] *dfTest['y'].size
     margin = 0.4
     for i in range(Diff_arr.size):
         if Diff_arr[i] > (limit + margin):
-            ActualValues[i] = ActualValues[i] + 1
+            ActualValues[i] =  1
     total = 0
     for i in range(len(values)):
-        if values[i] == 0 & ActualValues[i] == 0:
+        if values[i] == 0 and ActualValues[i] == 0:
             total = total + 1
-        if values[i] != 0 & ActualValues[i] != 0:
+        if values[i] != 0 and ActualValues[i] != 0:
             total = total + 1
     accuracy = total/len(values)
-    plt.rcParams.update({'font.size': 8})
-    fig5, ax = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True,
-                                        figsize=(20, 10))
-    cm = plt.cm.get_cmap('binary')
-    sc = ax[0].scatter(X_arr, Y_arr,
+    plt.rcParams.update({'font.size': 9})
+    fig5, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True,
+                                        figsize=(4.5,3.3))
+    cm = plt.cm.get_cmap('RdYlGn', 3)
+
+    sc = ax.scatter(X_arr, Y_arr,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 10,
+            s = 24,
             c=(values),
                 cmap=cm, vmin=-2, vmax=2)
-    subtitle = 'Probability of sedimentation above: ' + str(limit) + 'accuracy :' + str(accuracy)
-    ax[0].set_title(subtitle)
-    ax[0].set_xlabel("x coordinate")
-    ax[0].set_ylabel("y coordinate")
-    ax[0].tick_params(labelsize=12)    
-    sc = ax[1].scatter(X_arr, Y_arr,
+    subtitle = 'accuracy: ' + str(round(accuracy*100,1)) + '%'
+    ax.set_title(subtitle)
+    ax.set_xlabel("Y [EPSG:32617]")
+    ax.set_ylabel("X [EPSG:32617]")
+    ax.tick_params(labelsize=8)    
+
+    """    sc = ax[1].scatter(X_arr, Y_arr,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 10,
+            s = 14,
             c=(ActualValues),
                 cmap=cm, vmin=-2, vmax=2)
     ax[1].set_title('Actual')
-    ax[1].set_xlabel("x coordinate")
-    ax[1].set_ylabel("y coordinate")
-    ax[1].tick_params(labelsize=12)
+    ax[1].set_ylabel("X [EPSG:32617]")
+    ax[1].tick_params(labelsize=8)"""
    
     fig5.subplots_adjust(wspace=0.03, hspace=0)
     fig5.suptitle(title)
+    fig5.tight_layout()
     plt.draw()
     return
 
 
-#valuesRFR = probRFR(2, 0.5, col_study_chag, dfTrain, dfTest)
-#plotProb(0.5, valuesRFR, dfTest, 'RFR')
 
-#valuesSVR = probSVR(4, 0.72, col_study_chag, dfTrain, dfTest)
-#plotProb(0.5, valuesSVR, dfTest, 'SVR')
+def probplotAllKernels(kernel, C, epsilon):
+    valuesSVR = probSVR(4, 0.72, col_study_chag, dfTrain, dfTest, kernel, C, epsilon)
+    plotProb(0.5, valuesSVR, dfTest, "Prediction with SVR: kernel={}, C={}, epsilon={}".format(kernel, C, epsilon))
+    print('done')
 
-#valuesMPLR = probMLPR(2, 0.5, col_study_chag, dfTrain, dfTest)
-#plotProb(0.5, valuesMPLR, dfTest, 'MPLR')
+def probplotPoly(kernel, C, epsilon, degree):
+    valuesSVR = probSVRPoly(4, 0.72, col_study_chag, dfTrain, dfTest, kernel, C, epsilon, degree)
+    plotProb(0.5, valuesSVR, dfTest, "SVR {} C= {} epsilon= {} degree={}".format(kernel, C, epsilon, degree))
+    print('done')
+
+"""
+valuesMPLR = probMLPR(2, 0.5, col_study_chag, dfTrain, dfTest)
+plotProb(0.5, valuesMPLR, dfTest, 'Prediction with MPLR')
+
+valuesRFR = probRFR(2, 0.5, col_study_chag, dfTrain, dfTest)
+plotProb(0.5, valuesRFR, dfTest, 'Prediction with RFR')
+"""
+
+
+
+##################################
+# CV
+########################################
+
+"""from sklearn.model_selection import RandomizedSearchCV
+
+XoTrainq = dfTrain[col_study_chag]
+yoTrainq = dfTrain[param_study]
+XtTestq = dfTest[col_study_chag]
+ytTestq =  dfTest[param_study]
+
+
+n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
+max_features = ['auto', 'sqrt']
+max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+max_depth.append(None)
+min_samples_split = [2, 5, 10]
+min_samples_leaf = [1, 2, 4]
+bootstrap = [True, False]
+
+random_grid = {'kernel': ['rbf'], 'C':[ 10],'gamma': [1e-3, 1e-4, 1e-5, 1e-6, 1e-7],'epsilon':[0.1, 0.2, 0.3, 0.4, 0.5]}
+#'linear', 'rbf','poly'
+#{'kernel': 'rbf', 'gamma': 0.001, 'epsilon': 0.1, 'C': 10}
+rf = RandomForestRegressor()
+svr = SVR()
+svr_random = RandomizedSearchCV(estimator = svr, param_distributions = random_grid, n_iter = 3, cv = 3, verbose=2, random_state=42, n_jobs = 3)
+svr_random.fit(XoTrainq, yoTrainq)
+print(svr_random.best_params_)"""
+
+
+"""
+def evaluate(model, test_features, test_labels):
+    predictions = model.predict(test_features)
+    errors = abs(predictions  - test_labels)
+    mape = 100 * np.mean(errors / (test_labels+ test_features['hprevious']))
+    accuracy = 100 - mape
+    print('Model Performance')
+    print('Average Error: {:0.4f} meters.'.format(np.mean(errors)))
+    print('Accuracy = {:0.2f}%.'.format(accuracy))
+    
+    return accuracy
+base_model = make_pipeline(StandardScaler(), RandomForestRegressor(n_estimators = 10, random_state = 42))
+base_model.fit(X_traino2, y_traino2)
+Xt6 = dfTest[col_study2]
+yt6 = dfTest[param_study]
+base_accuracy = evaluate(base_model, Xt6, yt6)
+optimized_accuracy = evaluate(forest3, Xt6, yt6)
+print('Improvement of {:0.2f}%.'.format( 100 * (optimized_accuracy - base_accuracy) / base_accuracy))
+"""
 
 
 ###################################
@@ -1244,8 +1280,6 @@ def plotProb(limit, values, dfTest, title):
 
 col_studyPe = [ 'depth', 'hrelative3', 'slope', 'curvatureS','curvatureM','curvatureL', 'averageRunoff1', 'averageRunoff2','averageRunoff3','discharge','skeletonAngleChagres', 'riverLengthChagres', 'distChagres', 'random', 'averageSlope', 'totalDistChagres','skeletonAnglePequeni', 'riverLengthPequeni', 'inflowPequeni', 'distPequeni','totalDistPequeni']
 #col_study2 = ['interval',  'hprevious', 'hrelative1','hrelative2','hrelative3', 'slope', 'aspect', 'curvature', 'dist', 'averageRunoff1', 'averageRunoff2', 'averageRunoff3', 'discharge','skeletonAngle', 'riverLength', 'inflow']
-col_study_peq = [ 'depth', 'hrelative3','hrelative2', 'slope', 'curvatureL', 'averageRunoff1', 'averageRunoff2','averageSlope','riverLengthPequeni', 'distPequeni','totalDistPequeni']
-col_study_chag = [ 'depth', 'riverLengthChagres','totalDistChagres', 'distChagres','averageRunoff3', 'averageRunoff2', 'averageRunoff1','aspect', 'averageSlope','skeletonAngleChagres','hrelative3','hrelative2','slope', 'curvatureL']
 
 
 param_study = 'hdifference'
