@@ -84,6 +84,7 @@ col_study = ['year','interval','x','y','depth',  'hrelative1', 'hrelative2', 'hr
 param_study = 'hdifference'
 
 #[df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970]
+
 """dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
@@ -204,8 +205,8 @@ def plotHeightForYears():
             c=(df97['height']),
                 cmap=cm, vmin=60, vmax=70)
     ax[0].set_title('97')
-    ax[0].set_xlabel("Y [EPSG:32617]")
-    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0].set_ylabel("X [m] - EPSG:32617")
     ax[0].tick_params(labelsize=8)
     sc = ax[1].scatter(df08['x']*10+1013618, df08['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -217,7 +218,7 @@ def plotHeightForYears():
     cbar.ax.set_ylabel('bed level height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08')
-    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)
     sc = ax[2].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -226,7 +227,7 @@ def plotHeightForYears():
             c=(df12['height']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[2].set_title('12')
-    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
     sc = ax[3].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -235,7 +236,7 @@ def plotHeightForYears():
             c=(df12['height'] + df12['hdifference']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[3].set_title('18')
-    ax[3].set_xlabel("Y [EPSG:32617]")
+    ax[3].set_xlabel("Y [m] - EPSG:32617")
     ax[3].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
@@ -266,8 +267,8 @@ def plotDiffForYears():
             c=(df97T['hdifference']),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[0].set_title('97-08')
-    ax[0].set_xlabel("Y [EPSG:32617]")
-    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0].set_ylabel("X [m] - EPSG:32617")
     ax[0].tick_params(labelsize=8)
     sc = ax[1].scatter(df08T['x']*10+1013618, df08T['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -279,7 +280,7 @@ def plotDiffForYears():
     cbar.ax.set_ylabel('difference in height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08-12')
-    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)
     sc = ax[2].scatter(df12T['x']*10+1013618, df12T['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -288,7 +289,7 @@ def plotDiffForYears():
             c=(df12T['hdifference']),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[2].set_title('12-18')
-    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
 
 
@@ -311,8 +312,8 @@ def plotHeightForYears():
             c=(df97['height']),
                 cmap=cm, vmin=60, vmax=70)
     ax[0].set_title('97')
-    ax[0].set_xlabel("Y [EPSG:32617]")
-    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0].set_ylabel("X [m] - EPSG:32617")
     ax[0].tick_params(labelsize=8)
     sc = ax[1].scatter(df08['x']*10+1013618, df08['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -324,7 +325,7 @@ def plotHeightForYears():
     cbar.ax.set_ylabel('bed level height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08')
-    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)
     sc = ax[2].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -333,7 +334,7 @@ def plotHeightForYears():
             c=(df12['height']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[2].set_title('12')
-    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
     sc = ax[3].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -342,7 +343,7 @@ def plotHeightForYears():
             c=(df12['height'] + df12['hdifference']),
                 cmap=cm,  vmin=60, vmax=70)
     ax[3].set_title('18')
-    ax[3].set_xlabel("Y [EPSG:32617]")
+    ax[3].set_xlabel("Y [m] - EPSG:32617")
     ax[3].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
@@ -364,8 +365,8 @@ def plotFeatureForYears(D97, D08, D12, feature):
             c=(D97[feature]),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0].set_title('97-08')
-    ax[0].set_xlabel("Y [EPSG:32617]")
-    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0].set_ylabel("X [m] - EPSG:32617")
     ax[0].tick_params(labelsize=8)
     sc = ax[1].scatter(D08['x']*10+1013618, D08['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -379,7 +380,7 @@ def plotFeatureForYears(D97, D08, D12, feature):
     cbar.ax.set_ylabel('difference in height [m]', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('08-12')
-    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)
     sc = ax[2].scatter(D12['x']*10+1013618, D12['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -388,7 +389,7 @@ def plotFeatureForYears(D97, D08, D12, feature):
             c=(D12[feature]),
                 cmap=cm, vmin=-2, vmax=2)
     ax[2].set_title('12-18')
-    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
 
     fig52.tight_layout()
@@ -396,12 +397,12 @@ def plotFeatureForYears(D97, D08, D12, feature):
     fig52.subplots_adjust(wspace=0.03, hspace=0.05)
     plt.draw()
 
-plotFeatureForYears(df97T, df08T, df12T, 'hdifference')
-plotFeatureForYears(df97, df08, df12, 'hdifference')
-plotFeatureForYears(df97H, df08H, df12H, 'hdifference')
-plotFeatureForYears(df97P, df08P, df12P, 'hdifference')
-plotFeatureForYears(df97U, df08U, df12U, 'hdifference')
 
+#plotFeatureForYears(df97T, df08T, df12T, 'hdifference')
+#plotFeatureForYears(df97, df08, df12, 'hdifference')
+#plotFeatureForYears(df97H, df08H, df12H, 'hdifference')
+plotFeatureForYears(df97P, df08P, df12P, 'hdifference')
+#plotFeatureForYears(df97U, df08U, df12U, 'hdifference')
 
 
 
@@ -470,8 +471,8 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0].set_title('Actual')
-    ax[0].set_xlabel("Y [EPSG:32617]")
-    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0].set_ylabel("X [m] - EPSG:32617")
     ax[0].tick_params(labelsize=8)
     sc = ax[1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -484,7 +485,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('SVR')
-    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)
     sc = ax[2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -493,7 +494,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
             c=(y_predMLPR),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[2].set_title('MLPR')
-    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
     sc = ax[3].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -502,7 +503,7 @@ def predictOtherAlgs(actual, Xt, X_traino2, y_traino2, Xt2, title):
             c=(y_pred),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[3].set_title('RFR')
-    ax[3].set_xlabel("Y [EPSG:32617]")
+    ax[3].set_xlabel("Y [m] - EPSG:32617")
     ax[3].tick_params(labelsize=8)
     fig5.tight_layout()
     fig5.subplots_adjust(wspace=0.03, hspace=0)
@@ -571,7 +572,7 @@ col_study_handpicked = [  'depth', 'aspect','curvatureM','averageRunoff2', 'aver
 forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,27,30]]
 
-indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
+"""indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
 print(featuresP[indicesP])
 title = 'params number: '+ str(indicesP.size)
 plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
@@ -583,7 +584,7 @@ for i in range(18):
     print(featuresP[indicesP])
     title = 'params number: '+ str(indicesP.size)
     plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
-
+"""
 #plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTest, 'handpicked')
 
 
@@ -642,8 +643,8 @@ def plotMaps2Sets(actual, pred1, pred2):
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0,0].set_title('Actual')
-    ax[0,0].set_xlabel("Y [EPSG:32617]")
-    ax[0,0].set_ylabel("X [EPSG:32617]")
+    ax[0,0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0,0].set_ylabel("X [m] - EPSG:32617")
     ax[0,0].tick_params(labelsize=8)
     sc = ax[0,1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -655,7 +656,7 @@ def plotMaps2Sets(actual, pred1, pred2):
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 40
     ax[0,1].set_title('Prediction')
-    ax[0,1].set_xlabel("Y [EPSG:32617]")
+    ax[0,1].set_xlabel("Y [m] - EPSG:32617")
     ax[0,1].tick_params(labelsize=8)
     sc = ax[0,2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -664,7 +665,7 @@ def plotMaps2Sets(actual, pred1, pred2):
             c=(pred1 - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[0,2].set_title('Residual')
-    ax[0,2].set_xlabel("Y [EPSG:32617]")
+    ax[0,2].set_xlabel("Y [m] - EPSG:32617")
     ax[0,2].tick_params(labelsize=8)
 
     sc = ax[1,0].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
@@ -674,8 +675,8 @@ def plotMaps2Sets(actual, pred1, pred2):
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[1,0].set_title('Actual')
-    ax[1,0].set_xlabel("Y [EPSG:32617]")
-    ax[1,0].set_ylabel("X [EPSG:32617]")
+    ax[1,0].set_xlabel("Y [m] - EPSG:32617")
+    ax[1,0].set_ylabel("X [m] - EPSG:32617")
     ax[1,0].tick_params(labelsize=8)
     sc = ax[1,1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -685,7 +686,7 @@ def plotMaps2Sets(actual, pred1, pred2):
                 cmap=cm, vmin=-2, vmax=2)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1,1].set_title('Prediction with only high importance params')
-    ax[1,1].set_xlabel("Y [EPSG:32617]")
+    ax[1,1].set_xlabel("Y [m] - EPSG:32617")
     ax[1,1].tick_params(labelsize=8)
     sc = ax[1,2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -694,7 +695,7 @@ def plotMaps2Sets(actual, pred1, pred2):
             c=(pred2 - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[1,2].set_title('Residual')
-    ax[1,2].set_xlabel("Y [EPSG:32617]")
+    ax[1,2].set_xlabel("Y [m] - EPSG:32617")
     ax[1,2].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
@@ -720,8 +721,8 @@ def plotMaps1Set(actual, pred, title):
             c=(actual),
                 cmap=cm, vmin=-2, vmax=2)
     ax[0].set_title('Actual')
-    ax[0].set_xlabel("Y [EPSG:32617]")
-    ax[0].set_ylabel("X [EPSG:32617]")
+    ax[0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0].set_ylabel("X [m] - EPSG:32617")
     ax[0].tick_params(labelsize=8)
     sc = ax[1].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -733,7 +734,7 @@ def plotMaps1Set(actual, pred, title):
     cbar.ax.set_ylabel('Change in bed level height per year [m] without xy', rotation=270)
     cbar.ax.get_yaxis().labelpad = 20
     ax[1].set_title('Prediction')
-    ax[1].set_xlabel("Y [EPSG:32617]")
+    ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)
     sc = ax[2].scatter(Xt['x']*10+1013618, Xt['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -742,7 +743,7 @@ def plotMaps1Set(actual, pred, title):
             c=(pred - actual),
                 cmap=cm,  vmin=-2, vmax=2)
     ax[2].set_title('Residual')
-    ax[2].set_xlabel("Y [EPSG:32617]")
+    ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
 
     fig5.subplots_adjust(wspace=0.03, hspace=0)
@@ -971,7 +972,7 @@ def plotOnYears(property, min, max):
             c=(df97[property]),
                 cmap=cm,  vmin=min, vmax=max)
     ax[0,0].set_title('97')
-    ax[0,0].set_ylabel("X [EPSG:32617]")
+    ax[0,0].set_ylabel("X [m] - EPSG:32617")
     ax[0,0].tick_params(labelsize=8)
     sc = ax[0,1].scatter(df08['x']*10+1013618, df08['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -1008,7 +1009,7 @@ def plotOnYears(property, min, max):
             c=(df22[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,0].set_title('22')
-    ax[1,0].set_ylabel("X [EPSG:32617]")
+    ax[1,0].set_ylabel("X [m] - EPSG:32617")
     ax[1,0].tick_params(labelsize=8)
     
     sc = ax[1,1].scatter(df26['x']*10+1013618, df26['y']*10+649502,
@@ -1037,7 +1038,7 @@ def plotOnYears(property, min, max):
             c=(df34[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[1,3].set_title('34')
-    ax[1,3].set_xlabel("Y [EPSG:32617]")
+    ax[1,3].set_xlabel("Y [m] - EPSG:32617")
     ax[1,3].tick_params(labelsize=8)
     
     sc = ax[2,0].scatter(df38['x']*10+1013618, df38['y']*10+649502,
@@ -1047,8 +1048,8 @@ def plotOnYears(property, min, max):
             c=(df38[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[2,0].set_title('38')
-    ax[2,0].set_xlabel("Y [EPSG:32617]")
-    ax[2,0].set_ylabel("X [EPSG:32617]")
+    ax[2,0].set_xlabel("Y [m] - EPSG:32617")
+    ax[2,0].set_ylabel("X [m] - EPSG:32617")
     ax[2,0].tick_params(labelsize=8)
     
     sc = ax[2,1].scatter(df42['x']*10+1013618, df42['y']*10+649502,
@@ -1059,7 +1060,7 @@ def plotOnYears(property, min, max):
                 cmap=cm, vmin=min, vmax=max)
 
     ax[2,1].set_title('42')
-    ax[2,1].set_xlabel("Y [EPSG:32617]")
+    ax[2,1].set_xlabel("Y [m] - EPSG:32617")
     ax[2,1].tick_params(labelsize=8)
     
     sc = ax[2,2].scatter(df46['x']*10+1013618, df46['y']*10+649502,
@@ -1069,7 +1070,7 @@ def plotOnYears(property, min, max):
             c=(df46[property]),
                 cmap=cm, vmin=min, vmax=max)
     ax[2,2].set_title('46')
-    ax[2,2].set_xlabel("Y [EPSG:32617]")
+    ax[2,2].set_xlabel("Y [m] - EPSG:32617")
     ax[2,2].tick_params(labelsize=8)
 
     fig5.tight_layout()
@@ -1181,8 +1182,8 @@ def plotProb(limit, values, dfTest, title):
                 cmap=cm, vmin=-2, vmax=2)
     subtitle = 'accuracy: ' + str(round(accuracy*100,1)) + '%'
     ax.set_title(subtitle)
-    ax.set_xlabel("Y [EPSG:32617]")
-    ax.set_ylabel("X [EPSG:32617]")
+    ax.set_xlabel("Y [m] - EPSG:32617")
+    ax.set_ylabel("X [m] - EPSG:32617")
     ax.tick_params(labelsize=8)    
 
     """    sc = ax[1].scatter(X_arr, Y_arr,
@@ -1192,7 +1193,7 @@ def plotProb(limit, values, dfTest, title):
             c=(ActualValues),
                 cmap=cm, vmin=-2, vmax=2)
     ax[1].set_title('Actual')
-    ax[1].set_ylabel("X [EPSG:32617]")
+    ax[1].set_ylabel("X [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)"""
    
     fig5.subplots_adjust(wspace=0.03, hspace=0)
