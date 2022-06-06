@@ -1474,10 +1474,9 @@ def probplotPoly(kernel, C, epsilon, degree):
     plotProb(0.5, valuesSVR, dfTest, "SVR {} C= {} epsilon= {} degree={}".format(kernel, C, epsilon, degree))
     print('done')
 
-"""
 valuesMPLR = probMLPR(2, 0.5, col_study_chag, dfTrain, dfTest)
 plotProb(0.5, valuesMPLR, dfTest, 'Prediction with MPLR')
-
+"""
 valuesRFR = probRFR(2, 0.5, col_study_chag, dfTrain, dfTest)
 plotProb(0.5, valuesRFR, dfTest, 'Prediction with RFR')
 """
