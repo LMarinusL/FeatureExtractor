@@ -91,10 +91,10 @@ yo = dfTrain[param_study]
 dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 """
 
-dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 
 Xt = dfTest[col_study]
 yt = np.clip(dfTest[param_study], -5, 2)
@@ -118,14 +118,14 @@ df12U = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdif
 df08U = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x > 1489],  random_state=None, stratify=None)
 df97U = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x > 1489], random_state=None, stratify=None)
 """
-df12P = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-df08P = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-df97P = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+df12P = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+df08P = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+df97P = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
 """
 
-df12P = sklearn.utils.resample(df[df.year == 2012][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525],  random_state=None, stratify=None)
-df08P = sklearn.utils.resample(df[df.year == 2008][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525],  random_state=None, stratify=None)
-df97P = sklearn.utils.resample(df[df.year == 1997][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], random_state=None, stratify=None)
+df12P = sklearn.utils.resample(df[df.year == 2012][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525],  random_state=None, stratify=None)
+df08P = sklearn.utils.resample(df[df.year == 2008][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525],  random_state=None, stratify=None)
+df97P = sklearn.utils.resample(df[df.year == 1997][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], random_state=None, stratify=None)
 
 
 df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970],  random_state=None, stratify=None)
@@ -397,14 +397,14 @@ def plotFeatureForYears(D97, D08, D12, feature):
     fig52.subplots_adjust(wspace=0.03, hspace=0.05)
     plt.draw()
 
-
+"""
 plotFeatureForYears(df97T, df08T, df12T, 'hdifference')
 plotFeatureForYears(df97, df08, df12, 'hdifference')
 plotFeatureForYears(df97H, df08H, df12H, 'hdifference')
 plotFeatureForYears(df97P, df08P, df12P, 'hdifference')
 plotFeatureForYears(df97U, df08U, df12U, 'hdifference')
 
-
+"""
 
 
 ###################
@@ -572,7 +572,7 @@ col_study_handpicked = [  'depth', 'aspect','curvatureM','averageRunoff2', 'aver
 forestImportanceP = RandomForestRegressor(n_estimators= 800, min_samples_split= 2, min_samples_leaf= 2, max_features= 'sqrt', max_depth= 50, bootstrap= False)
 featuresP=df.columns[[4,6,7,8,9,10,11,12,13,14,15,16,17,22, 23, 24, 25,27,31]]
 
-indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
+"""indicesP = plotImportances(forestImportanceP, featuresP, dfTrain[featuresP], dfTrain[param_study] )
 print(featuresP[indicesP])
 title = 'params number: '+ str(indicesP.size)
 plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
@@ -584,7 +584,7 @@ for i in range(18):
     print(featuresP[indicesP])
     title = 'params number: '+ str(indicesP.size)
     plotSelection(featuresP[indicesP], yt, Xt, dfTrain, dfTest, title)
-
+"""
 #plotSelection(col_study_handpicked, yt, Xt, dfTrain, dfTest, 'handpicked')
 
 
@@ -948,15 +948,15 @@ graph = graphviz.Source(dot_data, format='png')
 def plotOnYears(property, min, max):
 
 
-    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
-    df38 = sklearn.utils.resample(df[df.year == 2038][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1250][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df18 = sklearn.utils.resample(df[df.year == 2018][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df22 = sklearn.utils.resample(df[df.year == 2022][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df26 = sklearn.utils.resample(df[df.year == 2026][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df30 = sklearn.utils.resample(df[df.year == 2030][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df34 = sklearn.utils.resample(df[df.year == 2034][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
+    df38 = sklearn.utils.resample(df[df.year == 2038][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1100][df.y < 650][df.y > 525], n_samples=10000, random_state=None, stratify=None)
     #df42 = sklearn.utils.resample(df[df.year == 2042][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     #df46 = sklearn.utils.resample(df[df.year == 2046][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
@@ -1080,10 +1080,10 @@ def plotOnYears(property, min, max):
     #fig5.suptitle(property)
     plt.draw()
 
-plotOnYears('hdifference', -2, 2)
+"""plotOnYears('hdifference', -2, 2)
 plotOnYears('height', 50, 70)
 plotOnYears('distChagres', 0, 40)
-
+"""
 
 
 ##################################
@@ -1207,7 +1207,7 @@ def plotProb(limit, values, dfTest, title):
 
 
 def probplotAllKernels(kernel, C, epsilon):
-    valuesSVR = probSVR(4, 0.72, col_study_chag, dfTrain, dfTest, kernel, C, epsilon)
+    valuesSVR = probSVR(2, 0.72, col_study_peq, dfTrain, dfTest, kernel, C, epsilon)
     plotProb(0.5, valuesSVR, dfTest, "Prediction with SVR: kernel={}, C={}, epsilon={}".format(kernel, C, epsilon))
     print('done')
 
@@ -1215,15 +1215,23 @@ def probplotPoly(kernel, C, epsilon, degree):
     valuesSVR = probSVRPoly(4, 0.72, col_study_chag, dfTrain, dfTest, kernel, C, epsilon, degree)
     plotProb(0.5, valuesSVR, dfTest, "SVR {} C= {} epsilon= {} degree={}".format(kernel, C, epsilon, degree))
     print('done')
-
 """
-valuesMPLR = probMLPR(2, 0.5, col_study_chag, dfTrain, dfTest)
+probplotAllKernels('rbf', 1, 0.3)
+
+valuesMPLR = probMLPR(2, 0.5, col_study_peq, dfTrain, dfTest)
 plotProb(0.5, valuesMPLR, dfTest, 'Prediction with MPLR')
 
-valuesRFR = probRFR(2, 0.5, col_study_chag, dfTrain, dfTest)
+valuesRFR = probRFR(2, 0.5, col_study_peq, dfTrain, dfTest)
 plotProb(0.5, valuesRFR, dfTest, 'Prediction with RFR')
 """
+#valuesRFR = probRFR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
+#plotProb(0.5, valuesRFR, dfTest, 'RFR')
 
+#valuesSVR = probSVR(5, 0.5, col_study_handpicked, dfTrain, dfTest, 'rbf', 1, 0.2)
+#plotProb(0.5, valuesSVR, dfTest, 'SVR')
+
+valuesSVR = probMLPR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
+plotProb(0.5, valuesSVR, dfTest, 'MLPR')
 
 
 ##################################
