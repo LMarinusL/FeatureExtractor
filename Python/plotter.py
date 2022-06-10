@@ -68,7 +68,7 @@ print(df.head())
 ##############
 import pathlib
 print(pathlib.Path(__file__).parent.resolve())
-df = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/ChagresFullOutput290522v2.txt', sep=" ")
+df = pd.read_csv('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/outputGridFull.txt', sep=" ")
 print(df.head())
 print(df.columns)
 
@@ -91,10 +91,10 @@ yo = dfTrain[param_study]
 dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -10][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 """
 
-dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+dfTrain = sklearn.utils.resample(df[df.year < 2012][df.hdifference > -2][df.hdifference < 10][ df.x > 640 ][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 Xo = dfTrain[col_study]
 yo = dfTrain[param_study]
-dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+dfTest = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][ df.x > 640 ][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 Xt = dfTest[col_study]
 yt = np.clip(dfTest[param_study], -5, 2)
@@ -128,17 +128,17 @@ df08P = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -10][df.hdif
 df97P = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -10][df.hdifference < 10][df.x < 1489][df.x > 1049][df.y < 650][df.y > 525], random_state=None, stratify=None)
 
 
-df12 = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-df08 = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-df97 = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+df12 = sklearn.utils.resample(df[df.year == 2012],  random_state=None, stratify=None)
+df08 = sklearn.utils.resample(df[df.year == 2008],  random_state=None, stratify=None)
+df97 = sklearn.utils.resample(df[df.year == 1997],  random_state=None, stratify=None)
 """
 df12C = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 df08C = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 df97C = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 """
-df12C = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970],  random_state=None, stratify=None)
-df08C = sklearn.utils.resample(df[df.year == 2008][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970],  random_state=None, stratify=None)
-df97C = sklearn.utils.resample(df[df.year == 1997][df.hdifference > -2][df.hdifference < 10][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970],  random_state=None, stratify=None)
+df12C = sklearn.utils.resample(df[df.year == 2012][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970],  n_samples=10000, random_state=None, stratify=None)
+df08C = sklearn.utils.resample(df[df.year == 2008][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970],  n_samples=10000, random_state=None, stratify=None)
+df97C = sklearn.utils.resample(df[df.year == 1997][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970],  n_samples=10000, random_state=None, stratify=None)
 
 df12test = sklearn.utils.resample(df[df.year == 2012][df.hdifference > -2][df.hdifference < 10][df.x < 1700][df.x > 1600][df.y < 700][df.y > 650],  random_state=None, stratify=None)
 print('size of 100x50: ', len(df12test['hdifference']))
@@ -345,24 +345,23 @@ def plotHeightForYears():
     ax[3].set_title('18')
     ax[3].set_xlabel("Y [m] - EPSG:32617")
     ax[3].tick_params(labelsize=8)
-
     fig5.subplots_adjust(wspace=0.03, hspace=0.05)
     plt.draw()
 plotHeightForYears()
 
 print(df12.head())
-def plotFeatureForYears(D97, D08, D12, feature):
+def plotFeatureForYears(D97, D08, D12, feature, min, max):
 
     plt.rcParams.update({'font.size': 8})
     fig52, ax = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True,
-                                        figsize=(9, 2.5))
-    cm = plt.cm.get_cmap('RdYlGn', 12)
+                                        figsize=(8, 2.5))
+    cm = plt.cm.get_cmap('RdYlGn', 16)
     sc = ax[0].scatter(D97['x']*10+1013618, D97['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 8,
+            s = 17,
             c=(D97[feature]),
-                cmap=cm, vmin=-6, vmax=6)
+                cmap=cm, vmin=min, vmax=max)
     ax[0].set_title('97-08')
     ax[0].set_xlabel("Y [m] - EPSG:32617")
     ax[0].set_ylabel("X [m] - EPSG:32617")
@@ -370,40 +369,36 @@ def plotFeatureForYears(D97, D08, D12, feature):
     sc = ax[1].scatter(D08['x']*10+1013618, D08['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 8,
+            s = 17,
             c=(D08[feature]),
-                cmap=cm, vmin=-6, vmax=6)
-    ticks = np.linspace(-6, 6, 5, endpoint=True)
-    cbar = fig52.colorbar(sc, ticks = ticks)
-    cbar.ax.set_title('>6')
-    cbar.ax.set_ylabel('difference in bed level height [m]', rotation=270)
-    cbar.ax.get_yaxis().labelpad = 20
+                cmap=cm, vmin=min, vmax=max)
     ax[1].set_title('08-12')
     ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].tick_params(labelsize=8)
     sc = ax[2].scatter(D12['x']*10+1013618, D12['y']*10+649502,
             linewidths=1, alpha=.7,
                 edgecolor='none',
-            s = 8,
+            s = 17,
             c=(D12[feature]),
-                cmap=cm, vmin=-6, vmax=6)
+                cmap=cm, vmin=min, vmax=max)
     ax[2].set_title('12-18')
     ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
-
+    fig52.suptitle(feature)
     fig52.tight_layout()
 
     fig52.subplots_adjust(wspace=0.03, hspace=0.05)
     plt.draw()
 
 
-#plotFeatureForYears(df97T, df08T, df12T, 'hdifference')
-plotFeatureForYears(df97, df08, df12, 'hdifference')
-plotFeatureForYears(df97H, df08H, df12H, 'hdifference')
-#plotFeatureForYears(df97P, df08P, df12P, 'hdifference')
-#plotFeatureForYears(df97U, df08U, df12U, 'hdifference')
-
-
+"""plotFeatureForYears(df97C, df08C, df12C, 'totalDistChagres', 0, 1800)
+plotFeatureForYears(df97C, df08C, df12C, 'curvatureL',-1, 1)
+plotFeatureForYears(df97C, df08C, df12C, 'curvatureS',-1, 1)
+plotFeatureForYears(df97C, df08C, df12C, 'averageRunoff1',0, 500)
+plotFeatureForYears(df97C, df08C, df12C, 'averageRunoff3',0, 200)
+plotFeatureForYears(df97C, df08C, df12C, 'skeletonAngleChagres',0, 300)
+plotFeatureForYears(df97C, df08C, df12C, 'riverLengthChagres', 0, 250)
+plotFeatureForYears(df97C, df08C, df12C, 'distChagres',0, 120)"""
 
 
 ###################
@@ -1261,7 +1256,7 @@ def plotPredYears(property, min, max):
     fig5.subplots_adjust(wspace=0.1, hspace=0.13)
     #fig5.suptitle(property)
     plt.draw()
-plotPredYears('hdifference', -1, 1)
+#plotPredYears('hdifference', -1, 1)
 
 
 def plotOnYears4Height(property, min, max):
@@ -1343,7 +1338,7 @@ def plotOnYears4Height(property, min, max):
    #fig5.suptitle('Morphological changes in Rio Chagres')
     plt.draw()
 
-plotOnYears4Height('height', 50, 70)   
+#plotOnYears4Height('height', 50, 70)   
 ##################################
 # PROB
 ########################################
@@ -1430,34 +1425,35 @@ def plotProb(limit, values, dfTest, title):
             total = total + 1
     accuracy = total/len(values)
     plt.rcParams.update({'font.size': 9})
-    fig5, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True,
+    fig5, ax = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True,
                                         figsize=(4.5,3.3))
     cm = plt.cm.get_cmap('RdYlGn', 3)
 
-    sc = ax.scatter(X_arr, Y_arr,
+    sc = ax[0].scatter(X_arr, Y_arr,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 24,
             c=(values),
                 cmap=cm, vmin=-2, vmax=2)
     subtitle = 'accuracy: ' + str(round(accuracy*100,1)) + '%'
-    ax.set_title(subtitle)
-    ax.set_xlabel("Y [m] - EPSG:32617")
-    ax.set_ylabel("X [m] - EPSG:32617")
-    ax.tick_params(labelsize=8)    
+    ax[0].set_title(subtitle)
+    ax[0].set_xlabel("Y [m] - EPSG:32617")
+    ax[0].set_ylabel("X [m] - EPSG:32617")
+    ax[0].tick_params(labelsize=8)    
 
-    """    sc = ax[1].scatter(X_arr, Y_arr,
+    sc = ax[1].scatter(X_arr, Y_arr,
             linewidths=1, alpha=.7,
                 edgecolor='none',
             s = 14,
             c=(ActualValues),
                 cmap=cm, vmin=-2, vmax=2)
     ax[1].set_title('Actual')
+    ax[1].set_xlabel("Y [m] - EPSG:32617")
     ax[1].set_ylabel("X [m] - EPSG:32617")
-    ax[1].tick_params(labelsize=8)"""
+    ax[1].tick_params(labelsize=8)
    
-    fig5.subplots_adjust(wspace=0.03, hspace=0)
-    fig5.suptitle(title)
+    fig5.subplots_adjust(wspace=0.03, hspace=0.4)
+    fig5.suptitle('No noise added - '+ subtitle)
     fig5.tight_layout()
     plt.draw()
     return
@@ -1473,15 +1469,15 @@ def probplotPoly(kernel, C, epsilon, degree):
     valuesSVR = probSVRPoly(4, 0.72, col_study_chag, dfTrain, dfTest, kernel, C, epsilon, degree)
     plotProb(0.5, valuesSVR, dfTest, "SVR {} C= {} epsilon= {} degree={}".format(kernel, C, epsilon, degree))
     print('done')
-
+"""
 valuesMPLR = probMLPR(2, 0.5, col_study_chag, dfTrain, dfTest)
 plotProb(0.5, valuesMPLR, dfTest, 'Prediction with MPLR')
-"""
+
 valuesRFR = probRFR(2, 0.5, col_study_chag, dfTrain, dfTest)
 plotProb(0.5, valuesRFR, dfTest, 'Prediction with RFR')
 """
 
-
+probplotAllKernels('rbf', 1, 0.4)
 
 ##################################
 # CV
