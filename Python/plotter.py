@@ -973,7 +973,7 @@ def plotOnYears(property, min, max):
             s = 20,
             c=(df97[property]),
                 cmap=cm,  vmin=min, vmax=max)
-    ax[0,0].set_title('97')
+    ax[0,0].set_title('97 - vol : '+str(sum(df97[property])*625))
     ax[0,0].set_ylabel("X [m] - EPSG:32617")
     ax[0,0].tick_params(labelsize=8)
     sc = ax[0,1].scatter(df08['x']*10+1013618, df08['y']*10+649502,
@@ -984,7 +984,7 @@ def plotOnYears(property, min, max):
                 cmap=cm,  vmin=min, vmax=max)
     cbar = fig5.colorbar(sc)
     cbar.ax.get_yaxis().labelpad = 20
-    ax[0,1].set_title('08')
+    ax[0,1].set_title('08 - vol : '+str(sum(df08[property])*625))
     ax[0,1].tick_params(labelsize=8)
     sc = ax[0,2].scatter(df12['x']*10+1013618, df12['y']*10+649502,
             linewidths=1, alpha=.7,
@@ -992,7 +992,7 @@ def plotOnYears(property, min, max):
             s = 20,
             c=(df12[property]),
                 cmap=cm,  vmin=min, vmax=max)
-    ax[0,2].set_title('12')
+    ax[0,2].set_title('12 - vol : '+str(sum(df12[property])*625))
     ax[0,2].tick_params(labelsize=8)
     
     sc = ax[0,3].scatter(df18['x']*10+1013618, df18['y']*10+649502,
@@ -1001,7 +1001,7 @@ def plotOnYears(property, min, max):
             s = 20,
             c=(df18[property]),
                 cmap=cm, vmin=min, vmax=max)
-    ax[0,3].set_title('18')
+    ax[0,3].set_title('18 - vol : '+str(sum(df18[property])*625))
     ax[0,3].tick_params(labelsize=8)
     
     sc = ax[1,0].scatter(df22['x']*10+1013618, df22['y']*10+649502,
@@ -1010,7 +1010,7 @@ def plotOnYears(property, min, max):
             s = 20,
             c=(df22[property]),
                 cmap=cm, vmin=min, vmax=max)
-    ax[1,0].set_title('22')
+    ax[1,0].set_title('22 - vol : '+str(sum(df22[property])*625))
     ax[1,0].set_ylabel("X [m] - EPSG:32617")
     ax[1,0].tick_params(labelsize=8)
     
@@ -1021,7 +1021,7 @@ def plotOnYears(property, min, max):
             c=(df26[property]),
                 cmap=cm, vmin=min, vmax=max)
 
-    ax[1,1].set_title('26')
+    ax[1,1].set_title('26 - vol : '+str(sum(df26[property])*625))
     ax[1,1].tick_params(labelsize=8)
     
     sc = ax[1,2].scatter(df30['x']*10+1013618, df30['y']*10+649502,
@@ -1030,7 +1030,7 @@ def plotOnYears(property, min, max):
             s = 20,
             c=(df30[property]),
                 cmap=cm, vmin=min, vmax=max)
-    ax[1,2].set_title('30')
+    ax[1,2].set_title('30 - vol : '+str(sum(df30[property])*625))
     ax[1,2].tick_params(labelsize=8)
     
     sc = ax[1,3].scatter(df34['x']*10+1013618, df34['y']*10+649502,
@@ -1039,7 +1039,7 @@ def plotOnYears(property, min, max):
             s = 20,
             c=(df34[property]),
                 cmap=cm, vmin=min, vmax=max)
-    ax[1,3].set_title('34')
+    ax[1,3].set_title('34 - vol : '+str(sum(df34[property])*625))
     ax[1,3].set_xlabel("Y [m] - EPSG:32617")
     ax[1,3].tick_params(labelsize=8)
     """
@@ -1080,7 +1080,8 @@ def plotOnYears(property, min, max):
     #fig5.suptitle(property)
     plt.draw()
 
-"""plotOnYears('hdifference', -2, 2)
+plotOnYears('hdifference', -2, 2)
+"""
 plotOnYears('height', 50, 70)
 plotOnYears('distChagres', 0, 40)
 """
@@ -1207,7 +1208,7 @@ def plotProb(limit, values, dfTest, title):
 
 
 def probplotAllKernels(kernel, C, epsilon):
-    valuesSVR = probSVR(2, 0.72, col_study_peq, dfTrain, dfTest, kernel, C, epsilon)
+    valuesSVR = probSVR(2, 0.5, col_study_peq, dfTrain, dfTest, kernel, C, epsilon)
     plotProb(0.5, valuesSVR, dfTest, "Prediction with SVR: kernel={}, C={}, epsilon={}".format(kernel, C, epsilon))
     print('done')
 
@@ -1215,9 +1216,14 @@ def probplotPoly(kernel, C, epsilon, degree):
     valuesSVR = probSVRPoly(4, 0.72, col_study_chag, dfTrain, dfTest, kernel, C, epsilon, degree)
     plotProb(0.5, valuesSVR, dfTest, "SVR {} C= {} epsilon= {} degree={}".format(kernel, C, epsilon, degree))
     print('done')
-"""
-probplotAllKernels('rbf', 1, 0.3)
 
+
+
+
+
+
+
+"""
 valuesMPLR = probMLPR(2, 0.5, col_study_peq, dfTrain, dfTest)
 plotProb(0.5, valuesMPLR, dfTest, 'Prediction with MPLR')
 
@@ -1230,8 +1236,8 @@ plotProb(0.5, valuesRFR, dfTest, 'Prediction with RFR')
 #valuesSVR = probSVR(5, 0.5, col_study_handpicked, dfTrain, dfTest, 'rbf', 1, 0.2)
 #plotProb(0.5, valuesSVR, dfTest, 'SVR')
 
-valuesSVR = probMLPR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
-plotProb(0.5, valuesSVR, dfTest, 'MLPR')
+"""valuesSVR = probMLPR(5, 0.5, col_study_handpicked, dfTrain, dfTest)
+plotProb(0.5, valuesSVR, dfTest, 'MLPR')"""
 
 
 ##################################
