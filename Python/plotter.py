@@ -1085,11 +1085,11 @@ def plotOnYears4(property, min, max):
     df18 = sklearn.utils.resample(df[df.year == 2018][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df22 = sklearn.utils.resample(df[df.year == 2022][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
     df26 = sklearn.utils.resample(df[df.year == 2026][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df30 = sklearn.utils.resample(df[df.year == 2030][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df34 = sklearn.utils.resample(df[df.year == 2034][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df38 = sklearn.utils.resample(df[df.year == 2038][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df42 = sklearn.utils.resample(df[df.year == 2042][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
-    df46 = sklearn.utils.resample(df[df.year == 2046][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df30 = sklearn.utils.resample(df[df.year == 2030][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df34 = sklearn.utils.resample(df[df.year == 2034][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df38 = sklearn.utils.resample(df[df.year == 2038][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df42 = sklearn.utils.resample(df[df.year == 2042][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
+    #df46 = sklearn.utils.resample(df[df.year == 2046][df.y < -(9.5 / 2) * df.x + 4545 ][df.y > df.x + 50][df.y < 920][ df.y > -1.25 * df.x + 1575 ][ df.y > 630 ][ df.y < 970], n_samples=10000, random_state=None, stratify=None)
 
 
     #plotBinned(df12['hdifference'], df12, 'binned 12')
@@ -1104,7 +1104,7 @@ def plotOnYears4(property, min, max):
             s = 16,
             c=(df97[property]),
                 cmap=cm,  vmin=min, vmax=max)
-    ax[0].set_title('97 to 08')
+    ax[0].set_title('97 to 08 vol: '+str(sum(df97[property])*625))
     ax[0].set_ylabel("X [m] - EPSG:32617")
     ax[0].set_xlabel("Y [m] - EPSG:32617")
     ax[0].tick_params(labelsize=8)
@@ -1118,7 +1118,7 @@ def plotOnYears4(property, min, max):
     cbar.ax.set_title('>4')
     cbar.ax.get_yaxis().labelpad = 20
     cbar.ax.set_ylabel('Change in bed level height [m]', rotation=270)
-    ax[1].set_title('08 to 12')
+    ax[1].set_title('08 to 12 vol: '+str(sum(df08[property])*625))
     ax[1].tick_params(labelsize=8)
     ax[1].set_xlabel("Y [m] - EPSG:32617")
     sc = ax[2].scatter(df12['x']*10+1013618, df12['y']*10+649502,
@@ -1127,11 +1127,12 @@ def plotOnYears4(property, min, max):
             s = 16,
             c=(df12[property]),
                 cmap=cm,  vmin=min, vmax=max)
-    ax[2].set_title('12 to 18')
+    ax[2].set_title('12 to 18 vol: '+str(sum(df12[property])*625))
     ax[2].set_xlabel("Y [m] - EPSG:32617")
     ax[2].tick_params(labelsize=8)
     df18sorted = df18.sort_values('index').drop_duplicates(subset=['index'])
-    dfNewsorted = df46.sort_values('index').drop_duplicates(subset=['index'])
+    dfToPred = df26
+    dfNewsorted = dfToPred.sort_values('index').drop_duplicates(subset=['index'])
     arrfinal = np.zeros(len(df18sorted['index']))
     arrx = np.zeros(len(df18sorted['index']))
     arry = np.zeros(len(df18sorted['index']))
@@ -1150,7 +1151,7 @@ def plotOnYears4(property, min, max):
             s = 16,
             c=(arrfinal),
                 cmap=cm, vmin=min, vmax=max)
-    ax[3].set_title('18 to 24')
+    ax[3].set_title('18 to 24 vol: '+str(sum(arrfinal)*625))
     ax[3].set_xlabel("Y [m] - EPSG:32617")
     ax[3].tick_params(labelsize=8)
 
@@ -1160,7 +1161,7 @@ def plotOnYears4(property, min, max):
    #fig5.suptitle('Morphological changes in Rio Chagres')
     plt.draw()
    
-#plotOnYears4('hdifference', -4, 4)
+plotOnYears4('hdifference', -4, 4)
 
 
 def plotPredYears(property, min, max):
@@ -1477,7 +1478,7 @@ valuesRFR = probRFR(2, 0.5, col_study_chag, dfTrain, dfTest)
 plotProb(0.5, valuesRFR, dfTest, 'Prediction with RFR')
 """
 
-probplotAllKernels('rbf', 1, 0.4)
+#probplotAllKernels('rbf', 1, 0.4)
 
 ##################################
 # CV
@@ -1551,7 +1552,7 @@ y_predPe = predict(svrPe, X_trainoPe, y_trainoPe, XtPe)
 
 def plotCumulative(pred, actual, bins, title):
     plt.rcParams.update({'font.size': 8})
-    fig, ax = plt.subplots(nrows=1, ncols=2, sharey=False, tight_layout=True)
+    fig, ax = plt.subplots(nrows=1, ncols=2, sharey=False, tight_layout=True,figsize=(3, 4))
     hist1 = ax[0].hist(
            (pred - actual),
            bins = bins,

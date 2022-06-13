@@ -72,7 +72,7 @@ print("pred made")
 
 
 outputFile =  open('C:/Users/neder/Documents/Geomatics/Unity/PCproject/DEMViewer/Assets/Output/Python_Output.txt', 'w')
-factor = 0.2
+factor = 0.4
 for i in range(pred.size):
     outputFile.write(str(index_array[i]))
     outputFile.write( " ")

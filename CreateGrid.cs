@@ -982,10 +982,10 @@ public class CreateGrid : MonoBehaviour
         Mesh mesh1997 = meshGenerator.mesh;
         grid1997 = InstantiateGrid(mesh1997, discharge1997C, discharge1997P);
 
-        grid2008 = append("Assets/Output/outputGridFull.txt", false, meshGenerator.vertexFile2008, 1997, 11, 73.9f, discharge2008C, discharge2008P, grid1997, 0f, 10, "data", true);
-        grid2012 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2012, 2008, 4, 95.5f, discharge2012C, discharge2012P, grid2008, 0f, 10, "data", true);
-        grid2018 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2018, 2012, 6, 58.2f, discharge2018C, discharge2018P, grid2012, 0f, 10, "data", true);
-        append("Assets/Output/outputGridPredParams.txt", false, meshGenerator.vertexFile2018, 2018, 6, 50f, discharge2018C, discharge2018P, grid2018, 0f, 10, "data", true);
+        grid2008 = append("Assets/Output/outputGridFull.txt", false, meshGenerator.vertexFile2008, 1997, 11, 73.9f, discharge2008C, discharge2008P, grid1997, 0f, 10, "data", false);
+        grid2012 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2012, 2008, 4, 95.5f, discharge2012C, discharge2012P, grid2008, 0f, 10, "data", false);
+        grid2018 = append("Assets/Output/outputGridFull.txt", true, meshGenerator.vertexFile2018, 2012, 6, 58.2f, discharge2018C, discharge2018P, grid2012, 0f, 10, "data", false);
+        append("Assets/Output/outputGridPredParams.txt", false,  meshGenerator.vertexFile2018, 2018, 6, 58.2f, discharge2018C, discharge2018P, grid2012, 0f, 10, "data", false);
         latestGrid = grid2018;
         latestYear = 2018;
 
