@@ -14,4 +14,4 @@ The python predictor script then reads the written file with features, uses the 
 ## Output plotter
 The prediction outpuit result along with a wide selection of machine learning quality check can be visualised with the python plotter script, however the final results of the prediction can also be checked in Unity.
 
-# Updates and research report on theory behind the code is coming 1st of July 2022
+# Updates and research report on theory behind the code is coming 4th of July 2022
